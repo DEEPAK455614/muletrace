@@ -1,5 +1,6 @@
 // Investigator triage state, persisted in localStorage (demo-scale case management).
 import { appendAudit } from './audit';
+import { scopedKey } from './dataset';
 
 export type TriageStatus = 'new' | 'review' | 'escalated' | 'cleared';
 export interface TriageEntry { status: TriageStatus; note: string; updatedAt: number }
@@ -7,12 +8,12 @@ export interface TriageEntry { status: TriageStatus; note: string; updatedAt: nu
 const KEY = 'muletrace.triage.v1';
 
 export function loadTriage(): Record<string, TriageEntry> {
-  try { return JSON.parse(localStorage.getItem(KEY) ?? '{}'); } catch { return {}; }
+  try { return JSON.parse(localStorage.getItem(scopedKey(KEY)) ?? '{}'); } catch { return {}; }
 }
 export function saveTriageEntry(accountId: string, entry: TriageEntry) {
   const all = loadTriage();
   all[accountId] = entry;
-  localStorage.setItem(KEY, JSON.stringify(all));
+  localStorage.setItem(scopedKey(KEY), JSON.stringify(all));
   void appendAudit('TRIAGE_STATUS', `status -> ${entry.status}${entry.note ? ' (note)' : ''}`, accountId);
 }
 export const TRIAGE_LABELS: Record<TriageStatus, string> = {

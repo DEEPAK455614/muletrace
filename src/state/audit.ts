@@ -13,6 +13,8 @@ export type AuditEntry = {
   hash: string;
 };
 
+import { scopedKey } from "./dataset";
+
 const KEY = "ps01_audit_v1";
 const GENESIS = "GENESIS";
 
@@ -25,7 +27,7 @@ async function sha256Hex(s: string): Promise<string> {
 }
 
 export function loadAuditLog(): AuditEntry[] {
-  try { return JSON.parse(localStorage.getItem(KEY) ?? "[]"); } catch { return []; }
+  try { return JSON.parse(localStorage.getItem(scopedKey(KEY)) ?? "[]"); } catch { return []; }
 }
 
 export async function appendAudit(action: string, detail: string, accountId?: string): Promise<void> {
@@ -34,7 +36,7 @@ export async function appendAudit(action: string, detail: string, accountId?: st
   const entry: AuditEntry = { seq: log.length, ts: Date.now(), action, accountId, detail, prevHash, hash: "" };
   entry.hash = await sha256Hex(bodyOf(entry));
   log.push(entry);
-  localStorage.setItem(KEY, JSON.stringify(log));
+  localStorage.setItem(scopedKey(KEY), JSON.stringify(log));
 }
 
 export type ChainCheck = { ok: boolean; checked: number; brokenAt?: number };

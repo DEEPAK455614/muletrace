@@ -3,6 +3,7 @@ import { Routes, Route, NavLink, Link } from 'react-router-dom';
 import { analyze, analyzeWorld, type Analysis } from './engine';
 import type { World } from './engine/types';
 import type { ImportResult } from './engine/import';
+import { setActiveDatasetScope } from './state/dataset';
 import { LayoutDashboard, Bell, Network, GitBranch, FileWarning, FlaskConical, BookOpen, Menu, X, ShieldCheck, History, Upload } from 'lucide-react';
 
 const Overview = lazy(() => import('./pages/Overview'));
@@ -65,6 +66,9 @@ export default function App() {
     [dataset],
   );
   const uploaded = dataset.kind === 'uploaded';
+  React.useEffect(() => {
+    setActiveDatasetScope(uploaded ? `uploaded:${dataset.fileName}` : 'synthetic');
+  }, [dataset, uploaded]);
   const [menuOpen, setMenuOpen] = React.useState(false);
   const fmtM = (ts: number) => new Date(ts).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
   const windowLabel = uploaded
