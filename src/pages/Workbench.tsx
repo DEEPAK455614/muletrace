@@ -1,11 +1,11 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import type { Analysis } from '../engine';
 import { analyze } from '../engine';
 import { featureVector, trainLogReg, predictProb, FEATURE_KEYS, type LogRegModel } from '../engine/ml';
 import { buildCommunities, buildLayout, BAND_FILL } from '../components/FlowGraph';
 import FlowGraph from '../components/FlowGraph';
-import { ScoreBadge, FactorBars, inr, inrFull, fmtDate } from '../ui';
+import { ScoreBadge, FactorBars, inr, inrFull, fmtDate, fmtDateTime } from '../ui';
 import { loadTriage, saveTriageEntry, TRIAGE_LABELS, TRIAGE_COLORS, type TriageStatus } from '../state/triage';
 import { Search, AlertTriangle, GitBranch, FileText, ExternalLink, X } from 'lucide-react';
 
@@ -49,6 +49,18 @@ function mlContributions(model: LogRegModel, f: Parameters<typeof featureVector>
 
 type FilterKey = 'all' | 'complaint' | 'new' | 'escalated';
 
+function useWidth() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [w, setW] = useState(660);
+  useEffect(() => {
+    if (!ref.current) return;
+    const ro = new ResizeObserver((es) => setW(Math.max(320, Math.round(es[0].contentRect.width))));
+    ro.observe(ref.current);
+    return () => ro.disconnect();
+  }, []);
+  return { ref, w };
+}
+
 export default function Workbench({ a, uploaded }: { a: Analysis; uploaded: boolean }) {
   const communities = useMemo(() => buildCommunities(a), [a]);
   const [cid, setCid] = useState<number | null>(null);
@@ -59,11 +71,13 @@ export default function Workbench({ a, uploaded }: { a: Analysis; uploaded: bool
   const [scorer, setScorer] = useState<'rules' | 'ml'>('rules');
   const [triage, setTriage] = useState(() => loadTriage());
 
+  const graphBox = useWidth();
+  const gw = graphBox.w, gh = Math.max(430, Math.round(gw * 0.72));
   const activeCid = cid ?? communities[0]?.cid ?? 0;
   const activeCommunity = communities.find((c) => c.cid === activeCid) ?? communities[0];
   const layout = useMemo(
-    () => (activeCommunity ? buildLayout(a, activeCommunity.members, 660, 480) : null),
-    [a, activeCommunity],
+    () => (activeCommunity ? buildLayout(a, activeCommunity.members, gw, gh) : null),
+    [a, activeCommunity, gw, gh],
   );
 
   const ranked = useMemo(() => {
@@ -99,6 +113,9 @@ export default function Workbench({ a, uploaded }: { a: Analysis; uploaded: bool
     () => (selected ? a.world.complaints.filter((c) => c.namedAccountIds.includes(selected)) : []),
     [a, selected],
   );
+  const partyName = (id: string) => id === 'EXT' ? 'External source' : id === 'ATM' ? 'Cash withdrawal' :
+    (a.world.customers.find((c) => c.id === a.world.accounts.find((x) => x.id === id)?.customerId)?.name ?? id);
+
   const selCounterparties = useMemo(() => {
     if (!selected) return { ins: [], outs: [] };
     const agg = new Map<string, { in: number; out: number }>();
@@ -106,13 +123,19 @@ export default function Workbench({ a, uploaded }: { a: Analysis; uploaded: bool
       if (t.to === selected) { const e = agg.get(t.from) ?? { in: 0, out: 0 }; e.in += t.amount; agg.set(t.from, e); }
       if (t.from === selected) { const e = agg.get(t.to) ?? { in: 0, out: 0 }; e.out += t.amount; agg.set(t.to, e); }
     }
-    const nm = (id: string) => id === 'EXT' ? 'External source' : id === 'ATM' ? 'Cash withdrawal' :
-      (a.world.customers.find((c) => c.id === a.world.accounts.find((x) => x.id === id)?.customerId)?.name ?? id);
-    const rows = [...agg.entries()].map(([id, v]) => ({ id, name: nm(id), ...v }));
+    const rows = [...agg.entries()].map(([id, v]) => ({ id, name: partyName(id), ...v }));
     return {
       ins: rows.filter((r) => r.in > 0).sort((x, y) => y.in - x.in).slice(0, 5),
       outs: rows.filter((r) => r.out > 0).sort((x, y) => y.out - x.out).slice(0, 5),
     };
+  }, [a, selected]);
+
+  const selTimeline = useMemo(() => {
+    if (!selected) return [];
+    return a.world.txns
+      .filter((t) => t.from === selected || t.to === selected)
+      .sort((x, y) => x.ts - y.ts)
+      .map((t) => ({ ...t, dir: t.to === selected ? ('in' as const) : ('out' as const), other: t.to === selected ? t.from : t.to }));
   }, [a, selected]);
 
   const ml = scorer === 'ml' ? getMlModel() : null;
@@ -180,13 +203,13 @@ export default function Workbench({ a, uploaded }: { a: Analysis; uploaded: bool
           ))}
         </div>
         {layout ? (
-          <>
+          <div ref={graphBox.ref} className="flex-1 min-h-0 flex flex-col">
             <FlowGraph layout={layout} selNode={selected}
-              onSelectNode={(id) => setSelected(id)} width={660} height={480} />
+              onSelectNode={(id) => setSelected(id)} width={gw} height={gh} labelScale={gw >= 900 ? 1.2 : gw >= 620 ? 1.1 : 1} />
             <div className="text-[10.5px] text-ink-mute mt-1.5 leading-relaxed">
               Communities from the transaction graph (Louvain), ranked by peak member risk. Structure is shown for investigator review - it does not establish any person's role. Select a node to open its evidence panel.
             </div>
-          </>
+          </div>
         ) : (
           <div className="flex-1 flex items-center justify-center text-[12.5px] text-ink-mute text-center px-6">
             No transaction community meets the display threshold under the current rules. This is not evidence that no suspicious activity exists - review the queue on the left, which lists every scored account.
@@ -206,11 +229,11 @@ export default function Workbench({ a, uploaded }: { a: Analysis; uploaded: bool
               <button onClick={() => setSelected(null)} className="text-ink-mute hover:text-ink-soft"><X size={16} /></button>
             </div>
             <div className="flex items-center gap-3 mt-3">
-              <ScoreBadge score={scorer === 'ml' && selMlProb != null ? (selMlProb >= 0.99 ? Math.round(selMlProb * 1000) / 10 : Math.round(selMlProb * 100)) : sel.score}
+              <ScoreBadge score={scorer === 'ml' && selMlProb != null ? (selMlProb >= 0.99 ? Math.floor(selMlProb * 1000) / 10 : Math.round(selMlProb * 100)) : sel.score}
                 band={scorer === 'ml' ? 'ML' : sel.band} size="lg" />
               <div className="text-[11px] text-ink-mute leading-snug">
                 {scorer === 'ml'
-                  ? 'ML probability (logistic regression, 0-100). Model attribution - not evidence.'
+                  ? 'ML model output (logistic regression score, 0-100). Class-weighted training on synthetic data - not a calibrated real-world probability. Model attribution, not evidence.'
                   : <>Rules score - {sel.archetype}. Every point is a named, weighted factor below.</>}
               </div>
             </div>
@@ -257,8 +280,8 @@ export default function Workbench({ a, uploaded }: { a: Analysis; uploaded: bool
                 ))}
                 <div className="text-[9.5px] text-ink-mute leading-relaxed mt-2 border-t border-[#1A2537] pt-2">
                   {uploaded
-                    ? 'Model trained on the synthetic demo world only. Uploaded data is unverified - this probability is indicative, not a validated risk estimate.'
-                    : 'Model trained on this synthetic demo world\'s generator labels (dev world) - in-sample here. Untouched-holdout results are on the Evaluation page. Not validated on real banking data.'}
+                    ? 'Model trained on the synthetic demo world only, with class-weighted fitting - the output measures synthetic discrimination, not a calibrated probability. Uploaded data is unverified - indicative ranking only, not a validated risk estimate.'
+                    : 'Model trained on this synthetic demo world\'s generator labels (dev world) - in-sample here, and class-weighted, so the number measures synthetic discrimination, not a calibrated probability. Untouched-holdout results are on the Evaluation page. Not validated on real banking data.'}
                 </div>
               </div>
             )}
@@ -292,6 +315,24 @@ export default function Workbench({ a, uploaded }: { a: Analysis; uploaded: bool
                   <span className="num text-[11px]">{inr(r.out)}</span>
                 </div>
               ))}
+            </div>
+
+            <div>
+              <div className="text-[12px] font-semibold mb-1">Transaction timeline (chronological)</div>
+              <div className="text-[10px] text-ink-mute mb-1.5">
+                {selTimeline.length} transaction{selTimeline.length === 1 ? '' : 's'} in the analysis window{selTimeline.length > 40 ? ' - showing earliest 40' : ''}.
+              </div>
+              <div className="max-h-[260px] overflow-y-auto pr-1">
+                {selTimeline.slice(0, 40).map((t) => (
+                  <div key={t.id} className="flex items-center gap-2 py-1 border-b border-[#141E30] last:border-0">
+                    <span className="num text-[10px] text-ink-mute w-[92px] shrink-0">{fmtDateTime(t.ts)}</span>
+                    <span className="text-[11px] font-semibold shrink-0 w-4 text-center" style={{ color: t.dir === 'in' ? '#2FD48C' : '#FF7A45' }}>{t.dir === 'in' ? '\u2193' : '\u2191'}</span>
+                    <span className="text-[11px] text-ink-soft truncate flex-1">{partyName(t.other)}</span>
+                    <span className="text-[9.5px] text-ink-mute shrink-0">{t.channel}</span>
+                    <span className="num text-[11px] shrink-0">{inr(t.amount)}</span>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div className="flex flex-col gap-1.5 pt-2 border-t border-[#1A2537]">

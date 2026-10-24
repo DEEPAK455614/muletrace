@@ -71,7 +71,7 @@ export function buildLayout(a: Analysis, members: string[], width = 660, height 
   return { nodes, links, maxAmt };
 }
 
-export default function FlowGraph({ layout, selNode, selEdge, onSelectNode, onSelectEdge, width = 660, height = 480 }: {
+export default function FlowGraph({ layout, selNode, selEdge, onSelectNode, onSelectEdge, width = 660, height = 480, labelScale = 1 }: {
   layout: GraphLayout;
   selNode?: string | null;
   selEdge?: { from: string; to: string } | null;
@@ -79,9 +79,10 @@ export default function FlowGraph({ layout, selNode, selEdge, onSelectNode, onSe
   onSelectEdge?: (e: { from: string; to: string } | null) => void;
   width?: number;
   height?: number;
+  labelScale?: number;
 }) {
   const interactive = Boolean(onSelectNode || onSelectEdge);
-  const labelSize = layout.nodes.length <= 8 ? 12.5 : layout.nodes.length <= 16 ? 11 : 9.5;
+  const labelSize = (layout.nodes.length <= 8 ? 12.5 : layout.nodes.length <= 16 ? 11 : 9.5) * labelScale;
   return (
     <svg viewBox={`0 0 ${width} ${height}`} className="w-full mt-2 rounded-lg" style={{ background: '#0E1626', border: '1px solid var(--color-line)' }}>
       <defs>
