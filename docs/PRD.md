@@ -1,9 +1,9 @@
 # MuleTrace - Intelligent Mule Account Detection and Financial Fraud Investigation Platform
 
 Product & technical document - v1.0, 24 Oct 2026
-Status: working synthetic demonstration, deployed preview.
+Status: working synthetic prototype, deployed preview. It covers the named PS-01 workflows end to end on synthetic data; it is not audit-ready and not production-ready (see section 8 limitations).
 Live preview: https://muletrace-5gm.pages.dev - Repo: https://github.com/DEEPAK455614/muletrace (private)
-Problem statement: PS-01 (hackathon problem statement, WhatsApp brief 24 Oct 2026).
+Problem statement: PS-01, supplied as a brief over WhatsApp on 24 Oct 2026. No hackathon, competition, deadline or production customer has been named; nothing below should be read as a submission to, or endorsement by, any organiser or institution.
 
 > Working name "MuleTrace" pending user's naming decision (see docs/NAMING.md).
 
@@ -15,14 +15,14 @@ Fraud networks recruit or operate "mule" accounts to receive, layer and cash out
 proceeds of cybercrime. Banks see single accounts; the fraud lives in the network.
 Investigators need: (a) risk-ranked alerts with reasons, (b) the ability to trace
 money forward and backward through hops, (c) complaint correlation, (d) network-level
-structure that exposes collectors and controllers, (e) an audit-ready evidence trail.
+structure that exposes collectors and controllers, (e) an exportable evidence report designed for human review.
 
 ## 2. What this system is (and is not)
 
 A full working investigation platform running on a deterministic synthetic dataset:
 AI/ML + graph analytics for transaction analysis, mule risk scoring with explanations,
 money-trail tracing, complaint correlation, graph-based investigation views, and an
-investigation dashboard - the complete PS-01 scope.
+investigation dashboard. The workflows named in PS-01 are all present in working form on the synthetic dataset; this is a prototype demonstration of the scope, not a claim of production capability.
 
 It is NOT connected to any real bank data, does not take account action (no freezing),
 does not file complaints, and makes no real-world performance claims. Every score is

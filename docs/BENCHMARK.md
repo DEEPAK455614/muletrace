@@ -12,8 +12,32 @@
 - Holdout worlds (`muletrace-holdout-2026a`, `muletrace-holdout-2026b`): evaluated exactly once, after freeze.
 - Benign hard negatives: landlord rent fan-in, coaching-fee band, kitty pooling,
   festival burst, family remittance pooling, salary sweep - reported explicitly.
-- No label leakage: scoring features are computed from transactions, complaints and
-  graph structure only; ground truth is used exclusively for evaluation and (dev-only) training.
+- No label leakage in features: scoring features are computed from transactions,
+  complaints and graph structure only; ground truth is used exclusively for evaluation
+  and (dev-only) training.
+- As-of discipline: each account is scored from the full Jan-Oct 2026 window; complaints
+  carry their own report dates and are treated as known for the whole window. There is
+  NO per-account temporal cutoff (unlike the arXiv NFPC study's per-account pre-flag
+  cutoffs) - a complaint dated late in the window can influence the score of an account
+  whose suspicious-looking transactions happened earlier. This mirrors a retrospective
+  review, not a real-time alerting deployment, and is stated as a limitation.
+
+## Validity limits (read before quoting any number)
+
+- **Same-template holdouts.** Holdout worlds use independent seeds but the SAME world
+  template and the SAME six injected typologies as dev. This tests generalisation to a
+  fresh draw from the same generator - NOT unseen typologies, NOT temporal drift, NOT
+  out-of-distribution behaviour. Real fraud adaptation would degrade these numbers by
+  an unknown amount.
+- **Complaint-label correlation.** Injected mule rings are also the accounts most likely
+  to attract synthetic complaints, and complaint linkage is a scoring feature. The
+  generator creates this correlation deliberately to model victim reporting, but it
+  means complaint-aware features partly "read the answer key": synthetic labels and
+  complaint assignment are not independent. Precision/recall here are therefore an
+  upper bound relative to a deployment where complaints arrive for only a fraction of
+  real mules.
+- **Hard negatives are template-injected too.** The 6 benign look-alikes are designed
+  traps; a real benign population is far more diverse.
 
 Run at: 2026-10-24T15:57:02.790Z
 

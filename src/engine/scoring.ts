@@ -58,7 +58,7 @@ export function factorSpecs(f: AccountFeatures): FactorSpec[] {
   specs.push({ key: 'structuring', label: 'Structured deposits', points: 12 * clamp01((f.structuredDepositShare - 0.35) / 0.4), max: 12,
     observed: `${f.structuredDepositCount} deposits between Rs 4,000-9,900` });
   specs.push({ key: 'relay', label: 'Relay-only account', points: f.outCount >= 1 && f.merchantSpendShare < 0.05 && pt24 > 0.3 ? 8 : 0, max: 8,
-    observed: f.merchantSpendShare < 0.05 ? 'No ordinary living spends; account exists only to relay funds' : `${Math.round(f.merchantSpendShare * 100)}% of outflow is ordinary spending` });
+    observed: f.merchantSpendShare < 0.05 ? 'No ordinary living spends observed in the analysis window' : `${Math.round(f.merchantSpendShare * 100)}% of outflow is ordinary spending` });
   specs.push({ key: 'atm', label: 'Cash-out share', points: f.atmShareOut >= 0.4 ? 8 : f.atmShareOut >= 0.2 ? 4 : 0, max: 8,
     observed: `${Math.round(f.atmShareOut * 100)}% of outflow withdrawn as cash` });
   specs.push({ key: 'income', label: 'Throughput vs declared income', points: f.incomeMultiple >= 5 ? 8 : f.incomeMultiple >= 2.5 ? 4 : 0, max: 8,
