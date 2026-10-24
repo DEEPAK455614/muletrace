@@ -62,7 +62,7 @@ export default function Alerts({ a }: { a: Analysis }) {
       <div className="card overflow-x-auto">
         <table className="table-base min-w-[760px]">
           <thead>
-            <tr><th>Account</th><th>Pattern</th><th>Top indicators</th><th>Complaint</th><th>Triage</th><th className="text-right">Inflow</th><th className="text-right">Score</th></tr>
+            <tr><th>Account</th><th>Observed pattern</th><th>Top indicators</th><th>Complaint</th><th>Triage</th><th className="text-right">Inflow</th><th className="text-right">Score</th></tr>
           </thead>
           <tbody>
             {rows.map((s) => {

@@ -52,7 +52,29 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <DemoBanner />
+      <div className="sticky top-0 z-40 md:static md:z-auto bg-surface">
+        <DemoBanner />
+        {/* Mobile top bar */}
+        <div className="no-print md:hidden bg-surface border-b border-line">
+          <div className="flex items-center justify-between px-3 h-[52px]">
+            <Brand />
+            <button className="btn !p-2" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
+              {menuOpen ? <X size={18} /> : <Menu size={18} />}
+            </button>
+          </div>
+          {menuOpen && (
+            <div className="border-t border-line bg-surface px-2 py-2 grid grid-cols-2 gap-1">
+              {NAV.map(({ to, label, icon: Icon, end }) => (
+                <NavLink key={to} to={to} end={end} onClick={() => setMenuOpen(false)}
+                  className={({ isActive }) => `flex items-center gap-2 px-3 py-2.5 rounded-lg text-[13px] font-medium no-underline ${isActive ? 'text-white' : 'text-ink-soft'}`}
+                  style={({ isActive }) => isActive ? { background: 'var(--color-brand)', color: '#fff' } : {}}>
+                  <Icon size={15} /> {label}
+                </NavLink>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
       <div className="flex flex-1 min-h-0">
         {/* Sidebar - desktop */}
         <aside className="no-print hidden md:flex flex-col w-[212px] shrink-0 border-r border-line bg-surface px-3 py-4 gap-1 sticky top-0 h-screen">
@@ -78,27 +100,6 @@ export default function App() {
             </div>
           </div>
         </aside>
-
-        {/* Mobile top bar */}
-        <div className="no-print md:hidden sticky top-0 z-40 bg-surface border-b border-line">
-          <div className="flex items-center justify-between px-3 h-[52px]">
-            <Brand />
-            <button className="btn !p-2" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
-              {menuOpen ? <X size={18} /> : <Menu size={18} />}
-            </button>
-          </div>
-          {menuOpen && (
-            <div className="border-t border-line bg-surface px-2 py-2 grid grid-cols-2 gap-1">
-              {NAV.map(({ to, label, icon: Icon, end }) => (
-                <NavLink key={to} to={to} end={end} onClick={() => setMenuOpen(false)}
-                  className={({ isActive }) => `flex items-center gap-2 px-3 py-2.5 rounded-lg text-[13px] font-medium no-underline ${isActive ? 'text-white' : 'text-ink-soft'}`}
-                  style={({ isActive }) => isActive ? { background: 'var(--color-brand)', color: '#fff' } : {}}>
-                  <Icon size={15} /> {label}
-                </NavLink>
-              ))}
-            </div>
-          )}
-        </div>
 
         {/* Content */}
         <main className="flex-1 min-w-0 px-4 md:px-7 py-5 md:py-6 pb-24 md:pb-10">

@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { forceSimulation, forceLink, forceManyBody, forceCollide, forceCenter, forceX, forceY, type SimulationNodeDatum, type SimulationLinkDatum } from 'd3-force';
 import type { Analysis } from '../engine';
-import { ScoreBadge, SectionTitle, inr } from '../ui';
+import { ScoreBadge, SectionTitle, inr, inrFull, fmtDate, fmtDateTime } from '../ui';
 
 interface N extends SimulationNodeDatum { id: string; score: number; band: string; inflow: number; name: string; complaint: boolean }
 interface L extends SimulationLinkDatum<N> { amount: number }
@@ -28,6 +28,8 @@ export default function NetworkPage({ a }: { a: Analysis }) {
   }, [a]);
 
   const [selected, setSelected] = useState<number | null>(communities[0]?.cid ?? null);
+  const [selNode, setSelNode] = useState<string | null>(null);
+  const [selEdge, setSelEdge] = useState<{ from: string; to: string } | null>(null);
   const sel = communities.find((c) => c.cid === selected);
 
   const layout = useMemo(() => {
@@ -67,6 +69,29 @@ export default function NetworkPage({ a }: { a: Analysis }) {
     return { nodes, links, maxAmt };
   }, [a, sel]);
 
+  const nameOf = (id: string) => {
+    if (id === 'ATM') return 'ATM (cash out)';
+    const acc = a.world.accounts.find((x) => x.id === id);
+    return a.world.customers.find((c) => c.id === acc?.customerId)?.name ?? id;
+  };
+
+  const edgeDetail = useMemo(() => {
+    if (!selEdge || !sel) return null;
+    const txns = a.world.txns.filter((t) => t.from === selEdge.from && t.to === selEdge.to).sort((x, y) => y.ts - x.ts);
+    const total = txns.reduce((sum, t) => sum + t.amount, 0);
+    return { txns: txns.slice(0, 8), count: txns.length, total };
+  }, [a, selEdge, sel]);
+
+  const nodeDetail = useMemo(() => {
+    if (!selNode) return null;
+    const sc = a.scores.get(selNode);
+    const f = a.features.get(selNode);
+    const acc = a.world.accounts.find((x) => x.id === selNode);
+    const nm = a.world.customers.find((c) => c.id === acc?.customerId)?.name ?? selNode;
+    const complaints = a.world.complaints.filter((c) => c.namedAccountIds.includes(selNode));
+    return { sc, f, acc, nm, complaints };
+  }, [a, selNode]);
+
   return (
     <div className="max-w-[1180px]">
       <div className="mb-4">
@@ -100,16 +125,33 @@ export default function NetworkPage({ a }: { a: Analysis }) {
             <div className="card p-4">
               <SectionTitle>Network #{sel.cid} - {sel.members.length} accounts - combined inflow {inr(sel.flow)}</SectionTitle>
               <svg viewBox="0 0 660 480" className="w-full mt-2 rounded-lg" style={{ background: '#F5F4F0', border: '1px solid var(--color-line)' }}>
+                <defs>
+                  <marker id="edge-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                    <path d="M0,0 L8,4 L0,8 z" fill="#9A9484" />
+                  </marker>
+                </defs>
                 {layout.links.map((l, i) => {
-                  const s = l.source as N, t = l.target as N;
-                  return <line key={i} x1={s.x} y1={s.y} x2={t.x} y2={t.y} stroke="#B9B4A8" strokeWidth={0.6 + (l.amount / layout.maxAmt) * 3.4} opacity={0.6} />;
+                  const sn = l.source as N, t = l.target as N;
+                  const dx = (t.x ?? 0) - (sn.x ?? 0), dy = (t.y ?? 0) - (sn.y ?? 0);
+                  const len = Math.hypot(dx, dy) || 1;
+                  const tr = 6 + Math.min(10, Math.sqrt(t.inflow) / 90);
+                  const ex = (t.x ?? 0) - (dx / len) * (tr + 4), ey = (t.y ?? 0) - (dy / len) * (tr + 4);
+                  const isSel = selEdge?.from === sn.id && selEdge?.to === t.id;
+                  return (
+                    <line key={i} x1={sn.x} y1={sn.y} x2={ex} y2={ey}
+                      stroke={isSel ? '#3B4BD8' : '#B9B4A8'} strokeWidth={(0.6 + (l.amount / layout.maxAmt) * 3.4) * (isSel ? 1.6 : 1)}
+                      opacity={isSel ? 1 : 0.6} markerEnd="url(#edge-arrow)" className="cursor-pointer"
+                      onClick={() => { setSelEdge(isSel ? null : { from: sn.id, to: t.id }); setSelNode(null); }} />
+                  );
                 })}
                 {layout.nodes.map((n) => {
                   const r = 6 + Math.min(10, Math.sqrt(n.inflow) / 90);
+                  const isSel = selNode === n.id;
                   return (
-                    <g key={n.id} className="cursor-pointer" onClick={() => nav(`/accounts/${n.id}`)}>
+                    <g key={n.id} className="cursor-pointer" onClick={() => { setSelNode(isSel ? null : n.id); setSelEdge(null); }}>
+                      {isSel && <circle cx={n.x} cy={n.y} r={r + 4} fill="none" stroke="#3B4BD8" strokeWidth={1.6} />}
                       <circle cx={n.x} cy={n.y} r={r} fill={BAND_FILL[n.band] ?? '#8A93A3'} opacity={0.88} stroke={n.complaint ? '#D92D20' : '#fff'} strokeWidth={n.complaint ? 2.5 : 1.5} />
-                      {(n.score >= 45 || n.complaint) && (
+                      {(n.score >= 45 || n.complaint || isSel) && (
                         <text x={n.x! + r + 3} y={n.y! + 3.5} fontSize={9.5} fill="#3A4152" fontWeight={600}>{n.name.split(' ')[0]} - {Math.round(n.score)}</text>
                       )}
                     </g>
@@ -122,6 +164,47 @@ export default function NetworkPage({ a }: { a: Analysis }) {
                 ))}
                 <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full inline-block border-2 border-[#D92D20] bg-white" /> Complaint-named</span>
               </div>
+
+              {(nodeDetail || edgeDetail) && (
+                <div className="mt-3 p-3 rounded-lg border border-line bg-[#FBFAF7]">
+                  {nodeDetail && nodeDetail.sc && nodeDetail.f && (
+                    <div>
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <div>
+                          <span className="text-[14px] font-semibold">{nodeDetail.nm}</span>
+                          <span className="num text-[11px] text-ink-mute ml-2">{selNode}</span>
+                        </div>
+                        <ScoreBadge score={nodeDetail.sc.score} band={nodeDetail.sc.band} size="sm" />
+                      </div>
+                      <div className="text-[12px] text-ink-soft mt-1">
+                        Observed pattern: {nodeDetail.sc.archetype} - inflow {inr(nodeDetail.f.inTotal)} - {nodeDetail.complaints.length} complaint{nodeDetail.complaints.length === 1 ? '' : 's'}
+                      </div>
+                      <div className="flex gap-2 mt-2.5">
+                        <button className="btn" onClick={() => nav(`/accounts/${selNode}`)}>Open 360</button>
+                        <button className="btn" onClick={() => nav(`/trails?account=${selNode}`)}>Trace funds</button>
+                      </div>
+                    </div>
+                  )}
+                  {edgeDetail && selEdge && (
+                    <div>
+                      <div className="text-[13px] font-semibold">
+                        {nameOf(selEdge.from)} → {nameOf(selEdge.to)}
+                      </div>
+                      <div className="text-[12px] text-ink-soft mt-0.5">
+                        {edgeDetail.count} transaction{edgeDetail.count === 1 ? '' : 's'} - total {inr(edgeDetail.total)}
+                        {edgeDetail.txns[0] && ` - most recent ${fmtDate(edgeDetail.txns[0].ts)}`}
+                      </div>
+                      <div className="mt-2 space-y-1">
+                        {edgeDetail.txns.slice(0, 5).map((t) => (
+                          <div key={t.id} className="num text-[11px] text-ink-soft flex justify-between gap-3">
+                            <span>{fmtDateTime(t.ts)}</span><span>{inrFull(t.amount)} - {t.channel}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
               <table className="table-base mt-4">
                 <thead><tr><th>Account</th><th>Pattern</th><th className="text-right">Inflow</th><th className="text-right">Score</th></tr></thead>

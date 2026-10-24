@@ -14,7 +14,7 @@ export interface Analysis {
   features: Map<string, AccountFeatures>;
   scores: Map<string, ScoreResult>;
   evaluation: EvalResult;
-  suspiciousCommunities: { id: number; members: string[]; meanScore: number; complaintCount: number; flaggedCount: number }[];
+  suspiciousCommunities: { id: number; members: string[]; meanScore: number; maxScore: number; complaintCount: number; flaggedCount: number }[];
   buildMs: number;
 }
 
@@ -40,10 +40,11 @@ export function analyze(seed = 'muletrace-v1'): Analysis {
       const complaintCount = c.members.filter((id) => complaintLinked.has(id)).length;
       const flaggedCount = memberScores.filter((s) => s >= 45).length;
       if (complaintLinked.size) communityComplaints.set(c.id, complaintCount);
-      return { id: c.id, members: c.members, meanScore, complaintCount, flaggedCount };
+      const maxScore = Math.max(...memberScores, 0);
+      return { id: c.id, members: c.members, meanScore, maxScore, complaintCount, flaggedCount };
     })
     .filter((c) => c.meanScore >= 25 || c.complaintCount > 0)
-    .sort((a, b) => b.meanScore - a.meanScore);
+    .sort((a, b) => b.maxScore - a.maxScore || b.meanScore - a.meanScore);
 
   cache = { world, graph, features, scores, evaluation, suspiciousCommunities, buildMs: performance.now() - t0 };
   return cache;

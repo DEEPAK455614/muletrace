@@ -77,7 +77,7 @@ export default function Overview({ a }: { a: Analysis }) {
                     <div className="text-[13px] font-semibold text-ink">Network #{c.id} - {c.members.length} accounts</div>
                     <div className="text-[12px] text-ink-soft truncate">Lead: {custName(topMember.accountId)} - {c.flaggedCount} flagged, {c.complaintCount} complaint-linked</div>
                   </div>
-                  <ScoreBadge score={Math.round(c.meanScore)} band={c.meanScore >= 75 ? 'Critical' : c.meanScore >= 45 ? 'High' : 'Moderate'} size="sm" />
+                  <ScoreBadge score={Math.round(c.maxScore)} band={c.maxScore >= 75 ? 'Critical' : c.maxScore >= 45 ? 'High' : 'Moderate'} size="sm" />
                 </Link>
               );
             })}

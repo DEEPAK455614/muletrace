@@ -61,7 +61,7 @@ export default function Account360({ a }: { a: Analysis }) {
               <ScoreBadge score={score.score} band={score.band} size="lg" />
             </div>
             <div className="num text-[12px] text-ink-mute mt-1.5">{acc.id} - {acc.bank} - {acc.ifsc} - {acc.type === 'current' ? 'Current' : 'Savings'} - opened {fmtDate(acc.openedAt)}</div>
-            <div className="text-[13px] text-ink-soft mt-1">{score.archetype} - {cust?.occupation}, declared income {inrFull(cust?.declaredIncome ?? 0)}/yr - {acc.city}</div>
+            <div className="text-[13px] text-ink-soft mt-1">Observed pattern: {score.archetype} - {cust?.occupation}, declared income {inrFull(cust?.declaredIncome ?? 0)}/yr - {acc.city}</div>
           </div>
           <div className="flex flex-col items-end gap-2 no-print">
             <div className="flex gap-2">

@@ -99,13 +99,13 @@ export function scoreAccount(f: AccountFeatures): ScoreResult {
 
 function archetypeOf(f: AccountFeatures, score: number, factors: FactorContribution[]): string {
   const has = (k: string, min = 1) => (factors.find((x) => x.key === k)?.points ?? 0) >= min;
-  if (has('cycle', 5)) return 'Round-tripping loop';
-  if (f.complaintDistance === 0 && has('passthrough', 10)) return 'Complaint-linked pass-through';
-  if (has('fan', 8) && has('passthrough', 8)) return 'Fan-in pass-through mule';
-  if (has('passthrough', 12) && f.distinctSources <= 3 && f.distinctDests <= 3) return 'Layering intermediary';
-  if (has('structuring', 4)) return 'Structured deposit collector';
-  if (has('dormant', 6)) return 'Dormant-burst account';
-  if (has('atm', 5) && f.distinctSources >= 4) return 'Cash-out aggregator';
+  if (has('cycle', 5)) return 'Circular flow pattern';
+  if (f.complaintDistance === 0 && has('passthrough', 10)) return 'Complaint-linked rapid relay';
+  if (has('fan', 8) && has('passthrough', 8)) return 'Fan-in relay pattern';
+  if (has('passthrough', 12) && f.distinctSources <= 3 && f.distinctDests <= 3) return 'Chain-relay pattern';
+  if (has('structuring', 4)) return 'Band-clustered deposits';
+  if (has('dormant', 6)) return 'Sudden activity after dormancy';
+  if (has('atm', 5) && f.distinctSources >= 4) return 'High cash-out pattern';
   if (f.complaintDistance === 0) return 'Complaint-named account';
   if (score >= 50) return 'Elevated network risk';
   if (score >= 30) return 'Moderate anomaly';
