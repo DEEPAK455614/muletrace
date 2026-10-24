@@ -65,7 +65,9 @@ export default function Overview({ a }: { a: Analysis }) {
           </div>
           <div className="mt-4 pt-3 border-t border-line text-[12px] text-ink-soft leading-relaxed">
             Estimated funds touching alerted accounts: <span className="num font-semibold text-ink">{inr(d.flaggedAmount)}</span>.
-            Figures derive from the synthetic dataset - they demonstrate workflow, not real exposure.
+            {a.world.seed === 'uploaded'
+              ? 'Figures derive from the uploaded, unverified dataset - they demonstrate workflow, not confirmed exposure.'
+              : 'Figures derive from the synthetic dataset - they demonstrate workflow, not real exposure.'}
           </div>
         </div>
 
