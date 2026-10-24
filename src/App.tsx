@@ -27,7 +27,7 @@ const NAV = [
 
 function Brand() {
   return (
-    <div className="flex items-center gap-2.5">
+    <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
       <Link to="/" className="flex items-center gap-2.5 no-underline">
         <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'var(--color-brand)' }}>
           <ShieldCheck size={17} color="#fff" strokeWidth={2.2} />
