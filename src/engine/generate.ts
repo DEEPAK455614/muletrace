@@ -18,6 +18,7 @@ interface Builder {
   txns: Txn[];
   complaints: Complaint[];
   groundTruth: Record<string, GroundTruth>;
+  hardNegatives: Record<string, string>;
 }
 
 function inr(rng: Rng, min: number, max: number): number {
@@ -26,7 +27,7 @@ function inr(rng: Rng, min: number, max: number): number {
 
 export function generateWorld(seed = 'muletrace-v1'): World {
   const rng = makeRng(seed);
-  const b: Builder = { customers: [], accounts: [], txns: [], complaints: [], groundTruth: {} };
+  const b: Builder = { customers: [], accounts: [], txns: [], complaints: [], groundTruth: {}, hardNegatives: {} };
   let custN = 1000, accN = 1000, txnN = 100000, cmpN = 100;
   const usedNames = new Set<string>();
   const usedDevices = new Set<string>();
@@ -105,6 +106,9 @@ export function generateWorld(seed = 'muletrace-v1'): World {
 
   const gt = (account: Account, role: GroundTruth['role'], ring: string, note: string) => {
     b.groundTruth[account.id] = { role, ring, note };
+  };
+  const hn = (account: Account, note: string) => {
+    b.hardNegatives[account.id] = note;
   };
 
   // ---------- pools ----------
@@ -432,6 +436,76 @@ export function generateWorld(seed = 'muletrace-v1'): World {
     scenarioNotes.push({ ring, title: 'Round-tripping loop', description: 'Three current accounts rotate the same capital in a closed loop, four times, to fabricate turnover.', size: 3 });
   }
 
+
+  // ---------- Benign hard negatives: legitimate look-alikes ----------
+  // The classic false-positive traps. Every detector is judged on how it treats these.
+  {
+    // (a) Landlord collecting monthly rent from 9 tenants - fan-in aggregation look-alike
+    const lord = addAccount(addCustomer({ occupation: 'Retired', declaredIncome: inr(rng, 700000, 1100000) }));
+    for (let t = 0; t < 9; t++) {
+      const tenant = pick(rng, normals);
+      for (let m = 0; m < 9; m++) {
+        txn(tenant.id, lord.id, inr(rng, 9000, 16500), Date.UTC(2026, m, rangeInt(rng, 1, 7)) + rangeInt(rng, 9, 20) * HOUR, 'UPI');
+      }
+    }
+    hn(lord, 'Landlord: monthly rent from 9 tenants (fan-in aggregation look-alike)');
+
+    // (b) Coaching institute collecting monthly fees in the 4.5k-9.5k band - structuring look-alike
+    const coach = addAccount(addCustomer({ occupation: 'Small business owner', declaredIncome: inr(rng, 900000, 1600000) }), { type: 'current' });
+    for (let p = 0; p < 16; p++) {
+      const parent = pick(rng, normals);
+      for (let m = 0; m < 8; m++) {
+        txn(parent.id, coach.id, inr(rng, 4600, 9400), Date.UTC(2026, m, rangeInt(rng, 2, 10)) + rangeInt(rng, 10, 19) * HOUR, 'UPI');
+      }
+    }
+    hn(coach, 'Coaching institute: monthly fees in 4.5-9.5k band from 16 parents (structuring look-alike)');
+
+    // (c) Kitty/committee organizer: collects from 10 friends, pays one winner monthly - fan-in+fan-out look-alike
+    const kitty = addAccount(addCustomer({ occupation: 'Homemaker', declaredIncome: inr(rng, 240000, 420000) }));
+    const members = Array.from({ length: 10 }, () => pick(rng, normals));
+    for (let m = 0; m < 10; m++) {
+      const day = Date.UTC(2026, m, rangeInt(rng, 3, 6)) + 18 * HOUR;
+      members.forEach((mem) => txn(mem.id, kitty.id, 5000, day + rangeInt(rng, 0, 8) * HOUR, 'UPI'));
+      txn(kitty.id, members[m % 10].id, 48000, day + rangeInt(rng, 12, 30) * HOUR, 'IMPS');
+    }
+    hn(kitty, 'Kitty/committee organizer: pools 10 contributions, pays one winner monthly (fan-in+fan-out look-alike)');
+
+    // (d) Festival-burst merchant: 5x Diwali spike then normal - burst look-alike
+    const fest = pick(rng, merchants);
+    const festBase = Date.UTC(2026, 9, 1);
+    for (let dday = 0; dday < 14; dday++) {
+      for (let k = 0; k < rangeInt(rng, 25, 45); k++) {
+        txn(pick(rng, normals).id, fest.id, inr(rng, 350, 4800), festBase + dday * DAY + rangeInt(rng, 9, 21) * HOUR, 'UPI');
+      }
+    }
+    hn(fest, 'Festival merchant: 2-week Diwali sales burst (burst/dormancy look-alike)');
+
+    // (e) Sibling pooling family remittances: receives from 3 family accounts, forwards lump sum same day - pass-through look-alike
+    const pooler = addAccount(addCustomer({ occupation: 'Salaried', declaredIncome: inr(rng, 500000, 800000) }));
+    const parents = addAccount(addCustomer({ occupation: 'Retired', declaredIncome: 300000 }));
+    const sibs = Array.from({ length: 3 }, () => pick(rng, normals));
+    for (let m = 0; m < 9; m++) {
+      const day = Date.UTC(2026, m, rangeInt(rng, 1, 5)) + 10 * HOUR;
+      let total = 0;
+      sibs.forEach((s) => { const amt = inr(rng, 8000, 14000); total += amt; txn(s.id, pooler.id, amt, day + rangeInt(rng, 0, 6) * HOUR, 'UPI'); });
+      txn(pooler.id, parents.id, total, day + rangeInt(rng, 8, 14) * HOUR, 'IMPS');
+    }
+    hn(pooler, 'Family remittance pooling: collects from 3 siblings, forwards to parents same day (pass-through look-alike)');
+
+    // (f) Salary sweep to own FD account: 60-80% of salary moved within hours - pass-through look-alike
+    const saverC = addCustomer({ occupation: 'Salaried', declaredIncome: inr(rng, 800000, 1400000) });
+    const salaryAcc = addAccount(saverC);
+    const fdAcc = addAccount(saverC);
+    const emp = pick(rng, employers);
+    for (let m = 0; m < 9; m++) {
+      const sal = inr(rng, 72000, 118000);
+      const t0 = Date.UTC(2026, m, rangeInt(rng, 1, 3)) + 10 * HOUR;
+      txn(emp.id, salaryAcc.id, sal, t0, 'NEFT');
+      txn(salaryAcc.id, fdAcc.id, sal * range(rng, 0.6, 0.8), t0 + rangeInt(rng, 2, 6) * HOUR, 'IMPS');
+    }
+    hn(salaryAcc, 'Salary sweep to own FD account within hours (pass-through look-alike)');
+  }
+
   // ---------- standalone + false-lead complaints ----------
   const falseLead = pick(rng, merchants);
   addComplaint({
@@ -465,6 +539,7 @@ export function generateWorld(seed = 'muletrace-v1'): World {
     txns: b.txns,
     complaints: b.complaints,
     groundTruth: b.groundTruth,
+    hardNegatives: b.hardNegatives,
     scenarioNotes,
   };
 }

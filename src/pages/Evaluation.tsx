@@ -1,31 +1,101 @@
 import React from 'react';
 import type { Analysis } from '../engine';
 import { SectionTitle } from '../ui';
+import benchmark from '../data/benchmark.json';
+
+type BenchEval = {
+  threshold: number; precision: number; recall: number; falseAlarmRate: number;
+  tp: number; fp: number; fn: number; tn: number;
+  hardNegatives: { id: string; note: string; score: number; flagged: boolean }[];
+  hardNegativesFlagged: number;
+};
+const rules = benchmark.rules as unknown as Record<string, BenchEval>;
+const ml = benchmark.ml as unknown as Record<string, BenchEval>;
+const worlds = Object.keys(rules);
 
 export default function Evaluation({ a }: { a: Analysis }) {
   const e = a.evaluation;
   const pct = (x: number) => `${(x * 100).toFixed(1)}%`;
   const maxP = Math.max(...e.prCurve.map((p) => p.precision), 0.01);
+  const WORLD_LABEL: Record<string, string> = { dev: 'Dev (tuning)', validation: 'Validation (threshold)', 'holdout-1': 'Holdout 1 (untouched)', 'holdout-2': 'Holdout 2 (untouched)' };
+
+  const CompareTable = ({ data, title }: { data: Record<string, BenchEval>; title: string }) => (
+    <div className="card p-4 mb-4">
+      <SectionTitle>{title}</SectionTitle>
+      <table className="table-base">
+        <thead><tr><th>World</th><th className="text-right">Threshold</th><th className="text-right">Precision</th><th className="text-right">Recall</th><th className="text-right">False-alarm</th><th className="text-right">Caught</th><th className="text-right">FP</th><th className="text-right">Hard-neg flagged</th></tr></thead>
+        <tbody>
+          {worlds.map((w) => (
+            <tr key={w}>
+              <td className="text-[13px]">{WORLD_LABEL[w] ?? w}</td>
+              <td className="num text-right">{data[w].threshold}</td>
+              <td className="num text-right">{pct(data[w].precision)}</td>
+              <td className="num text-right">{pct(data[w].recall)}</td>
+              <td className="num text-right">{pct(data[w].falseAlarmRate)}</td>
+              <td className="num text-right">{data[w].tp}/{data[w].tp + data[w].fn}</td>
+              <td className="num text-right">{data[w].fp}</td>
+              <td className="num text-right" style={{ color: data[w].hardNegativesFlagged > 0 ? '#D99A1F' : '#1F9D6B' }}>{data[w].hardNegativesFlagged}/{data[w].hardNegatives.length}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+
   return (
     <div className="max-w-[1080px]">
       <div className="mb-4">
         <h1 className="text-[22px] font-bold tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>Evaluation - synthetic benchmark</h1>
-        <p className="text-[13px] text-ink-soft mt-1 max-w-[720px]">
-          These numbers measure how well the scoring engine recovers the fraud scenarios injected into THIS synthetic dataset.
-          They are not evidence of real-world performance. Real deployment needs labelled bank data, model validation and governance.
+        <p className="text-[13px] text-ink-soft mt-1 max-w-[760px]">
+          These numbers measure how well each scorer recovers the fraud scenarios injected into generated worlds.
+          They are not evidence of real-world performance. Dev numbers are optimistic by construction;
+          the honest estimate is the untouched-holdout rows, and even those only describe this generator.
         </p>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
-        <div className="card p-4"><div className="num text-[22px] font-semibold">{pct(e.precision)}</div><div className="text-[11px] text-ink-mute">Precision at alert threshold ({e.threshold})</div></div>
-        <div className="card p-4"><div className="num text-[22px] font-semibold">{pct(e.recall)}</div><div className="text-[11px] text-ink-mute">Recall of injected scenarios</div></div>
-        <div className="card p-4"><div className="num text-[22px] font-semibold">{pct(e.falseAlarmRate)}</div><div className="text-[11px] text-ink-mute">False-alarm rate ({e.fp} of {e.fp + e.tn})</div></div>
-        <div className="card p-4"><div className="num text-[22px] font-semibold">{e.tp}/{e.positives}</div><div className="text-[11px] text-ink-mute">Injected accounts flagged</div></div>
+      <div className="card p-4 mb-4" style={{ borderColor: '#3B4BD830', background: '#3B4BD808' }}>
+        <SectionTitle>Protocol and provenance</SectionTitle>
+        <div className="grid sm:grid-cols-2 gap-x-8 gap-y-1.5 text-[12.5px] text-ink-soft">
+          <div>- Rule weights frozen on dev world <span className="num">{benchmark.protocol.devSeed}</span>; never re-tuned.</div>
+          <div>- ML model (logistic regression, {benchmark.protocol.featureKeys.length} observed features) trained only on dev: <span className="num">{benchmark.protocol.trainCounts.positives}</span> positive / <span className="num">{benchmark.protocol.trainCounts.negatives}</span> negative accounts.</div>
+          <div>- Threshold <span className="num">{benchmark.protocol.threshold}</span>: {benchmark.protocol.thresholdRule} (<span className="num">{benchmark.protocol.validationSeed}</span>).</div>
+          <div>- Holdout worlds <span className="num">{benchmark.protocol.holdoutSeeds.join(', ')}</span> evaluated exactly once, after the freeze.</div>
+          <div>- No label leakage: features use transactions, complaints and graph structure only; ground truth is used for evaluation and dev-only training.</div>
+          <div>- Protocol run at <span className="num">{new Date(benchmark.protocol.trainedAtUtc).toLocaleString('en-IN')}</span>.</div>
+        </div>
+      </div>
+
+      <CompareTable data={rules} title="Rule engine (transparent weighted factors, frozen)" />
+      <CompareTable data={ml} title="Trained model (logistic regression, dev-trained)" />
+
+      <div className="card p-4 mb-4">
+        <SectionTitle>Benign hard negatives (holdout 1) - the false-positive traps</SectionTitle>
+        <p className="text-[12px] text-ink-soft mb-3">Deliberately injected legitimate patterns that resemble mule behaviour. A flagged row is a detector failure, shown openly rather than suppressed.</p>
+        <table className="table-base">
+          <thead><tr><th>Legitimate pattern</th><th className="text-right">Rules score</th><th className="text-right">ML score</th><th className="text-right">Verdict</th></tr></thead>
+          <tbody>
+            {rules['holdout-1'].hardNegatives.map((h, i) => {
+              const m = ml['holdout-1'].hardNegatives[i];
+              const anyFlag = h.flagged || m?.flagged;
+              return (
+                <tr key={h.id}>
+                  <td className="text-[12px]">{h.note}</td>
+                  <td className="num text-right">{h.score}</td>
+                  <td className="num text-right">{m?.score ?? '-'}</td>
+                  <td className="num text-right text-[12px]" style={{ color: anyFlag ? '#D99A1F' : '#1F9D6B' }}>{anyFlag ? 'False positive' : 'Correctly cleared'}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        <div className="mt-3 text-[12px] text-ink-soft leading-relaxed">
+          The kitty organizer and family remittance pooler are flagged by the rule engine: their fan-in/fan-out and same-day forwarding genuinely resemble mule structure. Separating committee-style rotation from fraud needs periodicity and counterparty-relationship evidence - recorded as known limitations and future work.
+        </div>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-4 mb-4">
         <div className="card p-4">
-          <SectionTitle>Analyst queue quality (precision @ depth)</SectionTitle>
+          <SectionTitle>Analyst queue quality - dev world (rules)</SectionTitle>
           <p className="text-[12px] text-ink-soft mb-3">Investigators work a ranked queue, not a threshold. Precision at the top of the queue is what a review team actually experiences.</p>
           <table className="table-base">
             <thead><tr><th>Queue depth</th><th className="text-right">Precision</th><th className="text-right">Recall</th></tr></thead>
@@ -37,7 +107,7 @@ export default function Evaluation({ a }: { a: Analysis }) {
           </table>
         </div>
         <div className="card p-4">
-          <SectionTitle>Precision-recall curve (synthetic)</SectionTitle>
+          <SectionTitle>Precision-recall curve - dev world (rules)</SectionTitle>
           <svg viewBox="0 0 400 210" className="w-full mt-2">
             <line x1={40} y1={180} x2={380} y2={180} stroke="#E4E2DC" />
             <line x1={40} y1={20} x2={40} y2={180} stroke="#E4E2DC" />
@@ -57,7 +127,7 @@ export default function Evaluation({ a }: { a: Analysis }) {
       </div>
 
       <div className="card p-4">
-        <SectionTitle>Per-scenario detection</SectionTitle>
+        <SectionTitle>Per-scenario detection - dev world (rules)</SectionTitle>
         <table className="table-base">
           <thead><tr><th>Injected scenario</th><th className="text-right">Accounts</th><th className="text-right">Flagged</th><th className="text-right">Detection</th></tr></thead>
           <tbody>

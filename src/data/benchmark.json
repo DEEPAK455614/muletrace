@@ -1,0 +1,1677 @@
+{
+  "protocol": {
+    "devSeed": "muletrace-v1",
+    "validationSeed": "muletrace-val-2026a",
+    "holdoutSeeds": [
+      "muletrace-holdout-2026a",
+      "muletrace-holdout-2026b"
+    ],
+    "featureKeys": [
+      "inCount",
+      "outCount",
+      "distinctSources",
+      "distinctDests",
+      "passThrough24h",
+      "passThrough72h",
+      "merchantSpendShare",
+      "aggregationConcentration",
+      "medianHoldHours",
+      "maxTxnsInHour",
+      "maxTxnsInDay",
+      "medianTxnsPerActiveDay",
+      "newCounterpartyShare",
+      "longestDormancyDays",
+      "burstAfterDormancy",
+      "structuredDepositShare",
+      "structuredDepositCount",
+      "atmShareOut",
+      "annualizedThroughput",
+      "incomeMultiple",
+      "accountAgeDaysAtEnd",
+      "complaintDistance",
+      "maxComplaintAmountLost",
+      "sharedDeviceCount",
+      "sharedAddressCount",
+      "sharesIdentifierWithComplaintLinked",
+      "cycleSize",
+      "communityMeanSignal",
+      "pagerank"
+    ],
+    "threshold": 35,
+    "thresholdRule": "highest-recall threshold achieving precision >= 0.9 on the validation world",
+    "trainedAtUtc": "2026-10-24T15:57:02.790Z",
+    "trainCounts": {
+      "positives": 31,
+      "negatives": 430
+    },
+    "note": "Synthetic benchmark only. Numbers measure recovery of injected typologies in generated worlds; they are not evidence of real-world performance. Holdout worlds were evaluated once, after model, threshold and weights were frozen."
+  },
+  "rules": {
+    "dev": {
+      "totalAccounts": 461,
+      "positives": 31,
+      "threshold": 45,
+      "tp": 24,
+      "fp": 2,
+      "fn": 7,
+      "tn": 428,
+      "precision": 0.9230769230769231,
+      "recall": 0.7741935483870968,
+      "falseAlarmRate": 0.004651162790697674,
+      "precisionAtK": [
+        {
+          "k": 10,
+          "precision": 1,
+          "recall": 0.3225806451612903
+        },
+        {
+          "k": 25,
+          "precision": 0.96,
+          "recall": 0.7741935483870968
+        },
+        {
+          "k": 50,
+          "precision": 0.54,
+          "recall": 0.8709677419354839
+        },
+        {
+          "k": 100,
+          "precision": 0.27,
+          "recall": 0.8709677419354839
+        }
+      ],
+      "prCurve": [
+        {
+          "threshold": 95,
+          "precision": 1,
+          "recall": 0.06451612903225806
+        },
+        {
+          "threshold": 90,
+          "precision": 1,
+          "recall": 0.06451612903225806
+        },
+        {
+          "threshold": 85,
+          "precision": 1,
+          "recall": 0.0967741935483871
+        },
+        {
+          "threshold": 80,
+          "precision": 1,
+          "recall": 0.16129032258064516
+        },
+        {
+          "threshold": 75,
+          "precision": 1,
+          "recall": 0.2903225806451613
+        },
+        {
+          "threshold": 70,
+          "precision": 1,
+          "recall": 0.3548387096774194
+        },
+        {
+          "threshold": 65,
+          "precision": 0.9285714285714286,
+          "recall": 0.41935483870967744
+        },
+        {
+          "threshold": 60,
+          "precision": 0.9333333333333333,
+          "recall": 0.45161290322580644
+        },
+        {
+          "threshold": 55,
+          "precision": 0.9473684210526315,
+          "recall": 0.5806451612903226
+        },
+        {
+          "threshold": 50,
+          "precision": 0.9583333333333334,
+          "recall": 0.7419354838709677
+        },
+        {
+          "threshold": 45,
+          "precision": 0.9230769230769231,
+          "recall": 0.7741935483870968
+        },
+        {
+          "threshold": 40,
+          "precision": 0.84375,
+          "recall": 0.8709677419354839
+        },
+        {
+          "threshold": 35,
+          "precision": 0.6585365853658537,
+          "recall": 0.8709677419354839
+        },
+        {
+          "threshold": 30,
+          "precision": 0.43548387096774194,
+          "recall": 0.8709677419354839
+        },
+        {
+          "threshold": 25,
+          "precision": 0.24324324324324326,
+          "recall": 0.8709677419354839
+        },
+        {
+          "threshold": 20,
+          "precision": 0.12608695652173912,
+          "recall": 0.9354838709677419
+        },
+        {
+          "threshold": 15,
+          "precision": 0.075,
+          "recall": 0.967741935483871
+        },
+        {
+          "threshold": 10,
+          "precision": 0.06813186813186813,
+          "recall": 1
+        }
+      ],
+      "perScenario": [
+        {
+          "ring": "ring-passthrough",
+          "title": "Pass-through mule ring",
+          "size": 11,
+          "detected": 8
+        },
+        {
+          "ring": "ring-layering",
+          "title": "Layering chain",
+          "size": 6,
+          "detected": 5
+        },
+        {
+          "ring": "ring-structuring",
+          "title": "Structured deposit network",
+          "size": 6,
+          "detected": 4
+        },
+        {
+          "ring": "ring-dormant",
+          "title": "Dormant-burst accounts",
+          "size": 3,
+          "detected": 3
+        },
+        {
+          "ring": "ring-witting",
+          "title": "Witting mules with cover activity",
+          "size": 2,
+          "detected": 2
+        },
+        {
+          "ring": "ring-roundtrip",
+          "title": "Round-tripping loop",
+          "size": 3,
+          "detected": 2
+        }
+      ],
+      "hardNegatives": [
+        {
+          "id": "A1455",
+          "note": "Landlord: monthly rent from 9 tenants (fan-in aggregation look-alike)",
+          "score": 26,
+          "flagged": false
+        },
+        {
+          "id": "A1456",
+          "note": "Coaching institute: monthly fees in 4.5-9.5k band from 16 parents (structuring look-alike)",
+          "score": 36,
+          "flagged": false
+        },
+        {
+          "id": "A1457",
+          "note": "Kitty/committee organizer: pools 10 contributions, pays one winner monthly (fan-in+fan-out look-alike)",
+          "score": 66,
+          "flagged": true
+        },
+        {
+          "id": "A1050",
+          "note": "Festival merchant: 2-week Diwali sales burst (burst/dormancy look-alike)",
+          "score": 19,
+          "flagged": false
+        },
+        {
+          "id": "A1458",
+          "note": "Family remittance pooling: collects from 3 siblings, forwards to parents same day (pass-through look-alike)",
+          "score": 41,
+          "flagged": false
+        },
+        {
+          "id": "A1460",
+          "note": "Salary sweep to own FD account within hours (pass-through look-alike)",
+          "score": 39,
+          "flagged": false
+        }
+      ],
+      "hardNegativesFlagged": 1
+    },
+    "validation": {
+      "totalAccounts": 461,
+      "positives": 31,
+      "threshold": 45,
+      "tp": 25,
+      "fp": 3,
+      "fn": 6,
+      "tn": 427,
+      "precision": 0.8928571428571429,
+      "recall": 0.8064516129032258,
+      "falseAlarmRate": 0.0069767441860465115,
+      "precisionAtK": [
+        {
+          "k": 10,
+          "precision": 1,
+          "recall": 0.3225806451612903
+        },
+        {
+          "k": 25,
+          "precision": 0.92,
+          "recall": 0.7419354838709677
+        },
+        {
+          "k": 50,
+          "precision": 0.54,
+          "recall": 0.8709677419354839
+        },
+        {
+          "k": 100,
+          "precision": 0.28,
+          "recall": 0.9032258064516129
+        }
+      ],
+      "prCurve": [
+        {
+          "threshold": 95,
+          "precision": 1,
+          "recall": 0.06451612903225806
+        },
+        {
+          "threshold": 90,
+          "precision": 1,
+          "recall": 0.06451612903225806
+        },
+        {
+          "threshold": 85,
+          "precision": 1,
+          "recall": 0.12903225806451613
+        },
+        {
+          "threshold": 80,
+          "precision": 1,
+          "recall": 0.16129032258064516
+        },
+        {
+          "threshold": 75,
+          "precision": 1,
+          "recall": 0.1935483870967742
+        },
+        {
+          "threshold": 70,
+          "precision": 1,
+          "recall": 0.3870967741935484
+        },
+        {
+          "threshold": 65,
+          "precision": 0.9333333333333333,
+          "recall": 0.45161290322580644
+        },
+        {
+          "threshold": 60,
+          "precision": 0.9333333333333333,
+          "recall": 0.45161290322580644
+        },
+        {
+          "threshold": 55,
+          "precision": 0.95,
+          "recall": 0.6129032258064516
+        },
+        {
+          "threshold": 50,
+          "precision": 0.9583333333333334,
+          "recall": 0.7419354838709677
+        },
+        {
+          "threshold": 45,
+          "precision": 0.8928571428571429,
+          "recall": 0.8064516129032258
+        },
+        {
+          "threshold": 40,
+          "precision": 0.84375,
+          "recall": 0.8709677419354839
+        },
+        {
+          "threshold": 35,
+          "precision": 0.6585365853658537,
+          "recall": 0.8709677419354839
+        },
+        {
+          "threshold": 30,
+          "precision": 0.39705882352941174,
+          "recall": 0.8709677419354839
+        },
+        {
+          "threshold": 25,
+          "precision": 0.24778761061946902,
+          "recall": 0.9032258064516129
+        },
+        {
+          "threshold": 20,
+          "precision": 0.13063063063063063,
+          "recall": 0.9354838709677419
+        },
+        {
+          "threshold": 15,
+          "precision": 0.07672634271099744,
+          "recall": 0.967741935483871
+        },
+        {
+          "threshold": 10,
+          "precision": 0.06768558951965066,
+          "recall": 1
+        }
+      ],
+      "perScenario": [
+        {
+          "ring": "ring-passthrough",
+          "title": "Pass-through mule ring",
+          "size": 11,
+          "detected": 9
+        },
+        {
+          "ring": "ring-layering",
+          "title": "Layering chain",
+          "size": 6,
+          "detected": 5
+        },
+        {
+          "ring": "ring-structuring",
+          "title": "Structured deposit network",
+          "size": 6,
+          "detected": 4
+        },
+        {
+          "ring": "ring-dormant",
+          "title": "Dormant-burst accounts",
+          "size": 3,
+          "detected": 3
+        },
+        {
+          "ring": "ring-witting",
+          "title": "Witting mules with cover activity",
+          "size": 2,
+          "detected": 2
+        },
+        {
+          "ring": "ring-roundtrip",
+          "title": "Round-tripping loop",
+          "size": 3,
+          "detected": 2
+        }
+      ],
+      "hardNegatives": [
+        {
+          "id": "A1455",
+          "note": "Landlord: monthly rent from 9 tenants (fan-in aggregation look-alike)",
+          "score": 23,
+          "flagged": false
+        },
+        {
+          "id": "A1456",
+          "note": "Coaching institute: monthly fees in 4.5-9.5k band from 16 parents (structuring look-alike)",
+          "score": 37,
+          "flagged": false
+        },
+        {
+          "id": "A1457",
+          "note": "Kitty/committee organizer: pools 10 contributions, pays one winner monthly (fan-in+fan-out look-alike)",
+          "score": 67,
+          "flagged": true
+        },
+        {
+          "id": "A1042",
+          "note": "Festival merchant: 2-week Diwali sales burst (burst/dormancy look-alike)",
+          "score": 23,
+          "flagged": false
+        },
+        {
+          "id": "A1458",
+          "note": "Family remittance pooling: collects from 3 siblings, forwards to parents same day (pass-through look-alike)",
+          "score": 44,
+          "flagged": false
+        },
+        {
+          "id": "A1460",
+          "note": "Salary sweep to own FD account within hours (pass-through look-alike)",
+          "score": 39,
+          "flagged": false
+        }
+      ],
+      "hardNegativesFlagged": 1
+    },
+    "holdout-1": {
+      "totalAccounts": 461,
+      "positives": 31,
+      "threshold": 45,
+      "tp": 24,
+      "fp": 3,
+      "fn": 7,
+      "tn": 427,
+      "precision": 0.8888888888888888,
+      "recall": 0.7741935483870968,
+      "falseAlarmRate": 0.0069767441860465115,
+      "precisionAtK": [
+        {
+          "k": 10,
+          "precision": 1,
+          "recall": 0.3225806451612903
+        },
+        {
+          "k": 25,
+          "precision": 0.92,
+          "recall": 0.7419354838709677
+        },
+        {
+          "k": 50,
+          "precision": 0.54,
+          "recall": 0.8709677419354839
+        },
+        {
+          "k": 100,
+          "precision": 0.28,
+          "recall": 0.9032258064516129
+        }
+      ],
+      "prCurve": [
+        {
+          "threshold": 95,
+          "precision": 1,
+          "recall": 0.06451612903225806
+        },
+        {
+          "threshold": 90,
+          "precision": 1,
+          "recall": 0.0967741935483871
+        },
+        {
+          "threshold": 85,
+          "precision": 1,
+          "recall": 0.0967741935483871
+        },
+        {
+          "threshold": 80,
+          "precision": 1,
+          "recall": 0.12903225806451613
+        },
+        {
+          "threshold": 75,
+          "precision": 1,
+          "recall": 0.25806451612903225
+        },
+        {
+          "threshold": 70,
+          "precision": 0.9285714285714286,
+          "recall": 0.41935483870967744
+        },
+        {
+          "threshold": 65,
+          "precision": 0.9333333333333333,
+          "recall": 0.45161290322580644
+        },
+        {
+          "threshold": 60,
+          "precision": 0.9333333333333333,
+          "recall": 0.45161290322580644
+        },
+        {
+          "threshold": 55,
+          "precision": 0.95,
+          "recall": 0.6129032258064516
+        },
+        {
+          "threshold": 50,
+          "precision": 0.9545454545454546,
+          "recall": 0.6774193548387096
+        },
+        {
+          "threshold": 45,
+          "precision": 0.8888888888888888,
+          "recall": 0.7741935483870968
+        },
+        {
+          "threshold": 40,
+          "precision": 0.8181818181818182,
+          "recall": 0.8709677419354839
+        },
+        {
+          "threshold": 35,
+          "precision": 0.627906976744186,
+          "recall": 0.8709677419354839
+        },
+        {
+          "threshold": 30,
+          "precision": 0.4426229508196721,
+          "recall": 0.8709677419354839
+        },
+        {
+          "threshold": 25,
+          "precision": 0.24347826086956523,
+          "recall": 0.9032258064516129
+        },
+        {
+          "threshold": 20,
+          "precision": 0.12831858407079647,
+          "recall": 0.9354838709677419
+        },
+        {
+          "threshold": 15,
+          "precision": 0.08244680851063829,
+          "recall": 1
+        },
+        {
+          "threshold": 10,
+          "precision": 0.0684326710816777,
+          "recall": 1
+        }
+      ],
+      "perScenario": [
+        {
+          "ring": "ring-passthrough",
+          "title": "Pass-through mule ring",
+          "size": 11,
+          "detected": 8
+        },
+        {
+          "ring": "ring-layering",
+          "title": "Layering chain",
+          "size": 6,
+          "detected": 5
+        },
+        {
+          "ring": "ring-structuring",
+          "title": "Structured deposit network",
+          "size": 6,
+          "detected": 4
+        },
+        {
+          "ring": "ring-dormant",
+          "title": "Dormant-burst accounts",
+          "size": 3,
+          "detected": 3
+        },
+        {
+          "ring": "ring-witting",
+          "title": "Witting mules with cover activity",
+          "size": 2,
+          "detected": 2
+        },
+        {
+          "ring": "ring-roundtrip",
+          "title": "Round-tripping loop",
+          "size": 3,
+          "detected": 2
+        }
+      ],
+      "hardNegatives": [
+        {
+          "id": "A1455",
+          "note": "Landlord: monthly rent from 9 tenants (fan-in aggregation look-alike)",
+          "score": 26,
+          "flagged": false
+        },
+        {
+          "id": "A1456",
+          "note": "Coaching institute: monthly fees in 4.5-9.5k band from 16 parents (structuring look-alike)",
+          "score": 35,
+          "flagged": false
+        },
+        {
+          "id": "A1457",
+          "note": "Kitty/committee organizer: pools 10 contributions, pays one winner monthly (fan-in+fan-out look-alike)",
+          "score": 71,
+          "flagged": true
+        },
+        {
+          "id": "A1038",
+          "note": "Festival merchant: 2-week Diwali sales burst (burst/dormancy look-alike)",
+          "score": 19,
+          "flagged": false
+        },
+        {
+          "id": "A1458",
+          "note": "Family remittance pooling: collects from 3 siblings, forwards to parents same day (pass-through look-alike)",
+          "score": 49,
+          "flagged": true
+        },
+        {
+          "id": "A1460",
+          "note": "Salary sweep to own FD account within hours (pass-through look-alike)",
+          "score": 39,
+          "flagged": false
+        }
+      ],
+      "hardNegativesFlagged": 2
+    },
+    "holdout-2": {
+      "totalAccounts": 461,
+      "positives": 31,
+      "threshold": 45,
+      "tp": 24,
+      "fp": 3,
+      "fn": 7,
+      "tn": 427,
+      "precision": 0.8888888888888888,
+      "recall": 0.7741935483870968,
+      "falseAlarmRate": 0.0069767441860465115,
+      "precisionAtK": [
+        {
+          "k": 10,
+          "precision": 1,
+          "recall": 0.3225806451612903
+        },
+        {
+          "k": 25,
+          "precision": 0.92,
+          "recall": 0.7419354838709677
+        },
+        {
+          "k": 50,
+          "precision": 0.56,
+          "recall": 0.9032258064516129
+        },
+        {
+          "k": 100,
+          "precision": 0.28,
+          "recall": 0.9032258064516129
+        }
+      ],
+      "prCurve": [
+        {
+          "threshold": 95,
+          "precision": 1,
+          "recall": 0.03225806451612903
+        },
+        {
+          "threshold": 90,
+          "precision": 1,
+          "recall": 0.06451612903225806
+        },
+        {
+          "threshold": 85,
+          "precision": 1,
+          "recall": 0.06451612903225806
+        },
+        {
+          "threshold": 80,
+          "precision": 1,
+          "recall": 0.12903225806451613
+        },
+        {
+          "threshold": 75,
+          "precision": 1,
+          "recall": 0.25806451612903225
+        },
+        {
+          "threshold": 70,
+          "precision": 0.9230769230769231,
+          "recall": 0.3870967741935484
+        },
+        {
+          "threshold": 65,
+          "precision": 0.9285714285714286,
+          "recall": 0.41935483870967744
+        },
+        {
+          "threshold": 60,
+          "precision": 0.9333333333333333,
+          "recall": 0.45161290322580644
+        },
+        {
+          "threshold": 55,
+          "precision": 0.9473684210526315,
+          "recall": 0.5806451612903226
+        },
+        {
+          "threshold": 50,
+          "precision": 0.9047619047619048,
+          "recall": 0.6129032258064516
+        },
+        {
+          "threshold": 45,
+          "precision": 0.8888888888888888,
+          "recall": 0.7741935483870968
+        },
+        {
+          "threshold": 40,
+          "precision": 0.8666666666666667,
+          "recall": 0.8387096774193549
+        },
+        {
+          "threshold": 35,
+          "precision": 0.717948717948718,
+          "recall": 0.9032258064516129
+        },
+        {
+          "threshold": 30,
+          "precision": 0.45901639344262296,
+          "recall": 0.9032258064516129
+        },
+        {
+          "threshold": 25,
+          "precision": 0.25925925925925924,
+          "recall": 0.9032258064516129
+        },
+        {
+          "threshold": 20,
+          "precision": 0.12184873949579832,
+          "recall": 0.9354838709677419
+        },
+        {
+          "threshold": 15,
+          "precision": 0.078125,
+          "recall": 0.967741935483871
+        },
+        {
+          "threshold": 10,
+          "precision": 0.06813186813186813,
+          "recall": 1
+        }
+      ],
+      "perScenario": [
+        {
+          "ring": "ring-passthrough",
+          "title": "Pass-through mule ring",
+          "size": 11,
+          "detected": 8
+        },
+        {
+          "ring": "ring-layering",
+          "title": "Layering chain",
+          "size": 6,
+          "detected": 5
+        },
+        {
+          "ring": "ring-structuring",
+          "title": "Structured deposit network",
+          "size": 6,
+          "detected": 4
+        },
+        {
+          "ring": "ring-dormant",
+          "title": "Dormant-burst accounts",
+          "size": 3,
+          "detected": 3
+        },
+        {
+          "ring": "ring-witting",
+          "title": "Witting mules with cover activity",
+          "size": 2,
+          "detected": 2
+        },
+        {
+          "ring": "ring-roundtrip",
+          "title": "Round-tripping loop",
+          "size": 3,
+          "detected": 2
+        }
+      ],
+      "hardNegatives": [
+        {
+          "id": "A1455",
+          "note": "Landlord: monthly rent from 9 tenants (fan-in aggregation look-alike)",
+          "score": 23,
+          "flagged": false
+        },
+        {
+          "id": "A1456",
+          "note": "Coaching institute: monthly fees in 4.5-9.5k band from 16 parents (structuring look-alike)",
+          "score": 36,
+          "flagged": false
+        },
+        {
+          "id": "A1457",
+          "note": "Kitty/committee organizer: pools 10 contributions, pays one winner monthly (fan-in+fan-out look-alike)",
+          "score": 70,
+          "flagged": true
+        },
+        {
+          "id": "A1035",
+          "note": "Festival merchant: 2-week Diwali sales burst (burst/dormancy look-alike)",
+          "score": 23,
+          "flagged": false
+        },
+        {
+          "id": "A1458",
+          "note": "Family remittance pooling: collects from 3 siblings, forwards to parents same day (pass-through look-alike)",
+          "score": 41,
+          "flagged": false
+        },
+        {
+          "id": "A1460",
+          "note": "Salary sweep to own FD account within hours (pass-through look-alike)",
+          "score": 37,
+          "flagged": false
+        }
+      ],
+      "hardNegativesFlagged": 1
+    }
+  },
+  "ml": {
+    "dev": {
+      "totalAccounts": 461,
+      "positives": 31,
+      "threshold": 35,
+      "tp": 31,
+      "fp": 2,
+      "fn": 0,
+      "tn": 428,
+      "precision": 0.9393939393939394,
+      "recall": 1,
+      "falseAlarmRate": 0.004651162790697674,
+      "precisionAtK": [
+        {
+          "k": 10,
+          "precision": 1,
+          "recall": 0.3225806451612903
+        },
+        {
+          "k": 25,
+          "precision": 1,
+          "recall": 0.8064516129032258
+        },
+        {
+          "k": 50,
+          "precision": 0.62,
+          "recall": 1
+        },
+        {
+          "k": 100,
+          "precision": 0.31,
+          "recall": 1
+        }
+      ],
+      "prCurve": [
+        {
+          "threshold": 95,
+          "precision": 1,
+          "recall": 1
+        },
+        {
+          "threshold": 90,
+          "precision": 1,
+          "recall": 1
+        },
+        {
+          "threshold": 85,
+          "precision": 1,
+          "recall": 1
+        },
+        {
+          "threshold": 80,
+          "precision": 1,
+          "recall": 1
+        },
+        {
+          "threshold": 75,
+          "precision": 1,
+          "recall": 1
+        },
+        {
+          "threshold": 70,
+          "precision": 1,
+          "recall": 1
+        },
+        {
+          "threshold": 65,
+          "precision": 1,
+          "recall": 1
+        },
+        {
+          "threshold": 60,
+          "precision": 1,
+          "recall": 1
+        },
+        {
+          "threshold": 55,
+          "precision": 1,
+          "recall": 1
+        },
+        {
+          "threshold": 50,
+          "precision": 0.96875,
+          "recall": 1
+        },
+        {
+          "threshold": 45,
+          "precision": 0.96875,
+          "recall": 1
+        },
+        {
+          "threshold": 40,
+          "precision": 0.96875,
+          "recall": 1
+        },
+        {
+          "threshold": 35,
+          "precision": 0.9393939393939394,
+          "recall": 1
+        },
+        {
+          "threshold": 30,
+          "precision": 0.9393939393939394,
+          "recall": 1
+        },
+        {
+          "threshold": 25,
+          "precision": 0.9117647058823529,
+          "recall": 1
+        },
+        {
+          "threshold": 20,
+          "precision": 0.9117647058823529,
+          "recall": 1
+        },
+        {
+          "threshold": 15,
+          "precision": 0.9117647058823529,
+          "recall": 1
+        },
+        {
+          "threshold": 10,
+          "precision": 0.7948717948717948,
+          "recall": 1
+        }
+      ],
+      "perScenario": [
+        {
+          "ring": "ring-passthrough",
+          "title": "Pass-through mule ring",
+          "size": 11,
+          "detected": 11
+        },
+        {
+          "ring": "ring-layering",
+          "title": "Layering chain",
+          "size": 6,
+          "detected": 6
+        },
+        {
+          "ring": "ring-structuring",
+          "title": "Structured deposit network",
+          "size": 6,
+          "detected": 6
+        },
+        {
+          "ring": "ring-dormant",
+          "title": "Dormant-burst accounts",
+          "size": 3,
+          "detected": 3
+        },
+        {
+          "ring": "ring-witting",
+          "title": "Witting mules with cover activity",
+          "size": 2,
+          "detected": 2
+        },
+        {
+          "ring": "ring-roundtrip",
+          "title": "Round-tripping loop",
+          "size": 3,
+          "detected": 3
+        }
+      ],
+      "hardNegatives": [
+        {
+          "id": "A1455",
+          "note": "Landlord: monthly rent from 9 tenants (fan-in aggregation look-alike)",
+          "score": 26,
+          "flagged": false
+        },
+        {
+          "id": "A1456",
+          "note": "Coaching institute: monthly fees in 4.5-9.5k band from 16 parents (structuring look-alike)",
+          "score": 0,
+          "flagged": false
+        },
+        {
+          "id": "A1457",
+          "note": "Kitty/committee organizer: pools 10 contributions, pays one winner monthly (fan-in+fan-out look-alike)",
+          "score": 0,
+          "flagged": false
+        },
+        {
+          "id": "A1050",
+          "note": "Festival merchant: 2-week Diwali sales burst (burst/dormancy look-alike)",
+          "score": 0,
+          "flagged": false
+        },
+        {
+          "id": "A1458",
+          "note": "Family remittance pooling: collects from 3 siblings, forwards to parents same day (pass-through look-alike)",
+          "score": 12,
+          "flagged": false
+        },
+        {
+          "id": "A1460",
+          "note": "Salary sweep to own FD account within hours (pass-through look-alike)",
+          "score": 55,
+          "flagged": true
+        }
+      ],
+      "hardNegativesFlagged": 1
+    },
+    "validation": {
+      "totalAccounts": 461,
+      "positives": 31,
+      "threshold": 35,
+      "tp": 31,
+      "fp": 3,
+      "fn": 0,
+      "tn": 427,
+      "precision": 0.9117647058823529,
+      "recall": 1,
+      "falseAlarmRate": 0.0069767441860465115,
+      "precisionAtK": [
+        {
+          "k": 10,
+          "precision": 1,
+          "recall": 0.3225806451612903
+        },
+        {
+          "k": 25,
+          "precision": 1,
+          "recall": 0.8064516129032258
+        },
+        {
+          "k": 50,
+          "precision": 0.62,
+          "recall": 1
+        },
+        {
+          "k": 100,
+          "precision": 0.31,
+          "recall": 1
+        }
+      ],
+      "prCurve": [
+        {
+          "threshold": 95,
+          "precision": 1,
+          "recall": 0.967741935483871
+        },
+        {
+          "threshold": 90,
+          "precision": 1,
+          "recall": 0.967741935483871
+        },
+        {
+          "threshold": 85,
+          "precision": 0.967741935483871,
+          "recall": 0.967741935483871
+        },
+        {
+          "threshold": 80,
+          "precision": 0.967741935483871,
+          "recall": 0.967741935483871
+        },
+        {
+          "threshold": 75,
+          "precision": 0.967741935483871,
+          "recall": 0.967741935483871
+        },
+        {
+          "threshold": 70,
+          "precision": 0.967741935483871,
+          "recall": 0.967741935483871
+        },
+        {
+          "threshold": 65,
+          "precision": 0.96875,
+          "recall": 1
+        },
+        {
+          "threshold": 60,
+          "precision": 0.96875,
+          "recall": 1
+        },
+        {
+          "threshold": 55,
+          "precision": 0.9393939393939394,
+          "recall": 1
+        },
+        {
+          "threshold": 50,
+          "precision": 0.9393939393939394,
+          "recall": 1
+        },
+        {
+          "threshold": 45,
+          "precision": 0.9393939393939394,
+          "recall": 1
+        },
+        {
+          "threshold": 40,
+          "precision": 0.9393939393939394,
+          "recall": 1
+        },
+        {
+          "threshold": 35,
+          "precision": 0.9117647058823529,
+          "recall": 1
+        },
+        {
+          "threshold": 30,
+          "precision": 0.8611111111111112,
+          "recall": 1
+        },
+        {
+          "threshold": 25,
+          "precision": 0.8378378378378378,
+          "recall": 1
+        },
+        {
+          "threshold": 20,
+          "precision": 0.8378378378378378,
+          "recall": 1
+        },
+        {
+          "threshold": 15,
+          "precision": 0.8378378378378378,
+          "recall": 1
+        },
+        {
+          "threshold": 10,
+          "precision": 0.7948717948717948,
+          "recall": 1
+        }
+      ],
+      "perScenario": [
+        {
+          "ring": "ring-passthrough",
+          "title": "Pass-through mule ring",
+          "size": 11,
+          "detected": 11
+        },
+        {
+          "ring": "ring-layering",
+          "title": "Layering chain",
+          "size": 6,
+          "detected": 6
+        },
+        {
+          "ring": "ring-structuring",
+          "title": "Structured deposit network",
+          "size": 6,
+          "detected": 6
+        },
+        {
+          "ring": "ring-dormant",
+          "title": "Dormant-burst accounts",
+          "size": 3,
+          "detected": 3
+        },
+        {
+          "ring": "ring-witting",
+          "title": "Witting mules with cover activity",
+          "size": 2,
+          "detected": 2
+        },
+        {
+          "ring": "ring-roundtrip",
+          "title": "Round-tripping loop",
+          "size": 3,
+          "detected": 3
+        }
+      ],
+      "hardNegatives": [
+        {
+          "id": "A1455",
+          "note": "Landlord: monthly rent from 9 tenants (fan-in aggregation look-alike)",
+          "score": 6,
+          "flagged": false
+        },
+        {
+          "id": "A1456",
+          "note": "Coaching institute: monthly fees in 4.5-9.5k band from 16 parents (structuring look-alike)",
+          "score": 0,
+          "flagged": false
+        },
+        {
+          "id": "A1457",
+          "note": "Kitty/committee organizer: pools 10 contributions, pays one winner monthly (fan-in+fan-out look-alike)",
+          "score": 0,
+          "flagged": false
+        },
+        {
+          "id": "A1042",
+          "note": "Festival merchant: 2-week Diwali sales burst (burst/dormancy look-alike)",
+          "score": 0,
+          "flagged": false
+        },
+        {
+          "id": "A1458",
+          "note": "Family remittance pooling: collects from 3 siblings, forwards to parents same day (pass-through look-alike)",
+          "score": 32,
+          "flagged": false
+        },
+        {
+          "id": "A1460",
+          "note": "Salary sweep to own FD account within hours (pass-through look-alike)",
+          "score": 59,
+          "flagged": true
+        }
+      ],
+      "hardNegativesFlagged": 1
+    },
+    "holdout-1": {
+      "totalAccounts": 461,
+      "positives": 31,
+      "threshold": 35,
+      "tp": 31,
+      "fp": 5,
+      "fn": 0,
+      "tn": 425,
+      "precision": 0.8611111111111112,
+      "recall": 1,
+      "falseAlarmRate": 0.011627906976744186,
+      "precisionAtK": [
+        {
+          "k": 10,
+          "precision": 1,
+          "recall": 0.3225806451612903
+        },
+        {
+          "k": 25,
+          "precision": 1,
+          "recall": 0.8064516129032258
+        },
+        {
+          "k": 50,
+          "precision": 0.62,
+          "recall": 1
+        },
+        {
+          "k": 100,
+          "precision": 0.31,
+          "recall": 1
+        }
+      ],
+      "prCurve": [
+        {
+          "threshold": 95,
+          "precision": 1,
+          "recall": 0.967741935483871
+        },
+        {
+          "threshold": 90,
+          "precision": 1,
+          "recall": 0.967741935483871
+        },
+        {
+          "threshold": 85,
+          "precision": 1,
+          "recall": 0.967741935483871
+        },
+        {
+          "threshold": 80,
+          "precision": 1,
+          "recall": 0.967741935483871
+        },
+        {
+          "threshold": 75,
+          "precision": 0.967741935483871,
+          "recall": 0.967741935483871
+        },
+        {
+          "threshold": 70,
+          "precision": 0.96875,
+          "recall": 1
+        },
+        {
+          "threshold": 65,
+          "precision": 0.96875,
+          "recall": 1
+        },
+        {
+          "threshold": 60,
+          "precision": 0.9393939393939394,
+          "recall": 1
+        },
+        {
+          "threshold": 55,
+          "precision": 0.9117647058823529,
+          "recall": 1
+        },
+        {
+          "threshold": 50,
+          "precision": 0.9117647058823529,
+          "recall": 1
+        },
+        {
+          "threshold": 45,
+          "precision": 0.9117647058823529,
+          "recall": 1
+        },
+        {
+          "threshold": 40,
+          "precision": 0.9117647058823529,
+          "recall": 1
+        },
+        {
+          "threshold": 35,
+          "precision": 0.8611111111111112,
+          "recall": 1
+        },
+        {
+          "threshold": 30,
+          "precision": 0.8611111111111112,
+          "recall": 1
+        },
+        {
+          "threshold": 25,
+          "precision": 0.8611111111111112,
+          "recall": 1
+        },
+        {
+          "threshold": 20,
+          "precision": 0.8157894736842105,
+          "recall": 1
+        },
+        {
+          "threshold": 15,
+          "precision": 0.8157894736842105,
+          "recall": 1
+        },
+        {
+          "threshold": 10,
+          "precision": 0.775,
+          "recall": 1
+        }
+      ],
+      "perScenario": [
+        {
+          "ring": "ring-passthrough",
+          "title": "Pass-through mule ring",
+          "size": 11,
+          "detected": 11
+        },
+        {
+          "ring": "ring-layering",
+          "title": "Layering chain",
+          "size": 6,
+          "detected": 6
+        },
+        {
+          "ring": "ring-structuring",
+          "title": "Structured deposit network",
+          "size": 6,
+          "detected": 6
+        },
+        {
+          "ring": "ring-dormant",
+          "title": "Dormant-burst accounts",
+          "size": 3,
+          "detected": 3
+        },
+        {
+          "ring": "ring-witting",
+          "title": "Witting mules with cover activity",
+          "size": 2,
+          "detected": 2
+        },
+        {
+          "ring": "ring-roundtrip",
+          "title": "Round-tripping loop",
+          "size": 3,
+          "detected": 3
+        }
+      ],
+      "hardNegatives": [
+        {
+          "id": "A1455",
+          "note": "Landlord: monthly rent from 9 tenants (fan-in aggregation look-alike)",
+          "score": 24,
+          "flagged": false
+        },
+        {
+          "id": "A1456",
+          "note": "Coaching institute: monthly fees in 4.5-9.5k band from 16 parents (structuring look-alike)",
+          "score": 0,
+          "flagged": false
+        },
+        {
+          "id": "A1457",
+          "note": "Kitty/committee organizer: pools 10 contributions, pays one winner monthly (fan-in+fan-out look-alike)",
+          "score": 0,
+          "flagged": false
+        },
+        {
+          "id": "A1038",
+          "note": "Festival merchant: 2-week Diwali sales burst (burst/dormancy look-alike)",
+          "score": 0,
+          "flagged": false
+        },
+        {
+          "id": "A1458",
+          "note": "Family remittance pooling: collects from 3 siblings, forwards to parents same day (pass-through look-alike)",
+          "score": 55,
+          "flagged": true
+        },
+        {
+          "id": "A1460",
+          "note": "Salary sweep to own FD account within hours (pass-through look-alike)",
+          "score": 65,
+          "flagged": true
+        }
+      ],
+      "hardNegativesFlagged": 2
+    },
+    "holdout-2": {
+      "totalAccounts": 461,
+      "positives": 31,
+      "threshold": 35,
+      "tp": 31,
+      "fp": 2,
+      "fn": 0,
+      "tn": 428,
+      "precision": 0.9393939393939394,
+      "recall": 1,
+      "falseAlarmRate": 0.004651162790697674,
+      "precisionAtK": [
+        {
+          "k": 10,
+          "precision": 1,
+          "recall": 0.3225806451612903
+        },
+        {
+          "k": 25,
+          "precision": 1,
+          "recall": 0.8064516129032258
+        },
+        {
+          "k": 50,
+          "precision": 0.62,
+          "recall": 1
+        },
+        {
+          "k": 100,
+          "precision": 0.31,
+          "recall": 1
+        }
+      ],
+      "prCurve": [
+        {
+          "threshold": 95,
+          "precision": 1,
+          "recall": 0.967741935483871
+        },
+        {
+          "threshold": 90,
+          "precision": 1,
+          "recall": 0.967741935483871
+        },
+        {
+          "threshold": 85,
+          "precision": 1,
+          "recall": 1
+        },
+        {
+          "threshold": 80,
+          "precision": 1,
+          "recall": 1
+        },
+        {
+          "threshold": 75,
+          "precision": 1,
+          "recall": 1
+        },
+        {
+          "threshold": 70,
+          "precision": 1,
+          "recall": 1
+        },
+        {
+          "threshold": 65,
+          "precision": 1,
+          "recall": 1
+        },
+        {
+          "threshold": 60,
+          "precision": 1,
+          "recall": 1
+        },
+        {
+          "threshold": 55,
+          "precision": 1,
+          "recall": 1
+        },
+        {
+          "threshold": 50,
+          "precision": 1,
+          "recall": 1
+        },
+        {
+          "threshold": 45,
+          "precision": 0.96875,
+          "recall": 1
+        },
+        {
+          "threshold": 40,
+          "precision": 0.9393939393939394,
+          "recall": 1
+        },
+        {
+          "threshold": 35,
+          "precision": 0.9393939393939394,
+          "recall": 1
+        },
+        {
+          "threshold": 30,
+          "precision": 0.9393939393939394,
+          "recall": 1
+        },
+        {
+          "threshold": 25,
+          "precision": 0.9117647058823529,
+          "recall": 1
+        },
+        {
+          "threshold": 20,
+          "precision": 0.8857142857142857,
+          "recall": 1
+        },
+        {
+          "threshold": 15,
+          "precision": 0.8857142857142857,
+          "recall": 1
+        },
+        {
+          "threshold": 10,
+          "precision": 0.8157894736842105,
+          "recall": 1
+        }
+      ],
+      "perScenario": [
+        {
+          "ring": "ring-passthrough",
+          "title": "Pass-through mule ring",
+          "size": 11,
+          "detected": 11
+        },
+        {
+          "ring": "ring-layering",
+          "title": "Layering chain",
+          "size": 6,
+          "detected": 6
+        },
+        {
+          "ring": "ring-structuring",
+          "title": "Structured deposit network",
+          "size": 6,
+          "detected": 6
+        },
+        {
+          "ring": "ring-dormant",
+          "title": "Dormant-burst accounts",
+          "size": 3,
+          "detected": 3
+        },
+        {
+          "ring": "ring-witting",
+          "title": "Witting mules with cover activity",
+          "size": 2,
+          "detected": 2
+        },
+        {
+          "ring": "ring-roundtrip",
+          "title": "Round-tripping loop",
+          "size": 3,
+          "detected": 3
+        }
+      ],
+      "hardNegatives": [
+        {
+          "id": "A1455",
+          "note": "Landlord: monthly rent from 9 tenants (fan-in aggregation look-alike)",
+          "score": 5,
+          "flagged": false
+        },
+        {
+          "id": "A1456",
+          "note": "Coaching institute: monthly fees in 4.5-9.5k band from 16 parents (structuring look-alike)",
+          "score": 0,
+          "flagged": false
+        },
+        {
+          "id": "A1457",
+          "note": "Kitty/committee organizer: pools 10 contributions, pays one winner monthly (fan-in+fan-out look-alike)",
+          "score": 0,
+          "flagged": false
+        },
+        {
+          "id": "A1035",
+          "note": "Festival merchant: 2-week Diwali sales burst (burst/dormancy look-alike)",
+          "score": 0,
+          "flagged": false
+        },
+        {
+          "id": "A1458",
+          "note": "Family remittance pooling: collects from 3 siblings, forwards to parents same day (pass-through look-alike)",
+          "score": 10,
+          "flagged": false
+        },
+        {
+          "id": "A1460",
+          "note": "Salary sweep to own FD account within hours (pass-through look-alike)",
+          "score": 45,
+          "flagged": true
+        }
+      ],
+      "hardNegativesFlagged": 1
+    }
+  }
+}

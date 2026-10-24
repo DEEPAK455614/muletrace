@@ -64,5 +64,8 @@ export interface World {
   txns: Txn[];
   complaints: Complaint[];
   groundTruth: Record<string, GroundTruth>;
+  // Benign look-alikes injected deliberately: accountId -> archetype note.
+  // These are KNOWN NEGATIVES - the classic false-positive traps.
+  hardNegatives: Record<string, string>;
   scenarioNotes: { ring: string; title: string; description: string; size: number }[];
 }

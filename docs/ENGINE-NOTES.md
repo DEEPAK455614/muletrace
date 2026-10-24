@@ -15,3 +15,16 @@ parameters) must stay untouched until final evaluation. Report dev vs holdout se
   flagged Moderate via community signal only.
 - One FP expected by design: a merchant named in a low-value buyer dispute is floored
   to Moderate review because any open complaint deserves a look.
+
+## Update - evaluation-rigor package (24 Oct 2026)
+
+- Generator now injects 6 benign hard negatives (landlord fan-in, coaching-fee band,
+  kitty rotation, festival burst, family remittance pooling, salary sweep) tagged in
+  `world.hardNegatives` and kept disjoint from `groundTruth`.
+- Rule weights were NOT re-tuned: they remain at the values frozen on the earlier dev
+  world. The dev world itself shifted because the generator gained the benign
+  archetypes (a dataset change, not a tuning step); baseline re-recorded accordingly.
+- Full dev/validation/holdout protocol added in `src/engine/benchmark.ts` with
+  logistic-regression ML component (`src/engine/ml.ts`): trained on dev only,
+  threshold chosen on validation only, holdouts evaluated once after freeze.
+- Results and provenance: `docs/BENCHMARK.md`, rendered in-app on the Evaluation page.

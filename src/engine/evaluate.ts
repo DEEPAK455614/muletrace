@@ -12,6 +12,8 @@ export interface EvalResult {
   precisionAtK: { k: number; precision: number; recall: number }[];
   prCurve: { threshold: number; precision: number; recall: number }[];
   perScenario: { ring: string; title: string; size: number; detected: number }[];
+  hardNegatives: { id: string; note: string; score: number; flagged: boolean }[];
+  hardNegativesFlagged: number;
 }
 
 export function evaluate(world: World, scores: Map<string, ScoreResult>, threshold = 45): EvalResult {
@@ -52,8 +54,14 @@ export function evaluate(world: World, scores: Map<string, ScoreResult>, thresho
     return { ring: sn.ring, title: sn.title, size: members.length, detected };
   });
 
+  const hardNegatives = Object.entries(world.hardNegatives ?? {}).map(([id, note]) => {
+    const sc = scores.get(id)?.score ?? 0;
+    return { id, note, score: Math.round(sc), flagged: sc >= threshold };
+  });
+
   return {
     totalAccounts: world.accounts.length, positives: positives.size, threshold,
     tp, fp, fn, tn, precision, recall, falseAlarmRate, precisionAtK, prCurve, perScenario,
+    hardNegatives, hardNegativesFlagged: hardNegatives.filter((h) => h.flagged).length,
   };
 }
