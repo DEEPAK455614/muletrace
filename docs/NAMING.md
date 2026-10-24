@@ -84,3 +84,21 @@ Finalist screens:
 - Viveka: partial - https://www.vivekahealth.com/ (health-tech).
 - Tahqiq: no software/fintech usage found.
 - Filigree: partial - Filigree Wealth (US wealth manager), familywealthreport.com listing.
+
+## Round 2-3 screening (24 Oct 2026, ~22:00 IST) - after user asked for more options
+
+Screened and REJECTED on public collision:
+- Anvesha - direct software collisions: Anvesha Infotech accounting software (techjockey.com, accountingsoftware.co.in). URLs: https://techjockey.com/detail/anvesha, https://accountingsoftware.co.in/anvesha-infotech
+- Kadi - direct fintech collision: Kadi Africa fintech startup, Accra. URLs: https://www.cbinsights.com/company/kadi, https://startuplist.africa/startup/kadi
+- Talaash - adjacent software: Talaash local-help app (talaash.orvilstudios.com), TALAASH conversational AI (coe-iot.com). URLs: https://talaash.orvilstudios.com, https://coe-iot.com
+- Khoj - direct software collision: Khoj AI for Humans. URLs: https://khoj.dev, https://github.com/khoj-ai/khoj
+- Spoor - fintech-adjacent: Spoors collections & deposits management software. URLs: https://spoors.in, https://casestudies.com (AEON Credit case study)
+- Vichara - DIRECT fintech collision: Vichara Technologies, capital-markets fintech. URL: https://vichara.com
+- Ishara - fintech collisions: Ishara Quantum Finance & Trading; Ishara Enterprise. URLs: https://agiquantumcloud.com, https://isharatoday.com
+- Sanket - direct fraud/identity collision: Sanket Identity Threat Intelligence (Sovio). URL: https://sovio.id
+- Pehchaan - adjacent KYC collision: Pehchaan E-KYC management. URL: https://smartsoochi.com
+
+Surviving candidate added:
+- Taqib (تعقیب, Urdu/Arabic "pursuit, tracking") - ta-QEEB. No product collisions found (only a personal site taqib.dev and a Vercel open-source cohort mention). Honest caveat: in Uzbek/Urdu legal usage "jinoiy ta'qib" means "criminal prosecution" as an ordinary word - a legal-proceedings association the user should hear before choosing. URLs: https://taqib.dev, https://kun.uz (ordinary-word legal usage example)
+
+Updated shortlist for user choice: Surag (pick), Taqib, Tahqiq, Viveka (partial collision Viveka Health), Filigree (partial collision Filigree Wealth).

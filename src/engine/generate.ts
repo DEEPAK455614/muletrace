@@ -531,6 +531,7 @@ export function generateWorld(seed = 'muletrace-v1'): World {
   b.complaints.sort((x, y) => x.reportedAt - y.reportedAt);
 
   return {
+    seed,
     generatedAt: Date.now(),
     windowStart: WINDOW_START,
     windowEnd: WINDOW_END,

@@ -24,10 +24,15 @@ export default function Trails({ a }: { a: Analysis }) {
 
   const merged = useMemo(() => {
     if (trails.length === 0) return null;
-    const hops = trails.flatMap((t) => t.hops).sort((x, y) => x.ts - y.ts);
+    // Dedupe hops by transaction id across seed trails - the same transaction
+    // must never be counted twice when several complaints trace through it.
+    const seen = new Set<string>();
+    const hops = trails.flatMap((t) => t.hops).filter((h) => { if (seen.has(h.txnId)) return false; seen.add(h.txnId); return true; }).sort((x, y) => x.ts - y.ts);
     const endpoints = new Map<string, { id: string; kind: string; amount: number }>();
-    trails.flatMap((t) => t.endpoints).forEach((e) => endpoints.set(e.id + e.kind, e));
-    return { hops, endpoints: [...endpoints.values()], totalTraced: trails.reduce((s, t) => s + t.totalTraced, 0), maxDepth: Math.max(...trails.map((t) => t.maxDepth)) };
+    trails.flatMap((t) => t.endpoints).forEach((e) => endpoints.set(e.id + e.kind, { id: e.id, kind: e.kind, amount: (endpoints.get(e.id + e.kind)?.amount ?? 0) + e.amount }));
+    const totalTraced = hops.reduce((sum, h) => sum + h.amount, 0);
+    const exitValue = [...endpoints.values()].reduce((sum, e) => sum + e.amount, 0);
+    return { hops, endpoints: [...endpoints.values()], totalTraced, exitValue, maxDepth: Math.max(...trails.map((t) => t.maxDepth)) };
   }, [trails]);
 
   const nameOf = (id: string) => {
@@ -48,7 +53,7 @@ export default function Trails({ a }: { a: Analysis }) {
         <div className="flex flex-wrap gap-3 items-end">
           <div>
             <label className="text-[11px] text-ink-mute block mb-1">Account ID</label>
-            <input className="btn text-[12px] num w-40" value={account} onChange={(e) => { setAccount(e.target.value); setComplaintRef(''); }} placeholder="AC-####" />
+            <input className="btn text-[12px] num w-40" value={account} onChange={(e) => { setAccount(e.target.value); setComplaintRef(''); }} placeholder="A1413" />
           </div>
           <div>
             <label className="text-[11px] text-ink-mute block mb-1">Direction</label>
@@ -66,7 +71,7 @@ export default function Trails({ a }: { a: Analysis }) {
           <div className="text-ink-mute text-[13px] px-1">or</div>
           <div>
             <label className="text-[11px] text-ink-mute block mb-1">Complaint reference</label>
-            <input className="btn text-[12px] num w-48" value={complaintRef} onChange={(e) => { setComplaintRef(e.target.value); setAccount(''); }} placeholder="NCRP-2026-####" />
+            <input className="btn text-[12px] num w-48" value={complaintRef} onChange={(e) => { setComplaintRef(e.target.value); setAccount(''); }} placeholder="NCRP-2026-06-786977" />
           </div>
         </div>
       </div>
@@ -81,10 +86,14 @@ export default function Trails({ a }: { a: Analysis }) {
 
       {merged && (
         <>
-          <div className="grid grid-cols-3 gap-3 mb-4">
-            <div className="card p-4"><div className="num text-[20px] font-semibold">{merged.hops.length}</div><div className="text-[11px] text-ink-mute">Hops reconstructed</div></div>
-            <div className="card p-4"><div className="num text-[20px] font-semibold">{inrFull(merged.totalTraced)}</div><div className="text-[11px] text-ink-mute">Value traced</div></div>
-            <div className="card p-4"><div className="num text-[20px] font-semibold">{merged.endpoints.length}</div><div className="text-[11px] text-ink-mute">Exit points (cash / terminal)</div></div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+            <div className="card p-4"><div className="num text-[16px] md:text-[20px] font-semibold">{merged.hops.length}</div><div className="text-[11px] text-ink-mute">Hops reconstructed</div></div>
+            <div className="card p-4"><div className="num text-[16px] md:text-[20px] font-semibold">{inrFull(merged.totalTraced)}</div><div className="text-[11px] text-ink-mute">Cumulative flow (distinct transactions)</div></div>
+            <div className="card p-4"><div className="num text-[16px] md:text-[20px] font-semibold">{inrFull(merged.exitValue)}</div><div className="text-[11px] text-ink-mute">Exit value (where money stops)</div></div>
+            <div className="card p-4"><div className="num text-[16px] md:text-[20px] font-semibold">{merged.endpoints.length}</div><div className="text-[11px] text-ink-mute">Exit points (cash / terminal)</div></div>
+          </div>
+          <div className="text-[11px] text-ink-mute mb-4 -mt-2">Allocation follows FIFO time-ordering over observed transactions - a hypothesis, not proof of which rupee moved where. In circular flows the same funds pass repeatedly, so cumulative flow can exceed an account's genuine inflow; exit value is the non-duplicative figure for funds reaching a stopping point. Neither number is a proven illicit amount.</div>
+          <div style={{display:'none'}}>
           </div>
 
           {merged.endpoints.length > 0 && (

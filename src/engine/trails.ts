@@ -19,7 +19,13 @@ export interface TrailResult {
   hops: TrailHop[];
   nodes: string[];
   endpoints: { id: string; kind: 'cash-out' | 'terminal-account' | 'off-window' ; amount: number }[];
+  // Sum of DISTINCT hop transaction amounts (visitedEdges dedupes). In cyclic
+  // flows the same funds can be counted on each pass - see exitValue.
   totalTraced: number;
+  // Non-duplicative measure: amounts arriving at terminal sinks (cash-out,
+  // terminal accounts, off-window). This is the defensible "how much value
+  // reached an observed stopping point" figure; it never recounts circulation.
+  exitValue: number;
   maxDepth: number;
 }
 
@@ -45,7 +51,7 @@ export function traceTrail(
   const endpointKind = new Map<string, TrailResult['endpoints'][number]['kind']>();
   let maxDepth = 0;
 
-  interface Frame { node: string; hop: number; minTs: number; maxTs: number; amountBudget: number }
+  interface Frame { node: string; hop: number; minTs: number; maxTs: number; amountBudget: number; inboundAmount: number }
   const activity = (txnsByFrom.get(seedAccountId) ?? []).concat(txnsByTo.get(seedAccountId) ?? []).map((t) => t.ts);
   const lastActivity = activity.length ? Math.max(...activity) : world.windowEnd;
   const seedTs = opts.sinceTs ?? (direction === 'forward' ? Math.max(world.windowStart, lastActivity - windowDays * DAY) : lastActivity);
@@ -54,6 +60,7 @@ export function traceTrail(
     minTs: direction === 'forward' ? seedTs : 0,
     maxTs: direction === 'forward' ? Number.MAX_SAFE_INTEGER : seedTs,
     amountBudget: opts.seedAmount ?? Number.MAX_SAFE_INTEGER,
+    inboundAmount: 0,
   }];
 
   while (stack.length) {
@@ -90,10 +97,11 @@ export function traceTrail(
         minTs: direction === 'forward' ? t.ts : frame.minTs,
         maxTs: direction === 'forward' ? frame.maxTs : t.ts,
         amountBudget: Math.min(frame.amountBudget, t.amount),
+        inboundAmount: t.amount,
       });
     }
     if (!expanded && frame.hop > 0) {
-      endpointAmount.set(frame.node, (endpointAmount.get(frame.node) ?? 0) + 0);
+      endpointAmount.set(frame.node, (endpointAmount.get(frame.node) ?? 0) + frame.inboundAmount);
       endpointKind.set(frame.node, 'terminal-account');
     }
   }
@@ -101,7 +109,8 @@ export function traceTrail(
   const endpoints = [...endpointAmount.entries()].map(([id, amount]) => ({
     id, kind: endpointKind.get(id) ?? 'terminal-account', amount,
   }));
-  return { seedId: seedAccountId, direction, hops, nodes: [...nodes], endpoints, totalTraced, maxDepth };
+  const exitValue = endpoints.reduce((s, e) => s + e.amount, 0);
+  return { seedId: seedAccountId, direction, hops, nodes: [...nodes], endpoints, totalTraced, exitValue, maxDepth };
 }
 
 export function traceComplaint(world: World, complaintId: string): TrailResult[] {

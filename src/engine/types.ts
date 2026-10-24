@@ -56,6 +56,7 @@ export interface GroundTruth {
 }
 
 export interface World {
+  seed: string;
   generatedAt: number;
   windowStart: number;
   windowEnd: number;

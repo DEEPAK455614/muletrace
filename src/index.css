@@ -69,3 +69,6 @@ body { margin: 0; -webkit-font-smoothing: antialiased; }
   .no-print { display: none !important; }
   .card { border-color: #ccc; break-inside: avoid; }
 }
+
+/* grid blowout guard: children may shrink below content width */
+.grid > * { min-width: 0; }

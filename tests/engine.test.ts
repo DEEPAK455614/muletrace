@@ -103,3 +103,30 @@ describe('evaluation honesty', () => {
     expect(a.evaluation.perScenario.length).toBe(a.world.scenarioNotes.length);
   });
 });
+
+describe('reproducibility regression', () => {
+  it('graph analytics are deterministic across runs on the same seed', () => {
+    const g1 = buildGraph(a.world);
+    const g2 = buildGraph(a.world);
+    expect(g1.community).toEqual(g2.community);
+    expect(g1.communities.map((c) => [c.id, [...c.members].sort()])).toEqual(g2.communities.map((c) => [c.id, [...c.members].sort()]));
+  });
+});
+
+describe('money-trail accounting honesty', () => {
+  it('never counts the same transaction twice within a trail', () => {
+    const c = a.world.complaints.find((x) => x.namedAccountIds.length > 0)!;
+    const t = traceComplaint(a.world, c.id)[0];
+    const ids = t.hops.map((h) => h.txnId);
+    expect(new Set(ids).size).toBe(ids.length);
+    expect(t.totalTraced).toBeCloseTo(t.hops.reduce((s, h) => s + h.amount, 0), 6);
+  });
+  it('exit value is positive and attributed to terminal sinks, not circulation', () => {
+    const c = a.world.complaints.find((x) => x.namedAccountIds.length > 0)!;
+    const t = traceComplaint(a.world, c.id)[0];
+    expect(t.exitValue).toBeGreaterThan(0);
+    expect(t.exitValue).toBe(t.endpoints.reduce((s, e) => s + e.amount, 0));
+    // exit value can never exceed the cumulative distinct flow
+    expect(t.exitValue).toBeLessThanOrEqual(t.totalTraced);
+  });
+});

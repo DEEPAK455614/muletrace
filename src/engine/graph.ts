@@ -4,6 +4,7 @@ import Graph from 'graphology';
 import louvain from 'graphology-communities-louvain';
 import { degreeCentrality } from 'graphology-metrics/centrality/degree';
 import type { World } from './types';
+import { makeRng } from './rng';
 
 export interface GraphResult {
   graph: Graph;
@@ -124,7 +125,7 @@ export function buildGraph(world: World): GraphResult {
   for (const ids of byAddress.values()) if (ids.length > 1 && ids.length <= 8) addUndirectedWeak(ids);
 
   const pagerank = pagerankWeighted(g);
-  const community = louvain(g, { getEdgeWeight: 'weight', resolution: 1 }) as Record<string, number>;
+  const community = louvain(g, { getEdgeWeight: 'weight', resolution: 1, rng: makeRng('louvain:' + world.seed) }) as Record<string, number>;
   const communityMap = new Map<number, string[]>();
   Object.entries(community).forEach(([node, c]) => {
     communityMap.set(c, [...(communityMap.get(c) ?? []), node]);
