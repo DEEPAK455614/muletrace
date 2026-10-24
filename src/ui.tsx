@@ -30,9 +30,9 @@ export function ScoreBadge({ score, band, size = 'md' }: { score: number; band: 
 
 export function Stat({ label, value, sub, accent }: { label: string; value: React.ReactNode; sub?: string; accent?: string }) {
   return (
-    <div className="card p-4">
+    <div className="card p-5">
       <div className="text-[11px] font-semibold uppercase tracking-[0.07em] text-ink-mute">{label}</div>
-      <div className="mt-1.5 text-[26px] leading-8 font-semibold num" style={{ color: accent ?? 'var(--color-ink)', fontFamily: 'var(--font-display)' }}>{value}</div>
+      <div className="mt-2 text-[28px] leading-8 font-semibold num" style={{ color: accent ?? 'var(--color-ink)', fontFamily: 'var(--font-display)' }}>{value}</div>
       {sub && <div className="mt-1 text-xs text-ink-soft">{sub}</div>}
     </div>
   );
@@ -58,7 +58,7 @@ export function FactorBars({ factors }: { factors: { key: string; label: string;
             <div className="text-[13px] font-medium">{f.label}</div>
             <div className="num text-[12px] text-ink-soft whitespace-nowrap">{f.points.toFixed(1)} / {f.max}</div>
           </div>
-          <div className="mt-1 h-[5px] rounded-full bg-[#EFEDE8] overflow-hidden">
+          <div className="mt-1.5 h-[5px] rounded-full bg-[#F0F0F3] overflow-hidden">
             <div className="h-full rounded-full" style={{ width: `${(f.points / maxPts) * 100}%`, background: 'var(--color-brand)', opacity: 0.35 + 0.65 * (f.points / f.max) }} />
           </div>
           <div className="mt-1 text-[12px] leading-snug text-ink-soft">{f.observed}</div>

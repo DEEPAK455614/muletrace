@@ -39,7 +39,7 @@ function Brand() {
 
 function DemoBanner() {
   return (
-    <div className="no-print text-center text-[11.5px] font-medium py-1.5 px-3" style={{ background: '#FFF6E5', color: '#8A5A00', borderBottom: '1px solid #F0DFB8' }}>
+    <div className="no-print text-center text-[11px] font-medium py-[5px] px-3" style={{ background: '#FFF9EC', color: '#93620A', borderBottom: '1px solid #F3E7C8' }}>
       Synthetic demonstration dataset, generated deterministically in your browser. No real banking data. Scores indicate suspicion for investigation, never proof of guilt.
     </div>
   );
@@ -55,7 +55,7 @@ export default function App() {
       <div className="sticky top-0 z-40 md:static md:z-auto bg-surface">
         <DemoBanner />
         {/* Mobile top bar */}
-        <div className="no-print md:hidden bg-surface border-b border-line">
+        <div className="no-print md:hidden">
           <div className="flex items-center justify-between px-3 h-[52px]">
             <Brand />
             <button className="btn !p-2" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
@@ -63,11 +63,10 @@ export default function App() {
             </button>
           </div>
           {menuOpen && (
-            <div className="border-t border-line bg-surface px-2 py-2 grid grid-cols-2 gap-1">
+            <div className="px-2 py-2 grid grid-cols-2 gap-1">
               {NAV.map(({ to, label, icon: Icon, end }) => (
                 <NavLink key={to} to={to} end={end} onClick={() => setMenuOpen(false)}
-                  className={({ isActive }) => `flex items-center gap-2 px-3 py-2.5 rounded-lg text-[13px] font-medium no-underline ${isActive ? 'text-white' : 'text-ink-soft'}`}
-                  style={({ isActive }) => isActive ? { background: 'var(--color-brand)', color: '#fff' } : {}}>
+                  className={({ isActive }) => `navpill !py-2.5 ${isActive ? 'active' : ''}`}>
                   <Icon size={15} /> {label}
                 </NavLink>
               ))}
@@ -77,14 +76,11 @@ export default function App() {
       </div>
       <div className="flex flex-1 min-h-0">
         {/* Sidebar - desktop */}
-        <aside className="no-print hidden md:flex flex-col w-[212px] shrink-0 border-r border-line bg-surface px-3 py-4 gap-1 sticky top-0 h-screen">
+        <aside className="no-print hidden md:flex flex-col w-[218px] shrink-0 px-3 py-5 gap-[3px] sticky top-0 h-screen">
           <div className="px-1 pb-4"><Brand /></div>
           {NAV.map(({ to, label, icon: Icon, end }) => (
             <NavLink key={to} to={to} end={end}
-              className={({ isActive }) =>
-                `flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] font-medium no-underline transition-colors ${isActive ? 'text-white' : 'text-ink-soft hover:bg-[#F4F3EF]'}`
-              }
-              style={({ isActive }) => isActive ? { background: 'var(--color-brand)', color: '#fff' } : {}}>
+              className={({ isActive }) => `navpill ${isActive ? 'active' : ''}`}>
               <Icon size={16} strokeWidth={2} />
               {label}
               {label === 'Alerts' && (
@@ -92,7 +88,7 @@ export default function App() {
               )}
             </NavLink>
           ))}
-          <div className="mt-auto pt-4 border-t border-line">
+          <div className="mt-auto pt-4 border-t border-[#E9E9ED]">
             <div className="text-[10.5px] text-ink-mute px-2 leading-relaxed">
               Analysis window: Jan-Oct 2026<br />
               Engine built in {a.buildMs.toFixed(0)} ms<br />
