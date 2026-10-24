@@ -38,7 +38,7 @@ export default function Overview({ a }: { a: Analysis }) {
         <p className="text-[13px] text-ink-soft mt-1">Mule-account risk across the monitored consortium. Every score below is explainable - open any account to see exactly why it was flagged.</p>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         <Stat label="Accounts monitored" value={a.world.accounts.length.toLocaleString('en-IN')} sub={`${a.world.txns.length.toLocaleString('en-IN')} transactions, Jan-Oct 2026`} />
         <Stat label="Open alerts" value={d.alerts.length} sub={`${d.complaintLinkedAlerts} directly named in complaints`} accent="var(--color-risk-high)" />
         <Stat label="Suspicious networks" value={topNetworks.length} sub="Communities with concentrated risk signals" accent="var(--color-risk-crit)" />
