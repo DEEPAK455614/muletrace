@@ -80,7 +80,7 @@ export default function App() {
         </aside>
 
         {/* Mobile top bar */}
-        <div className="no-print md:hidden fixed top-0 inset-x-0 z-40 bg-surface border-b border-line">
+        <div className="no-print md:hidden sticky top-0 z-40 bg-surface border-b border-line">
           <div className="flex items-center justify-between px-3 h-[52px]">
             <Brand />
             <button className="btn !p-2" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
@@ -101,7 +101,7 @@ export default function App() {
         </div>
 
         {/* Content */}
-        <main className="flex-1 min-w-0 px-4 md:px-7 py-5 md:py-6 mt-[52px] md:mt-0 pb-24 md:pb-10">
+        <main className="flex-1 min-w-0 px-4 md:px-7 py-5 md:py-6 pb-24 md:pb-10">
           <Suspense fallback={<div className="text-sm text-ink-mute py-16 text-center">Loading analysis…</div>}>
             <Routes>
               <Route path="/" element={<Overview a={a} />} />
