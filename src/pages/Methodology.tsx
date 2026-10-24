@@ -7,9 +7,9 @@ import { SectionTitle } from '../ui';
 const TYPOLOGIES = [
   { name: 'Rapid dispersal (pass-through)', desc: 'Victim funds forwarded within minutes to hours, preserving most of the amount. Generational layering follows: one account receives from many victims, forwards to a smaller set of consolidators.', src: 'FCA multi-firm review; FATF illicit financial flows' },
   { name: 'Layering chains', desc: 'Funds hop through chains of accounts in consistent amounts within tight time windows, then exit to cash (ATM) or a merchant front.', src: 'Neo4j graph-analytics AML guidance; FATF' },
-  { name: 'Structuring (smurfing)', desc: 'Deposits kept in the Rs 45,000-49,900 band to sit below round-number reporting scrutiny, aggregated into a business front.', src: 'RBIH NFPC study (arXiv); Outseer' },
+  { name: 'Structuring (smurfing)', desc: 'Deposits clustered in a narrow band just below a round number (Rs 45,000-49,900 in this synthetic fixture - a demonstration pattern, not any legal reporting cutoff), aggregated into a business front.', src: 'RBIH NFPC study (arXiv); Outseer' },
   { name: 'Dormant activation', desc: 'A low-activity account suddenly carries high throughput inconsistent with its history - a classic recruited-mule tell.', src: 'FCA; Feedzai mule blueprint' },
-  { name: 'Income inconsistency', desc: 'Annualised turnover far above declared income: no lawful source explains the observed flows.', src: 'Feedzai; Unit21' },
+  { name: 'Income inconsistency', desc: 'Annualised turnover far above declared income. Declared income alone does not explain the observed flows; other legitimate sources may exist.', src: 'Feedzai; Unit21' },
   { name: 'Network proximity to complaints', desc: 'Membership of communities containing complaint-named accounts, shared devices or addresses, and many-to-one dispersal structure.', src: 'Neo4j; Quantexa entity-resolution practice' },
 ];
 
