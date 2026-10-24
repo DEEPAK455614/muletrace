@@ -27,22 +27,19 @@ const NAV = [
 
 function Brand() {
   return (
-    <Link to="/" className="flex items-center gap-2.5 no-underline">
-      <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'var(--color-brand)' }}>
-        <ShieldCheck size={17} color="#fff" strokeWidth={2.2} />
-      </div>
-      <div>
-        <div className="text-[16px] font-bold leading-4 tracking-tight" style={{ fontFamily: 'var(--font-display)', color: 'var(--color-ink)' }}>Surag</div>
-        <div className="text-[10px] font-medium text-ink-mute leading-3 mt-0.5">Financial crime intelligence</div>
-      </div>
-    </Link>
-  );
-}
-
-function DemoBanner() {
-  return (
-    <div className="no-print text-center text-[11px] font-medium py-[5px] px-3" style={{ background: '#FFF9EC', color: '#93620A', borderBottom: '1px solid #F3E7C8' }}>
-      Synthetic demonstration dataset, generated deterministically in your browser. No real banking data. Scores indicate suspicion for investigation, never proof of guilt.
+    <div className="flex items-center gap-2.5">
+      <Link to="/" className="flex items-center gap-2.5 no-underline">
+        <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'var(--color-brand)' }}>
+          <ShieldCheck size={17} color="#fff" strokeWidth={2.2} />
+        </div>
+        <div>
+          <div className="text-[16px] font-bold leading-4 tracking-tight" style={{ fontFamily: 'var(--font-display)', color: 'var(--color-ink)' }}>Surag</div>
+          <div className="text-[10px] font-medium text-ink-mute leading-3 mt-0.5">Financial crime intelligence</div>
+        </div>
+      </Link>
+      <Link to="/methodology" className="demo-pill no-print" title="Synthetic demonstration dataset - no real banking data. Scores indicate suspicion for investigation, never proof of guilt. Details in Methodology.">
+        Demo - Synthetic data
+      </Link>
     </div>
   );
 }
@@ -55,7 +52,6 @@ export default function App() {
   return (
     <div className="min-h-screen flex flex-col">
       <div className="sticky top-0 z-40 md:static md:z-auto bg-surface">
-        <DemoBanner />
         {/* Mobile top bar */}
         <div className="no-print md:hidden">
           <div className="flex items-center justify-between px-3 h-[52px]">

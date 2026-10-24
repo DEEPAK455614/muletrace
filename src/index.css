@@ -91,3 +91,11 @@ select.btn:focus, input.btn:focus { outline: 2px solid var(--color-brand-soft); 
 .grid > * { min-width: 0; }
 
 .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+.demo-pill {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.02em;
+  color: #93620A; background: #FFF6E3; border: 1px solid #F0E2BC;
+  padding: 3px 8px; border-radius: 999px; text-decoration: none;
+  white-space: nowrap; margin-left: 2px;
+}
+.demo-pill:hover { background: #FDEFC9; }
