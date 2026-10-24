@@ -6,6 +6,7 @@ import type { ImportResult } from './engine/import';
 import { setActiveDatasetScope } from './state/dataset';
 import { LayoutDashboard, Bell, Network, GitBranch, FileWarning, FlaskConical, BookOpen, Menu, X, ShieldCheck, History, Upload } from 'lucide-react';
 
+const Workbench = lazy(() => import('./pages/Workbench'));
 const Overview = lazy(() => import('./pages/Overview'));
 const Alerts = lazy(() => import('./pages/Alerts'));
 const Account360 = lazy(() => import('./pages/Account360'));
@@ -19,7 +20,7 @@ const ReportPage = lazy(() => import('./pages/ReportPage'));
 const ImportData = lazy(() => import('./pages/ImportData'));
 
 const NAV = [
-  { to: '/', label: 'Overview', icon: LayoutDashboard, end: true },
+  { to: '/', label: 'Workbench', icon: LayoutDashboard, end: true },
   { to: '/alerts', label: 'Alerts', icon: Bell },
   { to: '/network', label: 'Network', icon: Network },
   { to: '/trails', label: 'Money trails', icon: GitBranch },
@@ -126,7 +127,8 @@ export default function App() {
         <main className="flex-1 min-w-0 px-4 md:px-7 py-5 md:py-6 pb-24 md:pb-10">
           <Suspense fallback={<div className="text-sm text-ink-mute py-16 text-center">Loading analysis…</div>}>
             <Routes>
-              <Route path="/" element={<Overview a={a} />} />
+              <Route path="/" element={<Workbench a={a} uploaded={dataset.kind === 'uploaded'} />} />
+              <Route path="/overview" element={<Overview a={a} />} />
               <Route path="/alerts" element={<Alerts a={a} />} />
               <Route path="/accounts/:id" element={<Account360 a={a} />} />
               <Route path="/network" element={<NetworkPage a={a} />} />
