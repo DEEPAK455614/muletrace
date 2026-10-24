@@ -41,3 +41,11 @@ Date: 2026-10-25. Branch: workbench. Trigger: user rejected page-based dashboard
 - ScorerToggle + ML contributions panel.
 - Workbench shell (queue + graph + slide-in evidence panel), trail hop-stepper.
 - Preserve: engine, benchmark, evaluation page, methodology, import, audit chain, report page.
+
+## Implementation notes (surveyed 2026-10-25, branch workbench)
+- App: react-router hash routes, lazy pages, NAV in src/App.tsx. Plan: Workbench at `/`; existing pages stay at their routes for deep views (Trails, Complaints, Evaluation, Methodology, Audit, Import, ReportPage at /report/account/:id); Overview demoted or folded into workbench home.
+- Engine API: analyze()/analyzeWorld -> Analysis { world, scores: Map<id, ScoreResult>, features: Map<id, AccountFeatures>, ... }. ScoreResult { accountId, score, band, archetype, factors: FactorContribution[] }; factorSpecs(f) gives {key,label,points,max,observed} - the observed text is the evidence line used in account360.
+- ML: src/engine/ml.ts exports FEATURE_KEYS, featureVector(f), trainLogReg, predictProb(model,f), pickThreshold. A trained dev-world model likely exists in evaluate/benchmark flow - reuse the same training call (dev world only) at runtime; do not retrain on holdout. Contributions = weight_i * standardized feature_i (check ml.ts internals for stored mean/std or recompute from dev set); rank by absolute contribution; label as model attribution not evidence.
+- Trails: traceTrail/traceComplaint in engine/trails.ts -> TrailResult (hops, exit points) - reuse for hop-stepper.
+- State: src/state/dataset.ts (active scope), audit.ts (SHA-chained triage log), triage.ts (status store). Triage actions must keep writing audit entries from the workbench evidence panel.
+- Video: paused. v3 (re-encoded, clean timestamps) local at /tmp/rec/muletrace-review-video-v3.mp4; v1/v2 + asset zips on Drive. No captures until new UI.
