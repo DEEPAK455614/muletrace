@@ -30,9 +30,9 @@ export const BANDS = [
 
 const clamp01 = (x: number) => Math.max(0, Math.min(1, x));
 
-interface FactorSpec { key: string; label: string; points: number; max: number; observed: string }
+export interface FactorSpec { key: string; label: string; points: number; max: number; observed: string }
 
-function factorSpecs(f: AccountFeatures): FactorSpec[] {
+export function factorSpecs(f: AccountFeatures): FactorSpec[] {
   const fanIn = f.distinctSources >= 5 && f.distinctDests <= 5;
   const fanOut = f.distinctDests >= 8 && f.distinctSources <= 3;
   const specs: FactorSpec[] = [];

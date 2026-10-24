@@ -1,0 +1,1 @@
+const a="muletrace.triage.v1";function c(){try{return JSON.parse(localStorage.getItem(a)??"{}")}catch{return{}}}function s(t,r){const e=c();e[t]=r,localStorage.setItem(a,JSON.stringify(e))}const l={new:"New",review:"In review",escalated:"Escalated",cleared:"Cleared"},n={new:"#667085",review:"#3B4BD8",escalated:"#D92D20",cleared:"#1F9D6B"};export{l as T,n as a,c as l,s};

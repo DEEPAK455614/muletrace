@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-sans: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --color-paper: #FAFAF7;
+  --color-surface: #FFFFFF;
+  --color-ink: #101828;
+  --color-ink-soft: #475467;
+  --color-ink-mute: #8A93A3;
+  --color-line: #E4E2DC;
+  --color-brand: #3B4BD8;
+  --color-brand-soft: #EEF0FC;
+  --color-risk-low: #1F9D6B;
+  --color-risk-mod: #D99A1F;
+  --color-risk-high: #E0651F;
+  --color-risk-crit: #D92D20;
+}
+
+html { font-family: var(--font-sans); background: var(--color-paper); color: var(--color-ink); }
+body { margin: 0; -webkit-font-smoothing: antialiased; }
+* { box-sizing: border-box; }
+
+.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 10px;
+}
+
+.chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.02em;
+  padding: 2.5px 9px; border-radius: 999px; border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 600; border-radius: 8px;
+  padding: 7px 13px; border: 1px solid var(--color-line);
+  background: var(--color-surface); color: var(--color-ink);
+  cursor: pointer; transition: background 140ms ease-out, border-color 140ms ease-out, transform 100ms ease-out;
+}
+.btn:hover { background: #F5F4F0; }
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--color-brand); border-color: var(--color-brand); color: #fff; }
+.btn-primary:hover { background: #2F3CB8; }
+
+.table-base { width: 100%; border-collapse: collapse; font-size: 13px; }
+.table-base th {
+  text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--color-ink-mute);
+  padding: 8px 12px; border-bottom: 1px solid var(--color-line);
+}
+.table-base td { padding: 9px 12px; border-bottom: 1px solid #EFECE6; vertical-align: middle; }
+.table-base tr:last-child td { border-bottom: none; }
+.rowlink { cursor: pointer; transition: background 120ms ease-out; }
+.rowlink:hover { background: #F7F6F2; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+@media print {
+  body { background: #fff; }
+  .no-print { display: none !important; }
+  .card { border-color: #ccc; break-inside: avoid; }
+}
