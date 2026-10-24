@@ -100,6 +100,62 @@ export default function Trails({ a }: { a: Analysis }) {
             </div>
           )}
 
+
+          {merged.hops.length > 0 && (() => {
+            // Flow diagram: columns = hop depth, rows = accounts, edges = value
+            const colOf = new Map<string, number>();
+            const seed = account.trim() || merged.hops[0]?.from;
+            if (seed) colOf.set(seed, 0);
+            for (const h of merged.hops) {
+              const c = colOf.get(h.from) ?? 0;
+              if (!colOf.has(h.to) || (colOf.get(h.to) ?? 99) > c + 1) colOf.set(h.to, c + 1);
+            }
+            const byCol = new Map<number, string[]>();
+            colOf.forEach((c, id) => byCol.set(c, [...(byCol.get(c) ?? []), id]));
+            const cols = Math.max(...byCol.keys()) + 1;
+            const W = 1000, rowH = 54, colW = Math.min(190, (W - 60) / Math.max(cols - 1, 1));
+            const H = Math.max(...[...byCol.values()].map((v) => v.length)) * rowH + 60;
+            const pos = new Map<string, { x: number; y: number }>();
+            byCol.forEach((ids, c) => {
+              const totalH = ids.length * rowH;
+              ids.forEach((id, i) => pos.set(id, { x: 30 + c * colW, y: 30 + (H - 60 - totalH) / 2 + i * rowH + rowH / 2 }));
+            });
+            const maxAmt = Math.max(...merged.hops.map((h) => h.amount), 1);
+            return (
+              <div className="card p-4 mb-4">
+                <SectionTitle>Flow diagram</SectionTitle>
+                <svg viewBox={`0 0 ${W} ${H}`} className="w-full mt-2">
+                  <defs>
+                    <marker id="arr" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+                      <path d="M0,0 L7,3.5 L0,7 z" fill="#B9B4A8" />
+                    </marker>
+                  </defs>
+                  {merged.hops.map((h) => {
+                    const a = pos.get(h.from)!, b = pos.get(h.to)!;
+                    if (!a || !b) return null;
+                    const mx = (a.x + b.x) / 2;
+                    return (
+                      <path key={h.txnId} d={`M ${a.x} ${a.y} C ${mx} ${a.y}, ${mx} ${b.y}, ${b.x} ${b.y}`}
+                        fill="none" stroke="#B9B4A8" strokeWidth={1 + (h.amount / maxAmt) * 5} opacity={0.65} markerEnd="url(#arr)" />
+                    );
+                  })}
+                  {[...pos.entries()].map(([id, p]) => {
+                    const sc = a.scores.get(id);
+                    const col = id === 'ATM' ? '#3A4152' : sc && sc.score >= 75 ? '#D92D20' : sc && sc.score >= 45 ? '#E0651F' : sc && sc.score >= 30 ? '#D99A1F' : '#8A93A3';
+                    return (
+                      <g key={id} className="cursor-pointer" onClick={() => id !== 'ATM' && nav(`/accounts/${id}`)}>
+                        <circle cx={p.x} cy={p.y} r={7} fill={col} opacity={0.9} />
+                        <text x={p.x + 11} y={p.y + 3.5} fontSize={10.5} fill="#3A4152" fontWeight={600}>{nameOf(id).split(' ')[0]}</text>
+                        <text x={p.x + 11} y={p.y + 15} fontSize={8.5} fill="#8A93A3" fontFamily="var(--font-mono)">{id}</text>
+                      </g>
+                    );
+                  })}
+                </svg>
+                <div className="text-[11px] text-ink-mute mt-1">Edge width = transaction value. Click a node for its 360 view.</div>
+              </div>
+            );
+          })()}
+
           <div className="card overflow-x-auto">
             <table className="table-base min-w-[720px]">
               <thead><tr><th>Hop</th><th>Time</th><th>From</th><th>To</th><th className="text-right">Amount</th><th>Channel</th><th className="text-right">Dest. risk</th></tr></thead>
