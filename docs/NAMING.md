@@ -102,3 +102,8 @@ Surviving candidate added:
 - Taqib (تعقیب, Urdu/Arabic "pursuit, tracking") - ta-QEEB. No product collisions found (only a personal site taqib.dev and a Vercel open-source cohort mention). Honest caveat: in Uzbek/Urdu legal usage "jinoiy ta'qib" means "criminal prosecution" as an ordinary word - a legal-proceedings association the user should hear before choosing. URLs: https://taqib.dev, https://kun.uz (ordinary-word legal usage example)
 
 Updated shortlist for user choice: Surag (pick), Taqib, Tahqiq, Viveka (partial collision Viveka Health), Filigree (partial collision Filigree Wealth).
+
+
+## DECISION (24 Oct 2026, ~22:15 IST)
+
+User chose **Surag** via WhatsApp voice note. Applied across UI (sidebar, page title, evidence report) and PRD on 24 Oct 2026. Descriptor "Financial Crime Intelligence" in use. Repository slug `muletrace` and internal seed/storage keys intentionally unchanged (private repo, link stability, triage-state continuity). Public-web collision screen only - not trademark clearance; unrelated SURAG medical-device firm disclosed to user before the decision.

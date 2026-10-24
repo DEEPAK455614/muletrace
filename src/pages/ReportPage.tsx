@@ -42,7 +42,7 @@ export default function ReportPage({ a }: { a: Analysis }) {
         <div className="text-[11px] uppercase tracking-[0.18em] text-ink-mute">Investigation evidence report</div>
         <h1 className="text-[22px] font-bold tracking-tight mt-1" style={{ fontFamily: 'var(--font-display)' }}>{name}</h1>
         <div className="num text-[12px] text-ink-mute mt-1">{acc.id} - {acc.bank} - {acc.ifsc}</div>
-        <div className="text-[11px] text-ink-mute mt-1">Prepared {fmtDateTime(now.getTime())} - MuleTrace synthetic demonstration environment</div>
+        <div className="text-[11px] text-ink-mute mt-1">Prepared {fmtDateTime(now.getTime())} - Surag synthetic demonstration environment</div>
         <div className="mt-4 flex items-center gap-4">
           <ScoreBadge score={score.score} band={score.band} size="lg" />
           <div className="text-[13px] text-ink-soft">{score.archetype}</div>
@@ -93,7 +93,7 @@ export default function ReportPage({ a }: { a: Analysis }) {
         </div>
       </div>
 
-      <div className="text-[11px] text-ink-mute text-center pb-6">MuleTrace - mule-account detection and financial fraud investigation (synthetic demonstration). Developed by Sahaj Solutions.</div>
+      <div className="text-[11px] text-ink-mute text-center pb-6">Surag - mule-account detection and financial fraud investigation (synthetic demonstration). Developed by Sahaj Solutions.</div>
     </div>
   );
 }

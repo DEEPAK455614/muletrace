@@ -30,8 +30,8 @@ function Brand() {
         <ShieldCheck size={17} color="#fff" strokeWidth={2.2} />
       </div>
       <div>
-        <div className="text-[16px] font-bold leading-4 tracking-tight" style={{ fontFamily: 'var(--font-display)', color: 'var(--color-ink)' }}>MuleTrace</div>
-        <div className="text-[10px] font-medium text-ink-mute leading-3 mt-0.5">Fraud investigation console</div>
+        <div className="text-[16px] font-bold leading-4 tracking-tight" style={{ fontFamily: 'var(--font-display)', color: 'var(--color-ink)' }}>Surag</div>
+        <div className="text-[10px] font-medium text-ink-mute leading-3 mt-0.5">Financial crime intelligence</div>
       </div>
     </Link>
   );

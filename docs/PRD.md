@@ -1,11 +1,11 @@
-# MuleTrace - Intelligent Mule Account Detection and Financial Fraud Investigation Platform
+# Surag - Intelligent Mule Account Detection and Financial Fraud Investigation Platform
 
 Product & technical document - v1.0, 24 Oct 2026
 Status: working synthetic prototype, deployed preview. It covers the named PS-01 workflows end to end on synthetic data; it is not audit-ready and not production-ready (see section 6 limitations, and the validity limits in docs/BENCHMARK.md).
 Live preview: https://muletrace-5gm.pages.dev - Repo: https://github.com/DEEPAK455614/muletrace (private)
 Problem statement: PS-01, supplied as a brief over WhatsApp on 24 Oct 2026. No hackathon, competition, deadline or production customer has been named; nothing below should be read as a submission to, or endorsement by, any organiser or institution.
 
-> Working name "MuleTrace" pending user's naming decision (see docs/NAMING.md).
+> Product named **Surag** (सुराग़, "clue / trace") by user decision on 24 Oct 2026, from the screened shortlist in docs/NAMING.md. Repository slug stays `muletrace` for link stability; internal seeds/storage keys keep the old slug deliberately (provenance continuity, and it preserves existing triage state).
 
 ---
 
