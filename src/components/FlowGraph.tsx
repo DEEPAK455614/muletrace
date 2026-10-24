@@ -24,7 +24,7 @@ export function buildCommunities(a: Analysis) {
     .sort((x, y) => y.maxScore - x.maxScore || y.flagged.length - x.flagged.length);
 }
 
-export function buildLayout(a: Analysis, members: string[], cx = 330, cy = 240): GraphLayout {
+export function buildLayout(a: Analysis, members: string[], width = 660, height = 480): GraphLayout {
   const memberSet = new Set(members);
   const nodes: GN[] = members.map((id) => {
     const s = a.scores.get(id);
@@ -52,11 +52,22 @@ export function buildLayout(a: Analysis, members: string[], cx = 330, cy = 240):
     .force('link', forceLink<GN, GL>(links).id((d) => d.id).distance(70))
     .force('charge', forceManyBody().strength(-180))
     .force('collide', forceCollide(18))
-    .force('center', forceCenter(cx, cy))
-    .force('x', forceX(cx).strength(0.06))
-    .force('y', forceY(cy).strength(0.1))
+    .force('center', forceCenter(width / 2, height / 2))
+    .force('x', forceX(width / 2).strength(0.06))
+    .force('y', forceY(height / 2).strength(0.1))
     .stop();
   for (let i = 0; i < 300; i++) sim.tick();
+
+  // Fit to view: normalize the simulated positions so the cluster spans the
+  // canvas with margins - a 3-node chain should read as clearly as a 30-node web.
+  const m = 56;
+  const xs = nodes.map((n) => n.x ?? 0), ys = nodes.map((n) => n.y ?? 0);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+  const spanX = Math.max(x1 - x0, 1), spanY = Math.max(y1 - y0, 1);
+  const scale = Math.min((width - 2 * m) / spanX, (height - 2 * m) / spanY, 2.4);
+  const offX = m + ((width - 2 * m) - spanX * scale) / 2 - x0 * scale;
+  const offY = m + ((height - 2 * m) - spanY * scale) / 2 - y0 * scale;
+  for (const n of nodes) { n.x = (n.x ?? 0) * scale + offX; n.y = (n.y ?? 0) * scale + offY; }
   return { nodes, links, maxAmt };
 }
 
@@ -70,6 +81,7 @@ export default function FlowGraph({ layout, selNode, selEdge, onSelectNode, onSe
   height?: number;
 }) {
   const interactive = Boolean(onSelectNode || onSelectEdge);
+  const labelSize = layout.nodes.length <= 8 ? 12.5 : layout.nodes.length <= 16 ? 11 : 9.5;
   return (
     <svg viewBox={`0 0 ${width} ${height}`} className="w-full mt-2 rounded-lg" style={{ background: '#0E1626', border: '1px solid var(--color-line)' }}>
       <defs>
@@ -113,7 +125,7 @@ export default function FlowGraph({ layout, selNode, selEdge, onSelectNode, onSe
             )}
             <circle cx={n.x} cy={n.y} r={r} fill={BAND_FILL[n.band] ?? '#5E7191'} opacity={0.88} stroke={n.complaint ? '#FF4D5E' : '#fff'} strokeWidth={n.complaint ? 2.5 : 1.5} />
             {(n.score >= 45 || n.complaint || isSel) && (
-              <text x={n.x! + r + 3} y={n.y! + 3.5} fontSize={9.5} fill="#8FA3C0" fontWeight={600}>{n.name.split(' ')[0]} - {Math.round(n.score)}</text>
+              <text x={n.x! + r + 3} y={n.y! + 3.5} fontSize={labelSize} fill="#8FA3C0" fontWeight={600}>{n.name.split(' ')[0]} - {Math.round(n.score)}</text>
             )}
           </g>
         );

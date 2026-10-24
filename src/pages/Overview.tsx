@@ -11,7 +11,7 @@ export default function Overview({ a }: { a: Analysis }) {
   const hero = useMemo(() => {
     const cs = buildCommunities(a);
     const top = cs[0];
-    return top ? { c: top, layout: buildLayout(a, top.members, 330, 200) } : null;
+    return top ? { c: top, layout: buildLayout(a, top.members, 660, 400) } : null;
   }, [a]);
   const d = useMemo(() => {
     const scores = [...a.scores.values()];

@@ -57,7 +57,7 @@ function Brand({ uploaded, fileName }: { uploaded: boolean; fileName?: string })
 
 type DatasetState =
   | { kind: 'synthetic' }
-  | { kind: 'uploaded'; world: World; fileName: string; stats: ImportResult['stats'] };
+  | { kind: 'uploaded'; world: World; fileName: string; stats: ImportResult['stats']; scope: string };
 
 export default function App() {
   const [dataset, setDataset] = React.useState<DatasetState>({ kind: 'synthetic' });
@@ -67,7 +67,7 @@ export default function App() {
   );
   const uploaded = dataset.kind === 'uploaded';
   React.useEffect(() => {
-    setActiveDatasetScope(uploaded ? `uploaded:${dataset.fileName}` : 'synthetic');
+    setActiveDatasetScope(uploaded ? dataset.scope : 'synthetic');
   }, [dataset, uploaded]);
   const [menuOpen, setMenuOpen] = React.useState(false);
   const fmtM = (ts: number) => new Date(ts).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
@@ -137,7 +137,7 @@ export default function App() {
               <Route path="/methodology" element={<Methodology a={a} />} />
               <Route path="/import" element={<ImportData
                 activeKind={dataset.kind}
-                onWorld={(world, fileName, stats) => setDataset({ kind: 'uploaded', world, fileName, stats })}
+                onWorld={(world, fileName, stats, scope) => setDataset({ kind: 'uploaded', world, fileName, stats, scope })}
                 onReset={() => setDataset({ kind: 'synthetic' })} />} />
               <Route path="/report/account/:id" element={<ReportPage a={a} />} />
             </Routes>

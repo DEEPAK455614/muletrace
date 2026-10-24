@@ -20,7 +20,21 @@ const CMP_CANON = [
   { f: 'city', label: 'City' }, { f: 'state', label: 'State' }, { f: 'summary', label: 'Summary' },
 ];
 
-interface FileState { name: string; rows: string[][]; map: ColumnMapping; }
+interface FileState { name: string; rows: string[][]; map: ColumnMapping; fingerprint: string; }
+
+// Small synchronous content hash (cyrb53) - identity fingerprint for storage
+// scoping, not a security primitive.
+function fingerprint(text: string): string {
+  let h1 = 0xdeadbeef ^ 0, h2 = 0x41c6ce57 ^ 0;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text.charCodeAt(i);
+    h1 = Math.imul(h1 ^ ch, 2654435761);
+    h2 = Math.imul(h2 ^ ch, 1597334677);
+  }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return (h2 >>> 0).toString(16) + (h1 >>> 0).toString(16);
+}
 
 function readFile(file: File): Promise<string> {
   return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result)); r.onerror = rej; r.readAsText(file); });
@@ -50,7 +64,7 @@ function Mapper({ title, headers, canon, map, onChange }: {
 }
 
 export default function ImportData({ onWorld, activeKind, onReset }: {
-  onWorld: (world: World, fileName: string, stats: ImportResult['stats']) => void;
+  onWorld: (world: World, fileName: string, stats: ImportResult['stats'], scope: string) => void;
   activeKind: 'synthetic' | 'uploaded';
   onReset: () => void;
 }) {
@@ -75,7 +89,7 @@ export default function ImportData({ onWorld, activeKind, onReset }: {
     if (rows.length < 2) throw new Error('No data rows found.');
     const headers = rows[0];
     const map = autoMap(headers, kind === 'txn' ? TXN_FIELDS : kind === 'acct' ? ACCOUNT_FIELDS : COMPLAINT_FIELDS);
-    const fs = { name: file.name, rows, map };
+    const fs = { name: file.name, rows, map, fingerprint: fingerprint(text) };
     if (kind === 'txn') setTxn(fs); else if (kind === 'acct') setAcct(fs); else setCmp(fs);
     setResult(null);
   };
@@ -88,7 +102,7 @@ export default function ImportData({ onWorld, activeKind, onReset }: {
       const r = buildWorld(txn.rows, txn.map, acct?.rows ?? null, acct?.map ?? null, cmp?.rows ?? null, cmp?.map ?? null);
       setResult(r);
       setBusy(false);
-      if (r.world) onWorld(r.world, txn.name, r.stats);
+      if (r.world) onWorld(r.world, txn.name, r.stats, `uploaded:${txn.fingerprint}`);
     }, 30);
   };
 
