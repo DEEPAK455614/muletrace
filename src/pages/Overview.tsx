@@ -3,8 +3,16 @@ import { Link } from 'react-router-dom';
 import type { Analysis } from '../engine';
 import { Stat, SectionTitle, ScoreBadge, inr, bandColor } from '../ui';
 import { ArrowRight, AlertTriangle } from 'lucide-react';
+import FlowGraph, { buildCommunities, buildLayout } from '../components/FlowGraph';
+import { useNavigate } from 'react-router-dom';
 
 export default function Overview({ a }: { a: Analysis }) {
+  const nav = useNavigate();
+  const hero = useMemo(() => {
+    const cs = buildCommunities(a);
+    const top = cs[0];
+    return top ? { c: top, layout: buildLayout(a, top.members, 330, 200) } : null;
+  }, [a]);
   const d = useMemo(() => {
     const scores = [...a.scores.values()];
     const alerts = scores.filter((s) => s.score >= 45).sort((x, y) => y.score - x.score);
@@ -61,27 +69,18 @@ export default function Overview({ a }: { a: Analysis }) {
           </div>
         </div>
 
-        <div className="card p-4 lg:col-span-3">
-          <SectionTitle right={<Link to="/network" className="text-[12px] font-medium no-underline" style={{ color: 'var(--color-brand)' }}>Open network explorer</Link>}>
-            Highest-risk networks
+        <div className="card p-4 lg:col-span-3 cursor-pointer" onClick={() => nav('/network')} title="Open network explorer">
+          <SectionTitle right={<span className="text-[12px] font-medium" style={{ color: 'var(--color-brand)' }}>Open network explorer</span>}>
+            Money movement - highest-risk network
           </SectionTitle>
-          <div className="space-y-2.5">
-            {topNetworks.map((c) => {
-              const topMember = c.members.map((id) => a.scores.get(id)!).sort((x, y) => y.score - x.score)[0];
-              return (
-                <Link to="/network" key={c.id} className="flex items-center gap-3 p-2.5 rounded-lg border border-line no-underline hover:bg-[#0E1626] transition-colors">
-                  <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: '#FF4D5E14' }}>
-                    <AlertTriangle size={16} color="var(--color-risk-crit)" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-[13px] font-semibold text-ink">Network #{c.id} - {c.members.length} accounts</div>
-                    <div className="text-[12px] text-ink-soft truncate">Lead: {custName(topMember.accountId)} - {c.flaggedCount} flagged, {c.complaintCount} complaint-linked</div>
-                  </div>
-                  <ScoreBadge score={Math.round(c.maxScore)} band={c.maxScore >= 75 ? 'Critical' : c.maxScore >= 45 ? 'High' : 'Moderate'} size="sm" />
-                </Link>
-              );
-            })}
-          </div>
+          {hero && (
+            <>
+              <div className="text-[12px] text-ink-soft mt-1">
+                Network #{hero.c.cid} - {hero.c.members.length} accounts - {hero.c.flagged.length} flagged - {hero.c.complaints.length} complaint-linked. Particles trace transaction direction and size.
+              </div>
+              <FlowGraph layout={hero.layout} width={660} height={400} />
+            </>
+          )}
         </div>
       </div>
 
