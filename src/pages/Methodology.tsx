@@ -13,8 +13,22 @@ const TYPOLOGIES = [
   { name: 'Network proximity to complaints', desc: 'Membership of communities containing complaint-named accounts, shared devices or addresses, and many-to-one dispersal structure.', src: 'Neo4j; Quantexa entity-resolution practice' },
 ];
 
+const ZERO_FEATURES: AccountFeatures = {
+  accountId: '', inCount: 0, outCount: 0, inTotal: 0, outTotal: 0,
+  distinctSources: 0, distinctDests: 0, passThrough24h: 0, passThrough72h: 0,
+  merchantSpendShare: 0, aggregationConcentration: 0, medianHoldHours: 0,
+  maxTxnsInHour: 0, maxTxnsInDay: 0, medianTxnsPerActiveDay: 0, newCounterpartyShare: 0,
+  longestDormancyDays: 0, burstAfterDormancy: false, structuredDepositShare: 0,
+  structuredDepositCount: 0, atmShareOut: 0, annualizedThroughput: 0, incomeMultiple: 0,
+  accountAgeDaysAtEnd: 0, complaintDistance: Infinity, maxComplaintAmountLost: 0,
+  sharedDeviceCount: 0, sharedAddressCount: 0, sharesIdentifierWithComplaintLinked: false,
+  cycleSize: 1, communityId: -1, communityMeanSignal: 0, pagerank: 0, firstCreditTs: null,
+};
+
 export default function Methodology({ a }: { a: Analysis }) {
-  const specs = factorSpecs({} as AccountFeatures);
+  // factorSpecs is reused here only for its label/max catalogue; a zeroed feature
+  // stub keeps every numeric formatter defined ({} would crash on .toFixed).
+  const specs = factorSpecs(ZERO_FEATURES);
   const totalW = specs.reduce((s, f) => s + f.max, 0);
   return (
     <div className="max-w-[880px]">
