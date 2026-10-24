@@ -67,3 +67,12 @@ Standing rule: study 50 top industry/related/world references before designing; 
 - Graph exploration is incremental and time-aware (Linkurious/KeyLines), not a hairball screenshot.
 - Queue-first, severity-consistent, zero vanity KPIs (Vectra/dashboard guidance).
 - Light, calm, forensic console: paper base, ink text, one brand indigo, semantic risk palette, mono data fonts; no purple gradients, no glassmorphism, no generic dark-terminal look (Impeccable detector rules applied).
+
+## Round 2 - 24 Oct 2026, teammate reference video (PRAG-DRISHTI)
+Reference: teammate's dark SOC "command intelligence center" demo video (1:52, phone capture).
+Adopted: tamper-evident audit-trail concept -> implemented as SHA-256 hash-chained log of triage
+status changes (browser-local, labeled demonstration-grade in UI).
+Rejected: dark command-center theme (user asked for iOS-style light clarity), predictive
+"next movement / predicted ATM" framing (conflicts with suspicion-not-guilt discipline),
+decorative fraud map (geography is not in the risk model), case-compare matrix (lower value
+than the existing queue workflow). No code copied; concept inspiration only.
