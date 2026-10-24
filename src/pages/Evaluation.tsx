@@ -34,7 +34,7 @@ export default function Evaluation({ a }: { a: Analysis }) {
               <td className="num text-right">{pct(data[w].falseAlarmRate)}</td>
               <td className="num text-right">{data[w].tp}/{data[w].tp + data[w].fn}</td>
               <td className="num text-right">{data[w].fp}</td>
-              <td className="num text-right" style={{ color: data[w].hardNegativesFlagged > 0 ? '#D99A1F' : '#1F9D6B' }}>{data[w].hardNegativesFlagged}/{data[w].hardNegatives.length}</td>
+              <td className="num text-right" style={{ color: data[w].hardNegativesFlagged > 0 ? '#FFB020' : '#2FD48C' }}>{data[w].hardNegativesFlagged}/{data[w].hardNegatives.length}</td>
             </tr>
           ))}
         </tbody>
@@ -53,7 +53,7 @@ export default function Evaluation({ a }: { a: Analysis }) {
         </p>
       </div>
 
-      <div className="card p-4 mb-4" style={{ borderColor: '#3B4BD830', background: '#3B4BD808' }}>
+      <div className="card p-4 mb-4" style={{ borderColor: '#4F8CFF30', background: '#4F8CFF08' }}>
         <SectionTitle>Protocol and provenance</SectionTitle>
         <div className="grid sm:grid-cols-2 gap-x-8 gap-y-1.5 text-[12.5px] text-ink-soft">
           <div>- Rule weights frozen on dev world <span className="num">{benchmark.protocol.devSeed}</span>; never re-tuned.</div>
@@ -82,7 +82,7 @@ export default function Evaluation({ a }: { a: Analysis }) {
                   <td className="text-[12px]">{h.note}</td>
                   <td className="num text-right">{h.score}</td>
                   <td className="num text-right">{m?.score ?? '-'}</td>
-                  <td className="num text-right text-[12px]" style={{ color: anyFlag ? '#D99A1F' : '#1F9D6B' }}>{anyFlag ? 'False positive' : 'Correctly cleared'}</td>
+                  <td className="num text-right text-[12px]" style={{ color: anyFlag ? '#FFB020' : '#2FD48C' }}>{anyFlag ? 'False positive' : 'Correctly cleared'}</td>
                 </tr>
               );
             })}
@@ -109,17 +109,17 @@ export default function Evaluation({ a }: { a: Analysis }) {
         <div className="card p-4">
           <SectionTitle>Precision-recall curve - dev world (rules)</SectionTitle>
           <svg viewBox="0 0 400 210" className="w-full mt-2">
-            <line x1={40} y1={180} x2={380} y2={180} stroke="#E4E2DC" />
-            <line x1={40} y1={20} x2={40} y2={180} stroke="#E4E2DC" />
-            <text x={200} y={202} textAnchor="middle" fontSize={10} fill="#8A93A3">Recall</text>
-            <text x={12} y={100} fontSize={10} fill="#8A93A3" transform="rotate(-90 14 100)">Precision</text>
+            <line x1={40} y1={180} x2={380} y2={180} stroke="#22334E" />
+            <line x1={40} y1={20} x2={40} y2={180} stroke="#22334E" />
+            <text x={200} y={202} textAnchor="middle" fontSize={10} fill="#5E7191">Recall</text>
+            <text x={12} y={100} fontSize={10} fill="#5E7191" transform="rotate(-90 14 100)">Precision</text>
             <polyline
-              fill="none" stroke="#3B4BD8" strokeWidth={2}
+              fill="none" stroke="#4F8CFF" strokeWidth={2}
               points={e.prCurve.map((p) => `${40 + p.recall * 340},${180 - (p.precision / maxP) * 150}`).join(' ')}
             />
             {e.prCurve.map((p) => (
               <circle key={p.threshold} cx={40 + p.recall * 340} cy={180 - (p.precision / maxP) * 150} r={p.threshold === e.threshold ? 4 : 2.5}
-                fill={p.threshold === e.threshold ? '#D92D20' : '#3B4BD8'} opacity={p.threshold === e.threshold ? 1 : 0.55} />
+                fill={p.threshold === e.threshold ? '#FF4D5E' : '#4F8CFF'} opacity={p.threshold === e.threshold ? 1 : 0.55} />
             ))}
           </svg>
           <div className="text-[11px] text-ink-mute mt-1">Red dot = operating threshold {e.threshold}. Y-axis scaled to best precision ({pct(maxP)}).</div>
@@ -136,7 +136,7 @@ export default function Evaluation({ a }: { a: Analysis }) {
                 <td className="text-[13px]">{s.title}</td>
                 <td className="num text-right">{s.size}</td>
                 <td className="num text-right">{s.detected}</td>
-                <td className="num text-right" style={{ color: s.detected === s.size ? '#1F9D6B' : s.detected > 0 ? '#D99A1F' : '#D92D20' }}>{pct(s.detected / s.size)}</td>
+                <td className="num text-right" style={{ color: s.detected === s.size ? '#2FD48C' : s.detected > 0 ? '#FFB020' : '#FF4D5E' }}>{pct(s.detected / s.size)}</td>
               </tr>
             ))}
           </tbody>

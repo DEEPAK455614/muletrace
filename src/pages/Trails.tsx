@@ -101,7 +101,7 @@ export default function Trails({ a }: { a: Analysis }) {
               <SectionTitle>Exit points - where the money leaves the traced network</SectionTitle>
               <div className="flex flex-wrap gap-2">
                 {merged.endpoints.map((x) => (
-                  <span key={x.id + x.kind} className="chip" style={{ color: 'var(--color-risk-crit)', background: '#D92D2010', borderColor: '#D92D2035' }}>
+                  <span key={x.id + x.kind} className="chip" style={{ color: 'var(--color-risk-crit)', background: '#FF4D5E10', borderColor: '#FF4D5E35' }}>
                     {nameOf(x.id)} - {kindLabel(x.kind)} - <span className="num">{inrFull(x.amount)}</span>
                   </span>
                 ))}
@@ -136,7 +136,7 @@ export default function Trails({ a }: { a: Analysis }) {
                 <svg viewBox={`0 0 ${W} ${H}`} className="w-full mt-2">
                   <defs>
                     <marker id="arr" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
-                      <path d="M0,0 L7,3.5 L0,7 z" fill="#B9B4A8" />
+                      <path d="M0,0 L7,3.5 L0,7 z" fill="#44587A" />
                     </marker>
                   </defs>
                   {merged.hops.map((h) => {
@@ -145,17 +145,17 @@ export default function Trails({ a }: { a: Analysis }) {
                     const mx = (a.x + b.x) / 2;
                     return (
                       <path key={h.txnId} d={`M ${a.x} ${a.y} C ${mx} ${a.y}, ${mx} ${b.y}, ${b.x} ${b.y}`}
-                        fill="none" stroke="#B9B4A8" strokeWidth={1 + (h.amount / maxAmt) * 5} opacity={0.65} markerEnd="url(#arr)" />
+                        fill="none" stroke="#44587A" strokeWidth={1 + (h.amount / maxAmt) * 5} opacity={0.65} markerEnd="url(#arr)" />
                     );
                   })}
                   {[...pos.entries()].map(([id, p]) => {
                     const sc = a.scores.get(id);
-                    const col = id === 'ATM' ? '#3A4152' : sc && sc.score >= 75 ? '#D92D20' : sc && sc.score >= 45 ? '#E0651F' : sc && sc.score >= 30 ? '#D99A1F' : '#8A93A3';
+                    const col = id === 'ATM' ? '#8FA3C0' : sc && sc.score >= 75 ? '#FF4D5E' : sc && sc.score >= 45 ? '#FF7A45' : sc && sc.score >= 30 ? '#FFB020' : '#5E7191';
                     return (
                       <g key={id} className="cursor-pointer" onClick={() => id !== 'ATM' && nav(`/accounts/${id}`)}>
                         <circle cx={p.x} cy={p.y} r={7} fill={col} opacity={0.9} />
-                        <text x={p.x + 11} y={p.y + 3.5} fontSize={10.5} fill="#3A4152" fontWeight={600}>{nameOf(id).split(' ')[0]}</text>
-                        <text x={p.x + 11} y={p.y + 15} fontSize={8.5} fill="#8A93A3" fontFamily="var(--font-mono)">{id}</text>
+                        <text x={p.x + 11} y={p.y + 3.5} fontSize={10.5} fill="#8FA3C0" fontWeight={600}>{nameOf(id).split(' ')[0]}</text>
+                        <text x={p.x + 11} y={p.y + 15} fontSize={8.5} fill="#5E7191" fontFamily="var(--font-mono)">{id}</text>
                       </g>
                     );
                   })}

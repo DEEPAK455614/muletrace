@@ -22,10 +22,10 @@ export interface ScoreResult {
 }
 
 export const BANDS = [
-  { name: 'Critical', min: 75, color: '#D92D20' },
-  { name: 'High', min: 45, color: '#E0651F' },
-  { name: 'Moderate', min: 30, color: '#D99A1F' },
-  { name: 'Low', min: 0, color: '#1F9D6B' },
+  { name: 'Critical', min: 75, color: '#FF4D5E' },
+  { name: 'High', min: 45, color: '#FF7A45' },
+  { name: 'Moderate', min: 30, color: '#FFB020' },
+  { name: 'Low', min: 0, color: '#2FD48C' },
 ] as const;
 
 const clamp01 = (x: number) => Math.max(0, Math.min(1, x));

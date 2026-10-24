@@ -103,16 +103,16 @@ export default function Account360({ a }: { a: Analysis }) {
                 const hout = (s.outflow / maxVal) * 140;
                 return (
                   <g key={s.w}>
-                    <rect x={x} y={160 - hin} width={bw} height={hin} rx={1.5} fill="#1F9D6B" opacity={0.75} />
-                    <rect x={x + bw + 2} y={160 - hout} width={bw} height={hout} rx={1.5} fill="#D92D20" opacity={0.7} />
+                    <rect x={x} y={160 - hin} width={bw} height={hin} rx={1.5} fill="#2FD48C" opacity={0.75} />
+                    <rect x={x + bw + 2} y={160 - hout} width={bw} height={hout} rx={1.5} fill="#FF4D5E" opacity={0.7} />
                   </g>
                 );
               })}
-              <line x1={8} y1={160} x2={552} y2={160} stroke="#E4E2DC" />
+              <line x1={8} y1={160} x2={552} y2={160} stroke="#22334E" />
             </svg>
             <div className="flex gap-4 text-[11px] text-ink-mute mt-1">
-              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm inline-block" style={{ background: '#1F9D6B', opacity: 0.75 }} /> Inflow</span>
-              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm inline-block" style={{ background: '#D92D20', opacity: 0.7 }} /> Outflow</span>
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm inline-block" style={{ background: '#2FD48C', opacity: 0.75 }} /> Inflow</span>
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm inline-block" style={{ background: '#FF4D5E', opacity: 0.7 }} /> Outflow</span>
               <span className="ml-auto num">peak week {inr(maxVal)}</span>
             </div>
           </div>

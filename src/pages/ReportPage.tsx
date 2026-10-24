@@ -47,7 +47,7 @@ export default function ReportPage({ a }: { a: Analysis }) {
           <ScoreBadge score={score.score} band={score.band} size="lg" />
           <div className="text-[13px] text-ink-soft">{score.archetype}</div>
         </div>
-        <div className="mt-4 p-3 rounded-lg text-[12px]" style={{ background: '#D99A1F10', border: '1px solid #D99A1F35', color: '#7A5410' }}>
+        <div className="mt-4 p-3 rounded-lg text-[12px]" style={{ background: '#FFB02010', border: '1px solid #FFB02035', color: '#FFB020' }}>
           This report assembles evidence for human review. The risk score ranks suspicion; it is not a finding of guilt. Verify KYC documents, contact the customer, and follow internal governance before any account action. Demonstration data is synthetic.
         </div>
       </div>

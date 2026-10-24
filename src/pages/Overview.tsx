@@ -47,7 +47,7 @@ export default function Overview({ a }: { a: Analysis }) {
               return (
                 <div key={b} className="flex items-center gap-3">
                   <div className="w-[70px] text-[12px] font-medium" style={{ color: bandColor(b) }}>{b}</div>
-                  <div className="flex-1 h-[7px] rounded-full bg-[#EFEDE8] overflow-hidden">
+                  <div className="flex-1 h-[7px] rounded-full bg-[#16223A] overflow-hidden">
                     <div className="h-full rounded-full" style={{ width: `${Math.max(pct, n ? 1.5 : 0)}%`, background: bandColor(b) }} />
                   </div>
                   <div className="num w-[44px] text-right text-[12px] text-ink-soft">{n}</div>
@@ -69,8 +69,8 @@ export default function Overview({ a }: { a: Analysis }) {
             {topNetworks.map((c) => {
               const topMember = c.members.map((id) => a.scores.get(id)!).sort((x, y) => y.score - x.score)[0];
               return (
-                <Link to="/network" key={c.id} className="flex items-center gap-3 p-2.5 rounded-lg border border-line no-underline hover:bg-[#F7F6F2] transition-colors">
-                  <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: '#D92D2014' }}>
+                <Link to="/network" key={c.id} className="flex items-center gap-3 p-2.5 rounded-lg border border-line no-underline hover:bg-[#0E1626] transition-colors">
+                  <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: '#FF4D5E14' }}>
                     <AlertTriangle size={16} color="var(--color-risk-crit)" />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -106,7 +106,7 @@ export default function Overview({ a }: { a: Analysis }) {
                       <div className="num text-[11px] text-ink-mute">{s.accountId} - {acc.bank}</div>
                     </td>
                     <td className="text-[12px] text-ink-soft">{s.archetype}</td>
-                    <td>{f.complaintDistance === 0 ? <span className="chip" style={{ color: 'var(--color-risk-crit)', background: '#D92D2012', borderColor: '#D92D2030' }}>Named</span> : f.complaintDistance === 1 ? <span className="chip" style={{ color: 'var(--color-risk-high)', background: '#E0651F12', borderColor: '#E0651F30' }}>1 hop</span> : <span className="text-[12px] text-ink-mute">None</span>}</td>
+                    <td>{f.complaintDistance === 0 ? <span className="chip" style={{ color: 'var(--color-risk-crit)', background: '#FF4D5E12', borderColor: '#FF4D5E30' }}>Named</span> : f.complaintDistance === 1 ? <span className="chip" style={{ color: 'var(--color-risk-high)', background: '#FF7A4512', borderColor: '#FF7A4530' }}>1 hop</span> : <span className="text-[12px] text-ink-mute">None</span>}</td>
                     <td className="num text-right text-[12px]">{inr(f.inTotal)}</td>
                     <td className="text-right"><ScoreBadge score={s.score} band={s.band} size="sm" /></td>
                   </tr>

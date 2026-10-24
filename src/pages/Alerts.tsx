@@ -76,7 +76,7 @@ export default function Alerts({ a }: { a: Analysis }) {
                   </td>
                   <td className="text-[12px] text-ink-soft max-w-[150px]">{s.archetype}</td>
                   <td className="text-[12px] text-ink-soft max-w-[210px]">{topFactors(s.accountId)}</td>
-                  <td>{f.complaintDistance === 0 ? <span className="chip" style={{ color: 'var(--color-risk-crit)', background: '#D92D2012', borderColor: '#D92D2030' }}>Named</span> : f.complaintDistance === 1 ? <span className="chip" style={{ color: 'var(--color-risk-high)', background: '#E0651F12', borderColor: '#E0651F30' }}>1 hop</span> : <span className="text-[12px] text-ink-mute">-</span>}</td>
+                  <td>{f.complaintDistance === 0 ? <span className="chip" style={{ color: 'var(--color-risk-crit)', background: '#FF4D5E12', borderColor: '#FF4D5E30' }}>Named</span> : f.complaintDistance === 1 ? <span className="chip" style={{ color: 'var(--color-risk-high)', background: '#FF7A4512', borderColor: '#FF7A4530' }}>1 hop</span> : <span className="text-[12px] text-ink-mute">-</span>}</td>
                   <td><span className="chip" style={{ color: TRIAGE_COLORS[t?.status ?? 'new'], background: `${TRIAGE_COLORS[t?.status ?? 'new']}12`, borderColor: `${TRIAGE_COLORS[t?.status ?? 'new']}30` }}>{TRIAGE_LABELS[t?.status ?? 'new']}</span></td>
                   <td className="num text-right text-[12px]">{inr(f.inTotal)}</td>
                   <td className="text-right"><ScoreBadge score={s.score} band={s.band} size="sm" /></td>

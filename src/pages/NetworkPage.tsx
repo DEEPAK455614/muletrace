@@ -8,7 +8,7 @@ interface N extends SimulationNodeDatum { id: string; score: number; band: strin
 interface L extends SimulationLinkDatum<N> { amount: number }
 
 const BAND_FILL: Record<string, string> = {
-  Critical: '#D92D20', High: '#E0651F', Moderate: '#D99A1F', Low: '#1F9D6B', Minimal: '#8A93A3',
+  Critical: '#FF4D5E', High: '#FF7A45', Moderate: '#FFB020', Low: '#2FD48C', Minimal: '#5E7191',
 };
 
 export default function NetworkPage({ a }: { a: Analysis }) {
@@ -124,10 +124,10 @@ export default function NetworkPage({ a }: { a: Analysis }) {
           ) : (
             <div className="card p-4">
               <SectionTitle>Network #{sel.cid} - {sel.members.length} accounts - combined inflow {inr(sel.flow)}</SectionTitle>
-              <svg viewBox="0 0 660 480" className="w-full mt-2 rounded-lg" style={{ background: '#F5F4F0', border: '1px solid var(--color-line)' }}>
+              <svg viewBox="0 0 660 480" className="w-full mt-2 rounded-lg" style={{ background: '#0E1626', border: '1px solid var(--color-line)' }}>
                 <defs>
                   <marker id="edge-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-                    <path d="M0,0 L8,4 L0,8 z" fill="#9A9484" />
+                    <path d="M0,0 L8,4 L0,8 z" fill="#5E7191" />
                   </marker>
                 </defs>
                 {layout.links.map((l, i) => {
@@ -139,7 +139,7 @@ export default function NetworkPage({ a }: { a: Analysis }) {
                   const isSel = selEdge?.from === sn.id && selEdge?.to === t.id;
                   return (
                     <line key={i} x1={sn.x} y1={sn.y} x2={ex} y2={ey}
-                      stroke={isSel ? '#3B4BD8' : '#B9B4A8'} strokeWidth={(0.6 + (l.amount / layout.maxAmt) * 3.4) * (isSel ? 1.6 : 1)}
+                      stroke={isSel ? '#4F8CFF' : '#44587A'} strokeWidth={(0.6 + (l.amount / layout.maxAmt) * 3.4) * (isSel ? 1.6 : 1)}
                       opacity={isSel ? 1 : 0.6} markerEnd="url(#edge-arrow)" className="cursor-pointer"
                       onClick={() => { setSelEdge(isSel ? null : { from: sn.id, to: t.id }); setSelNode(null); }} />
                   );
@@ -149,10 +149,10 @@ export default function NetworkPage({ a }: { a: Analysis }) {
                   const isSel = selNode === n.id;
                   return (
                     <g key={n.id} className="cursor-pointer" onClick={() => { setSelNode(isSel ? null : n.id); setSelEdge(null); }}>
-                      {isSel && <circle cx={n.x} cy={n.y} r={r + 4} fill="none" stroke="#3B4BD8" strokeWidth={1.6} />}
-                      <circle cx={n.x} cy={n.y} r={r} fill={BAND_FILL[n.band] ?? '#8A93A3'} opacity={0.88} stroke={n.complaint ? '#D92D20' : '#fff'} strokeWidth={n.complaint ? 2.5 : 1.5} />
+                      {isSel && <circle cx={n.x} cy={n.y} r={r + 4} fill="none" stroke="#4F8CFF" strokeWidth={1.6} />}
+                      <circle cx={n.x} cy={n.y} r={r} fill={BAND_FILL[n.band] ?? '#5E7191'} opacity={0.88} stroke={n.complaint ? '#FF4D5E' : '#fff'} strokeWidth={n.complaint ? 2.5 : 1.5} />
                       {(n.score >= 45 || n.complaint || isSel) && (
-                        <text x={n.x! + r + 3} y={n.y! + 3.5} fontSize={9.5} fill="#3A4152" fontWeight={600}>{n.name.split(' ')[0]} - {Math.round(n.score)}</text>
+                        <text x={n.x! + r + 3} y={n.y! + 3.5} fontSize={9.5} fill="#8FA3C0" fontWeight={600}>{n.name.split(' ')[0]} - {Math.round(n.score)}</text>
                       )}
                     </g>
                   );
@@ -162,11 +162,11 @@ export default function NetworkPage({ a }: { a: Analysis }) {
                 {Object.entries(BAND_FILL).map(([b, c]) => (
                   <span key={b} className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full inline-block" style={{ background: c }} /> {b}</span>
                 ))}
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full inline-block border-2 border-[#D92D20] bg-white" /> Complaint-named</span>
+                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full inline-block border-2 border-[#FF4D5E] bg-white" /> Complaint-named</span>
               </div>
 
               {(nodeDetail || edgeDetail) && (
-                <div className="mt-3 p-3 rounded-lg border border-line bg-[#FBFAF7]">
+                <div className="mt-3 p-3 rounded-lg border border-line bg-[#0B1220]">
                   {nodeDetail && nodeDetail.sc && nodeDetail.f && (
                     <div>
                       <div className="flex items-center justify-between gap-2 flex-wrap">

@@ -19,5 +19,5 @@ export const TRIAGE_LABELS: Record<TriageStatus, string> = {
   new: 'New', review: 'In review', escalated: 'Escalated', cleared: 'Cleared',
 };
 export const TRIAGE_COLORS: Record<TriageStatus, string> = {
-  new: '#667085', review: '#3B4BD8', escalated: '#D92D20', cleared: '#1F9D6B',
+  new: '#5E7191', review: '#4F8CFF', escalated: '#FF4D5E', cleared: '#2FD48C',
 };

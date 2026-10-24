@@ -15,7 +15,7 @@ export const fmtDateTime = (ts: number): string =>
   ' ' + new Date(ts).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'UTC' });
 
 export const bandColor = (band: string): string =>
-  BANDS.find((b) => b.name === band)?.color ?? '#667085';
+  BANDS.find((b) => b.name === band)?.color ?? '#5E7191';
 
 export function ScoreBadge({ score, band, size = 'md' }: { score: number; band: string; size?: 'sm' | 'md' | 'lg' }) {
   const c = bandColor(band);
@@ -58,7 +58,7 @@ export function FactorBars({ factors }: { factors: { key: string; label: string;
             <div className="text-[13px] font-medium">{f.label}</div>
             <div className="num text-[12px] text-ink-soft whitespace-nowrap">{f.points.toFixed(1)} / {f.max}</div>
           </div>
-          <div className="mt-1.5 h-[5px] rounded-full bg-[#F0F0F3] overflow-hidden">
+          <div className="mt-1.5 h-[5px] rounded-full bg-[#141E30] overflow-hidden">
             <div className="h-full rounded-full" style={{ width: `${(f.points / maxPts) * 100}%`, background: 'var(--color-brand)', opacity: 0.35 + 0.65 * (f.points / f.max) }} />
           </div>
           <div className="mt-1 text-[12px] leading-snug text-ink-soft">{f.observed}</div>

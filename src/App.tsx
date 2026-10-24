@@ -82,11 +82,11 @@ export default function App() {
               <Icon size={16} strokeWidth={2} />
               {label}
               {label === 'Alerts' && (
-                <span className="ml-auto num text-[10px] font-semibold rounded-full px-1.5 py-0.5" style={{ background: '#D92D2018', color: 'var(--color-risk-crit)' }}>{alertCount}</span>
+                <span className="ml-auto num text-[10px] font-semibold rounded-full px-1.5 py-0.5" style={{ background: '#FF4D5E18', color: 'var(--color-risk-crit)' }}>{alertCount}</span>
               )}
             </NavLink>
           ))}
-          <div className="mt-auto pt-4 border-t border-[#E9E9ED]">
+          <div className="mt-auto pt-4 border-t border-[#1A2537]">
             <div className="text-[10.5px] text-ink-mute px-2 leading-relaxed">
               Analysis window: Jan-Oct 2026<br />
               Engine built in {a.buildMs.toFixed(0)} ms<br />
