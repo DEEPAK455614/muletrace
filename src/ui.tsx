@@ -28,11 +28,33 @@ export function ScoreBadge({ score, band, size = 'md' }: { score: number; band: 
   );
 }
 
+function useCountUp(target: number, enabled: boolean): number {
+  const [v, setV] = React.useState(enabled ? 0 : target);
+  React.useEffect(() => {
+    if (!enabled || target <= 0) { setV(target); return; }
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) { setV(target); return; }
+    let raf = 0;
+    const t0 = performance.now();
+    const dur = 900;
+    const step = (t: number) => {
+      const p = Math.min(1, (t - t0) / dur);
+      setV(Math.round(target * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [target, enabled]);
+  return v;
+}
+
 export function Stat({ label, value, sub, accent }: { label: string; value: React.ReactNode; sub?: string; accent?: string }) {
+  const numeric = typeof value === 'number';
+  const shown = useCountUp(numeric ? (value as number) : 0, numeric);
   return (
     <div className="card p-5">
       <div className="text-[11px] font-semibold uppercase tracking-[0.07em] text-ink-mute">{label}</div>
-      <div className="mt-2 text-[28px] leading-8 font-semibold num" style={{ color: accent ?? 'var(--color-ink)', fontFamily: 'var(--font-display)' }}>{value}</div>
+      <div className="mt-2 text-[28px] leading-8 font-semibold num" style={{ color: accent ?? 'var(--color-ink)', fontFamily: 'var(--font-display)' }}>{numeric ? shown.toLocaleString('en-IN') : value}</div>
       {sub && <div className="mt-1 text-xs text-ink-soft">{sub}</div>}
     </div>
   );
