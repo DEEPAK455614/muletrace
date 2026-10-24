@@ -59,3 +59,28 @@ clearance and no domains were purchased.
 
 ## Recommendation
 **Surag** - with tagline options: "Follow every clue." / "Every trail, explained."
+
+## Collision-screen source URLs (exact, for recovery)
+
+Rejections:
+- Aurum: https://aurum.solutions/solutions/psp-reconciliation , https://aurum.solutions/resources/what-is-payment-reconciliation-and-how-does-it-work
+- Mohur: https://www.mohur.com/
+- Praman: https://pramanlabs.com/solutions , https://pramanlabs.com/
+- Anvaya: https://anvayai.com/
+- Trailight: https://www.comply.com/resource/comply-acquires-trailight/
+- Ducat: https://www.ducatprotocol.com/
+- Skein: https://skeintech.com/
+- Bezant: https://bezant.trade/
+- Numisma: https://sapfioneer.com (Numisma Bank coverage) - bank confirmed via americanbanker.com
+- Symbolon: https://getsymbolon.ai/
+- Ogha: https://ogha-research.in/
+- Trailmark: https://blog.trailofbits.com/ (Trail of Bits tooling)
+- Scentra: https://scentra.ai/
+- Trailora: https://trailora.app/
+- Kavach / PARAKH / Drishti: Indian public systems and brands, widely known.
+
+Finalist screens:
+- Surag: only unrelated usage found - SURAG Medical GmbH: https://www.surag-medical.com/ (German surgical-audio devices). No fintech/fraud/software-product usage found in public web screen.
+- Viveka: partial - https://www.vivekahealth.com/ (health-tech).
+- Tahqiq: no software/fintech usage found.
+- Filigree: partial - Filigree Wealth (US wealth manager), familywealthreport.com listing.
