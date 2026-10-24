@@ -39,7 +39,7 @@ export default function Overview({ a }: { a: Analysis }) {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-        <Stat label="Accounts monitored" value={a.world.accounts.length.toLocaleString('en-IN')} sub={`${a.world.txns.length.toLocaleString('en-IN')} transactions, Jan-Oct 2026`} />
+        <Stat label="Accounts monitored" value={a.world.accounts.length.toLocaleString('en-IN')} sub={`${a.world.txns.length.toLocaleString('en-IN')} transactions${a.world.seed === 'uploaded' ? ' (uploaded)' : ', Jan-Oct 2026'}`} />
         <Stat label="Open alerts" value={d.alerts.length} sub={`${d.complaintLinkedAlerts} directly named in complaints`} accent="var(--color-risk-high)" />
         <Stat label="Suspicious networks" value={topNetworks.length} sub="Communities with concentrated risk signals" accent="var(--color-risk-crit)" />
         <Stat label="Complaints on file" value={a.world.complaints.length} sub="NCRP-style cybercrime reports" />

@@ -46,7 +46,7 @@ export function parseCsv(text: string): string[][] {
 }
 
 // Canonical fields and the header synonyms we auto-map (lowercase compare).
-const TXN_FIELDS: Record<string, { required: boolean; synonyms: string[] }> = {
+export const TXN_FIELDS: Record<string, { required: boolean; synonyms: string[] }> = {
   id: { required: false, synonyms: ['id', 'txn id', 'transaction id', 'txn_id', 'transaction_id', 'ref', 'utr'] },
   from: { required: true, synonyms: ['from', 'from account', 'from_account', 'sender', 'payer', 'debit account', 'debited account', 'remitter'] },
   to: { required: true, synonyms: ['to', 'to account', 'to_account', 'receiver', 'payee', 'beneficiary', 'credit account', 'credited account'] },
@@ -55,7 +55,7 @@ const TXN_FIELDS: Record<string, { required: boolean; synonyms: string[] }> = {
   channel: { required: false, synonyms: ['channel', 'mode', 'payment mode', 'txn type', 'type'] },
 };
 
-const ACCOUNT_FIELDS: Record<string, { required: boolean; synonyms: string[] }> = {
+export const ACCOUNT_FIELDS: Record<string, { required: boolean; synonyms: string[] }> = {
   id: { required: true, synonyms: ['id', 'account', 'account id', 'account_id', 'account number', 'account_number', 'acc no'] },
   customerId: { required: false, synonyms: ['customer id', 'customer_id', 'customer', 'cust id'] },
   bank: { required: false, synonyms: ['bank', 'bank name'] },
@@ -66,7 +66,7 @@ const ACCOUNT_FIELDS: Record<string, { required: boolean; synonyms: string[] }> 
   phone: { required: false, synonyms: ['phone', 'mobile', 'phone number', 'mobile number'] },
 };
 
-const COMPLAINT_FIELDS: Record<string, { required: boolean; synonyms: string[] }> = {
+export const COMPLAINT_FIELDS: Record<string, { required: boolean; synonyms: string[] }> = {
   id: { required: false, synonyms: ['id', 'ref', 'reference', 'complaint id', 'ack no', 'acknowledgement'] },
   category: { required: false, synonyms: ['category', 'type', 'crime type', 'fraud type'] },
   reportedAt: { required: false, synonyms: ['reported at', 'reported_at', 'report date', 'date'] },

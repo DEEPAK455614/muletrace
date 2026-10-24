@@ -1,7 +1,9 @@
 import React, { Suspense, lazy, useMemo } from 'react';
 import { Routes, Route, NavLink, Link } from 'react-router-dom';
-import { analyze } from './engine';
-import { LayoutDashboard, Bell, Network, GitBranch, FileWarning, FlaskConical, BookOpen, Menu, X, ShieldCheck, History } from 'lucide-react';
+import { analyze, analyzeWorld, type Analysis } from './engine';
+import type { World } from './engine/types';
+import type { ImportResult } from './engine/import';
+import { LayoutDashboard, Bell, Network, GitBranch, FileWarning, FlaskConical, BookOpen, Menu, X, ShieldCheck, History, Upload } from 'lucide-react';
 
 const Overview = lazy(() => import('./pages/Overview'));
 const Alerts = lazy(() => import('./pages/Alerts'));
@@ -13,6 +15,7 @@ const Evaluation = lazy(() => import('./pages/Evaluation'));
 const Methodology = lazy(() => import('./pages/Methodology'));
 const Audit = lazy(() => import('./pages/Audit'));
 const ReportPage = lazy(() => import('./pages/ReportPage'));
+const ImportData = lazy(() => import('./pages/ImportData'));
 
 const NAV = [
   { to: '/', label: 'Overview', icon: LayoutDashboard, end: true },
@@ -23,9 +26,10 @@ const NAV = [
   { to: '/audit', label: 'Audit trail', icon: History },
   { to: '/evaluation', label: 'Evaluation', icon: FlaskConical },
   { to: '/methodology', label: 'Methodology', icon: BookOpen },
+  { to: '/import', label: 'Import data', icon: Upload },
 ];
 
-function Brand() {
+function Brand({ uploaded, fileName }: { uploaded: boolean; fileName?: string }) {
   return (
     <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
       <Link to="/" className="flex items-center gap-2.5 no-underline">
@@ -37,16 +41,35 @@ function Brand() {
           <div className="text-[10px] font-medium text-ink-mute leading-3 mt-0.5">Financial crime intelligence</div>
         </div>
       </Link>
-      <Link to="/methodology" className="demo-pill no-print" title="Synthetic demonstration dataset - no real banking data. Scores indicate suspicion for investigation, never proof of guilt. Details in Methodology.">
-        Demo - Synthetic data
-      </Link>
+      {uploaded ? (
+        <Link to="/import" className="demo-pill demo-pill-uploaded no-print" title={`Uploaded dataset${fileName ? ` (${fileName})` : ''} - unverified, not validated banking data. Scores rank suspicion for human review, never proof of guilt. No accuracy benchmark exists for unlabelled data.`}>
+          Uploaded data - unverified
+        </Link>
+      ) : (
+        <Link to="/methodology" className="demo-pill no-print" title="Synthetic demonstration dataset - no real banking data. Scores indicate suspicion for investigation, never proof of guilt. Details in Methodology.">
+          Demo - Synthetic data
+        </Link>
+      )}
     </div>
   );
 }
 
+type DatasetState =
+  | { kind: 'synthetic' }
+  | { kind: 'uploaded'; world: World; fileName: string; stats: ImportResult['stats'] };
+
 export default function App() {
-  const a = useMemo(() => analyze(), []);
+  const [dataset, setDataset] = React.useState<DatasetState>({ kind: 'synthetic' });
+  const a: Analysis = useMemo(
+    () => (dataset.kind === 'synthetic' ? analyze() : analyzeWorld(dataset.world)),
+    [dataset],
+  );
+  const uploaded = dataset.kind === 'uploaded';
   const [menuOpen, setMenuOpen] = React.useState(false);
+  const fmtM = (ts: number) => new Date(ts).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
+  const windowLabel = uploaded
+    ? `${fmtM(a.world.windowStart)} - ${fmtM(a.world.windowEnd)} (uploaded)`
+    : 'Jan-Oct 2026';
   const alertCount = useMemo(() => [...a.scores.values()].filter((s) => s.score >= 45).length, [a]);
 
   return (
@@ -55,7 +78,7 @@ export default function App() {
         {/* Mobile top bar */}
         <div className="no-print md:hidden">
           <div className="flex items-center justify-between px-3 h-[52px]">
-            <Brand />
+            <Brand uploaded={uploaded} fileName={uploaded ? dataset.fileName : undefined} />
             <button className="btn !p-2" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
               {menuOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
@@ -75,7 +98,7 @@ export default function App() {
       <div className="flex flex-1 min-h-0">
         {/* Sidebar - desktop */}
         <aside className="no-print hidden md:flex flex-col w-[218px] shrink-0 px-3 py-5 gap-[3px] sticky top-0 h-screen">
-          <div className="px-1 pb-4"><Brand /></div>
+          <div className="px-1 pb-4"><Brand uploaded={uploaded} fileName={uploaded ? dataset.fileName : undefined} /></div>
           {NAV.map(({ to, label, icon: Icon, end }) => (
             <NavLink key={to} to={to} end={end}
               className={({ isActive }) => `navpill ${isActive ? 'active' : ''}`}>
@@ -88,7 +111,7 @@ export default function App() {
           ))}
           <div className="mt-auto pt-4 border-t border-[#1A2537]">
             <div className="text-[10.5px] text-ink-mute px-2 leading-relaxed">
-              Analysis window: Jan-Oct 2026<br />
+              Analysis window: {windowLabel}<br />
               Engine built in {a.buildMs.toFixed(0)} ms<br />
               <a href="https://sahajsolutions.org" target="_blank" rel="noreferrer" className="text-ink-mute no-underline hover:text-brand mt-1 inline-block">Developed by Sahaj Solutions</a>
             </div>
@@ -108,6 +131,10 @@ export default function App() {
               <Route path="/audit" element={<Audit a={a} />} />
               <Route path="/evaluation" element={<Evaluation a={a} />} />
               <Route path="/methodology" element={<Methodology a={a} />} />
+              <Route path="/import" element={<ImportData
+                activeKind={dataset.kind}
+                onWorld={(world, fileName, stats) => setDataset({ kind: 'uploaded', world, fileName, stats })}
+                onReset={() => setDataset({ kind: 'synthetic' })} />} />
               <Route path="/report/account/:id" element={<ReportPage a={a} />} />
             </Routes>
           </Suspense>

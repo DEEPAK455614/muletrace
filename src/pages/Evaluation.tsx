@@ -93,6 +93,17 @@ export default function Evaluation({ a }: { a: Analysis }) {
         </div>
       </div>
 
+      {Object.keys(a.world.groundTruth).length === 0 ? (
+        <div className="card p-4 mb-4" style={{ borderColor: '#FFB02050', background: '#FFB02010' }}>
+          <SectionTitle>No accuracy benchmark for this dataset</SectionTitle>
+          <p className="text-[12.5px] text-ink-soft leading-relaxed">
+            The active uploaded dataset carries no labels, so no precision, recall or per-scenario detection numbers can be
+            computed for it. Scores on this data remain fully explainable per factor and rank suspicion for human review;
+            they are not a measured accuracy. The frozen synthetic-benchmark tables below describe the generator only.
+          </p>
+        </div>
+      ) : (
+      <>
       <div className="grid lg:grid-cols-2 gap-4 mb-4">
         <div className="card p-4">
           <SectionTitle>Analyst queue quality - dev world (rules)</SectionTitle>
@@ -145,6 +156,8 @@ export default function Evaluation({ a }: { a: Analysis }) {
           Herder and merchant off-ramp accounts carry little transactional signal by design; they surface through the network view, echoing the FCA finding that link analysis - not scoring - uncovers controllers. Confusion at threshold: TP {e.tp}, FP {e.fp}, FN {e.fn}, TN {e.tn}.
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 }
