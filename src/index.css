@@ -7,8 +7,8 @@
   --color-paper: #05080E;
   --color-surface: #0B1220;
   --color-ink: #E4ECF8;
-  --color-ink-soft: #9DB0CA;
-  --color-ink-mute: #5E7191;
+  --color-ink-soft: #AABBD6;
+  --color-ink-mute: #7488A8;
   --color-line: #1A2537;
   --color-brand: #2CD9FF;
   --color-brand-soft: rgba(44, 217, 255, 0.12);
@@ -135,3 +135,5 @@ select.btn:focus, input.btn:focus { outline: 2px solid var(--color-brand-soft); 
   white-space: nowrap; margin-left: 2px;
 }
 .demo-pill:hover { background: rgba(255, 176, 32, 0.18); }
+
+@media (prefers-reduced-motion: reduce) { .flow-anim { display: none; } }

@@ -101,24 +101,19 @@ export default function NetworkPage({ a }: { a: Analysis }) {
         </p>
       </div>
 
-      <div className="grid lg:grid-cols-5 gap-4">
-        <div className="lg:col-span-2 space-y-2 lg:max-h-[560px] lg:overflow-y-auto pr-1">
-          {communities.map((c) => (
-            <button key={c.cid} className="card w-full text-left p-3 cursor-pointer transition-shadow hover:shadow-md"
-              style={selected === c.cid ? { borderColor: 'var(--color-brand)', boxShadow: '0 0 0 1px var(--color-brand)' } : {}}
-              onClick={() => setSelected(c.cid)}>
-              <div className="flex items-center justify-between gap-2">
-                <span className="font-semibold text-[13px]">Network #{c.cid}</span>
-                <span className="num text-[12px]" style={{ color: c.maxScore >= 75 ? 'var(--color-risk-crit)' : c.maxScore >= 45 ? 'var(--color-risk-high)' : 'var(--color-ink-mute)' }}>peak {Math.round(c.maxScore)}</span>
-              </div>
-              <div className="text-[11px] text-ink-mute mt-1">
-                {c.members.length} accounts - {c.flagged.length} flagged - {c.complaints.length} complaint{c.complaints.length === 1 ? '' : 's'} - {inr(c.flow)} inflow
-              </div>
-            </button>
-          ))}
-        </div>
+      <div className="flex gap-2 overflow-x-auto pb-2 mb-3 -mx-1 px-1" style={{ scrollbarWidth: 'thin' }}>
+        {communities.map((c) => (
+          <button key={c.cid} className="navpill shrink-0 !py-2 !gap-2"
+            style={selected === c.cid ? { background: 'var(--color-brand-soft)', color: 'var(--color-brand)', fontWeight: 600, boxShadow: '0 0 0 1px rgba(44,217,255,0.22) inset, 0 0 16px rgba(44,217,255,0.10)' } : {}}
+            onClick={() => setSelected(c.cid)}>
+            <span className="font-semibold">#{c.cid}</span>
+            <span className="num text-[11px]" style={{ color: c.maxScore >= 75 ? 'var(--color-risk-crit)' : c.maxScore >= 45 ? 'var(--color-risk-high)' : 'var(--color-ink-mute)' }}>peak {Math.round(c.maxScore)}</span>
+            <span className="text-[10px] text-ink-mute">{c.members.length} acct - {c.complaints.length} cmp</span>
+          </button>
+        ))}
+      </div>
 
-        <div className="lg:col-span-3">
+      <div>
           {!sel || !layout ? (
             <div className="card p-10 text-center text-[13px] text-ink-mute">Select a network to inspect its graph and members.</div>
           ) : (
@@ -137,11 +132,18 @@ export default function NetworkPage({ a }: { a: Analysis }) {
                   const tr = 6 + Math.min(10, Math.sqrt(t.inflow) / 90);
                   const ex = (t.x ?? 0) - (dx / len) * (tr + 4), ey = (t.y ?? 0) - (dy / len) * (tr + 4);
                   const isSel = selEdge?.from === sn.id && selEdge?.to === t.id;
+                  const pr = 1.4 + (l.amount / layout.maxAmt) * 2.2;
                   return (
-                    <line key={i} x1={sn.x} y1={sn.y} x2={ex} y2={ey}
-                      stroke={isSel ? '#4F8CFF' : '#44587A'} strokeWidth={(0.6 + (l.amount / layout.maxAmt) * 3.4) * (isSel ? 1.6 : 1)}
-                      opacity={isSel ? 1 : 0.6} markerEnd="url(#edge-arrow)" className="cursor-pointer"
-                      onClick={() => { setSelEdge(isSel ? null : { from: sn.id, to: t.id }); setSelNode(null); }} />
+                    <g key={i}>
+                      <line x1={sn.x} y1={sn.y} x2={ex} y2={ey}
+                        stroke={isSel ? '#4F8CFF' : '#44587A'} strokeWidth={(0.6 + (l.amount / layout.maxAmt) * 3.4) * (isSel ? 1.6 : 1)}
+                        opacity={isSel ? 1 : 0.45} markerEnd="url(#edge-arrow)" className="cursor-pointer"
+                        onClick={() => { setSelEdge(isSel ? null : { from: sn.id, to: t.id }); setSelNode(null); }} />
+                      <circle r={pr} fill={isSel ? '#4F8CFF' : '#2CD9FF'} opacity={0.85} className="flow-anim" style={{ pointerEvents: 'none' }}>
+                        <animateMotion dur={`${2.4 + (i % 5) * 0.6}s`} begin={`${(i % 7) * 0.35}s`} repeatCount="indefinite"
+                          path={`M${sn.x ?? 0},${sn.y ?? 0} L${ex},${ey}`} />
+                      </circle>
+                    </g>
                   );
                 })}
                 {layout.nodes.map((n) => {
@@ -150,6 +152,12 @@ export default function NetworkPage({ a }: { a: Analysis }) {
                   return (
                     <g key={n.id} className="cursor-pointer" onClick={() => { setSelNode(isSel ? null : n.id); setSelEdge(null); }}>
                       {isSel && <circle cx={n.x} cy={n.y} r={r + 4} fill="none" stroke="#4F8CFF" strokeWidth={1.6} />}
+                      {n.complaint && (
+                        <circle cx={n.x} cy={n.y} r={r} fill="none" stroke="#FF4D5E" strokeWidth={1.2} className="flow-anim" style={{ pointerEvents: 'none' }}>
+                          <animate attributeName="r" values={`${r};${r + 10}`} dur="1.8s" repeatCount="indefinite" />
+                          <animate attributeName="opacity" values="0.7;0" dur="1.8s" repeatCount="indefinite" />
+                        </circle>
+                      )}
                       <circle cx={n.x} cy={n.y} r={r} fill={BAND_FILL[n.band] ?? '#5E7191'} opacity={0.88} stroke={n.complaint ? '#FF4D5E' : '#fff'} strokeWidth={n.complaint ? 2.5 : 1.5} />
                       {(n.score >= 45 || n.complaint || isSel) && (
                         <text x={n.x! + r + 3} y={n.y! + 3.5} fontSize={9.5} fill="#8FA3C0" fontWeight={600}>{n.name.split(' ')[0]} - {Math.round(n.score)}</text>
@@ -236,7 +244,6 @@ export default function NetworkPage({ a }: { a: Analysis }) {
             </div>
           )}
         </div>
-      </div>
     </div>
   );
 }
