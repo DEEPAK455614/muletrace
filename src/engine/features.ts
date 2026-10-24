@@ -22,7 +22,8 @@ export interface AccountFeatures {
   structuredDepositCount: number;
   atmShareOut: number;
   annualizedThroughput: number;
-  incomeMultiple: number; // annualized throughput / declared income
+  incomeMultiple: number; // annualized throughput / declared income (0 when income unknown)
+  incomeKnown: boolean; // false when declared income is missing/placeholder - income factor must not score
   accountAgeDaysAtEnd: number;
   complaintDistance: number; // 0 = named, 1 = 1 hop, 2 = 2 hops, Infinity
   maxComplaintAmountLost: number; // largest amountLost among complaints naming this account (0 = none)
@@ -162,7 +163,8 @@ export function computeFeatures(world: World, gres: GraphResult): Map<string, Ac
     const spanDays = firstTs && lastTs ? Math.max(30, (lastTs - firstTs) / DAY + 1) : 30;
     const annualizedThroughput = (inTotal / spanDays) * 365;
     const cust = customersById.get(a.customerId);
-    const incomeMultiple = cust ? annualizedThroughput / Math.max(1, cust.declaredIncome) : 0;
+    const incomeKnown = Boolean(cust && cust.declaredIncome > 0);
+    const incomeMultiple = incomeKnown ? annualizedThroughput / cust!.declaredIncome : 0;
 
     const devPeers = byDevice.get(a.deviceId) ?? [];
     const addrPeers = byAddress.get(a.addressId) ?? [];
@@ -183,7 +185,7 @@ export function computeFeatures(world: World, gres: GraphResult): Map<string, Ac
       longestDormancyDays, burstAfterDormancy,
       structuredDepositShare, structuredDepositCount: structured.length,
       atmShareOut,
-      annualizedThroughput, incomeMultiple,
+      annualizedThroughput, incomeMultiple, incomeKnown,
       accountAgeDaysAtEnd: (world.windowEnd - a.openedAt) / DAY,
       complaintDistance: gres.distToComplaint[a.id] ?? Infinity,
       maxComplaintAmountLost: maxLossByAccount.get(a.id) ?? 0,

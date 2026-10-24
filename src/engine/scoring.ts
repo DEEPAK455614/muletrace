@@ -61,8 +61,8 @@ export function factorSpecs(f: AccountFeatures): FactorSpec[] {
     observed: f.merchantSpendShare < 0.05 ? 'No ordinary living spends observed in the analysis window' : `${Math.round(f.merchantSpendShare * 100)}% of outflow is ordinary spending` });
   specs.push({ key: 'atm', label: 'Cash-out share', points: f.atmShareOut >= 0.4 ? 8 : f.atmShareOut >= 0.2 ? 4 : 0, max: 8,
     observed: `${Math.round(f.atmShareOut * 100)}% of outflow withdrawn as cash` });
-  specs.push({ key: 'income', label: 'Throughput vs declared income', points: f.incomeMultiple >= 5 ? 8 : f.incomeMultiple >= 2.5 ? 4 : 0, max: 8,
-    observed: `Annualised throughput ${f.incomeMultiple.toFixed(1)}x declared income` });
+  specs.push({ key: 'income', label: 'Throughput vs declared income', points: !f.incomeKnown ? 0 : f.incomeMultiple >= 5 ? 8 : f.incomeMultiple >= 2.5 ? 4 : 0, max: 8,
+    observed: f.incomeKnown ? `Annualised throughput ${f.incomeMultiple.toFixed(1)}x declared income` : 'Declared income not available - factor not scored' });
   specs.push({ key: 'churn', label: 'Counterparty churn', points: 5 * clamp01((f.newCounterpartyShare - 0.55) / 0.4), max: 5,
     observed: `${Math.round(f.newCounterpartyShare * 100)}% of counterparties seen once` });
   specs.push({ key: 'newacct', label: 'New account, high velocity', points: f.accountAgeDaysAtEnd < 120 && f.inTotal >= 200000 ? 6 : 0, max: 6,

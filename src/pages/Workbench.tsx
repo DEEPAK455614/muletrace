@@ -66,6 +66,10 @@ export default function Workbench({ a, uploaded }: { a: Analysis; uploaded: bool
   const [cid, setCid] = useState<number | null>(null);
   const [params] = useSearchParams();
   const [selected, setSelected] = useState<string | null>(() => params.get('account'));
+  const paramAccount = params.get('account');
+  useEffect(() => {
+    if (paramAccount) setSelected((cur) => (cur === paramAccount ? cur : paramAccount));
+  }, [paramAccount]);
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<FilterKey>('all');
   const [scorer, setScorer] = useState<'rules' | 'ml'>('rules');
@@ -229,7 +233,7 @@ export default function Workbench({ a, uploaded }: { a: Analysis; uploaded: bool
               <button onClick={() => setSelected(null)} className="text-ink-mute hover:text-ink-soft"><X size={16} /></button>
             </div>
             <div className="flex items-center gap-3 mt-3">
-              <ScoreBadge score={scorer === 'ml' && selMlProb != null ? (selMlProb >= 0.99 ? Math.floor(selMlProb * 1000) / 10 : Math.round(selMlProb * 100)) : sel.score}
+              <ScoreBadge score={scorer === 'ml' && selMlProb != null ? (selMlProb >= 0.99 ? Math.min(99.9, Math.floor(selMlProb * 1000) / 10) : Math.round(selMlProb * 100)) : sel.score}
                 band={scorer === 'ml' ? 'ML' : sel.band} size="lg" />
               <div className="text-[11px] text-ink-mute leading-snug">
                 {scorer === 'ml'

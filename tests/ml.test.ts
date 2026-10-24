@@ -32,7 +32,7 @@ describe('logistic regression', () => {
       maxTxnsInHour: 2, maxTxnsInDay: 5, medianTxnsPerActiveDay: 1.5,
       newCounterpartyShare: 0.5, longestDormancyDays: 30, burstAfterDormancy: false,
       structuredDepositShare: 0, structuredDepositCount: 0, atmShareOut: 0.05,
-      annualizedThroughput: 50000, incomeMultiple: 1.2, accountAgeDaysAtEnd: 400,
+      annualizedThroughput: 50000, incomeKnown: true, incomeMultiple: 1.2, accountAgeDaysAtEnd: 400,
       complaintDistance: Infinity, maxComplaintAmountLost: 0, sharedDeviceCount: 0,
       sharedAddressCount: 0, sharesIdentifierWithComplaintLinked: false,
       cycleSize: 1, communityId: 3, communityMeanSignal: 10, pagerank: 0.001,

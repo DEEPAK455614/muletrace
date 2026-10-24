@@ -19,7 +19,7 @@ const ZERO_FEATURES: AccountFeatures = {
   merchantSpendShare: 0, aggregationConcentration: 0, medianHoldHours: 0,
   maxTxnsInHour: 0, maxTxnsInDay: 0, medianTxnsPerActiveDay: 0, newCounterpartyShare: 0,
   longestDormancyDays: 0, burstAfterDormancy: false, structuredDepositShare: 0,
-  structuredDepositCount: 0, atmShareOut: 0, annualizedThroughput: 0, incomeMultiple: 0,
+  structuredDepositCount: 0, atmShareOut: 0, annualizedThroughput: 0, incomeKnown: true, incomeMultiple: 0,
   accountAgeDaysAtEnd: 0, complaintDistance: Infinity, maxComplaintAmountLost: 0,
   sharedDeviceCount: 0, sharedAddressCount: 0, sharesIdentifierWithComplaintLinked: false,
   cycleSize: 1, communityId: -1, communityMeanSignal: 0, pagerank: 0, firstCreditTs: null,
