@@ -40,7 +40,7 @@ export default function Methodology({ a }: { a: Analysis }) {
       <div className="card p-5 mb-4">
         <SectionTitle>Score composition ({specs.length} factors, max {totalW} points)</SectionTitle>
         <p className="text-[12px] text-ink-soft mb-3">Transparent, weighted, and fully explainable per factor on every account - reason codes rather than a black-box number. Weights were set once against the development dataset and frozen before any tuning of other components.</p>
-        <table className="table-base">
+        <div className="table-scroll"><table className="table-base">
           <thead><tr><th>Factor</th><th className="text-right">Max points</th><th>Share of model</th></tr></thead>
           <tbody>
             {specs.sort((x, y) => y.max - x.max).map((s) => (
@@ -56,7 +56,7 @@ export default function Methodology({ a }: { a: Analysis }) {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></div>
         <div className="mt-3 text-[12px] text-ink-soft">Bands: Critical ≥ 75, High ≥ 45, Moderate 30-44. A complaint-evidence floor lifts accounts directly named in complaints with ≥ Rs 10,000 loss to at least 55.</div>
       </div>
 

@@ -85,11 +85,11 @@ export default function ReportPage({ a }: { a: Analysis }) {
       <div className="grid lg:grid-cols-2 gap-4 mb-4">
         <div className="card p-5">
           <SectionTitle>Largest inbound</SectionTitle>
-          <table className="table-base"><thead><tr><th>Time</th><th>From</th><th className="text-right">Amount</th><th>Channel</th></tr></thead><tbody><TxnRows txns={ins} other="from" /></tbody></table>
+          <div className="table-scroll"><table className="table-base"><thead><tr><th>Time</th><th>From</th><th className="text-right">Amount</th><th>Channel</th></tr></thead><tbody><TxnRows txns={ins} other="from" /></tbody></table></div>
         </div>
         <div className="card p-5">
           <SectionTitle>Largest outbound</SectionTitle>
-          <table className="table-base"><thead><tr><th>Time</th><th>To</th><th className="text-right">Amount</th><th>Channel</th></tr></thead><tbody><TxnRows txns={outs} other="to" /></tbody></table>
+          <div className="table-scroll"><table className="table-base"><thead><tr><th>Time</th><th>To</th><th className="text-right">Amount</th><th>Channel</th></tr></thead><tbody><TxnRows txns={outs} other="to" /></tbody></table></div>
         </div>
       </div>
 

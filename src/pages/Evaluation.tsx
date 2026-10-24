@@ -22,7 +22,7 @@ export default function Evaluation({ a }: { a: Analysis }) {
   const CompareTable = ({ data, title }: { data: Record<string, BenchEval>; title: string }) => (
     <div className="card p-4 mb-4">
       <SectionTitle>{title}</SectionTitle>
-      <table className="table-base">
+      <div className="table-scroll"><table className="table-base">
         <thead><tr><th>World</th><th className="text-right">Threshold</th><th className="text-right">Precision</th><th className="text-right">Recall</th><th className="text-right">False-alarm</th><th className="text-right">Caught</th><th className="text-right">FP</th><th className="text-right">Hard-neg flagged</th></tr></thead>
         <tbody>
           {worlds.map((w) => (
@@ -38,7 +38,7 @@ export default function Evaluation({ a }: { a: Analysis }) {
             </tr>
           ))}
         </tbody>
-      </table>
+      </table></div>
     </div>
   );
 
@@ -71,7 +71,7 @@ export default function Evaluation({ a }: { a: Analysis }) {
       <div className="card p-4 mb-4">
         <SectionTitle>Benign hard negatives (holdout 1) - the false-positive traps</SectionTitle>
         <p className="text-[12px] text-ink-soft mb-3">Deliberately injected legitimate patterns that resemble mule behaviour. A flagged row is a detector failure, shown openly rather than suppressed.</p>
-        <table className="table-base">
+        <div className="table-scroll"><table className="table-base">
           <thead><tr><th>Legitimate pattern</th><th className="text-right">Rules score</th><th className="text-right">ML score</th><th className="text-right">Verdict</th></tr></thead>
           <tbody>
             {rules['holdout-1'].hardNegatives.map((h, i) => {
@@ -87,7 +87,7 @@ export default function Evaluation({ a }: { a: Analysis }) {
               );
             })}
           </tbody>
-        </table>
+        </table></div>
         <div className="mt-3 text-[12px] text-ink-soft leading-relaxed">
           The kitty organizer and family remittance pooler are flagged by the rule engine: their fan-in/fan-out and same-day forwarding genuinely resemble mule structure. Separating committee-style rotation from fraud needs periodicity and counterparty-relationship evidence - recorded as known limitations and future work.
         </div>
@@ -97,14 +97,14 @@ export default function Evaluation({ a }: { a: Analysis }) {
         <div className="card p-4">
           <SectionTitle>Analyst queue quality - dev world (rules)</SectionTitle>
           <p className="text-[12px] text-ink-soft mb-3">Investigators work a ranked queue, not a threshold. Precision at the top of the queue is what a review team actually experiences.</p>
-          <table className="table-base">
+          <div className="table-scroll"><table className="table-base">
             <thead><tr><th>Queue depth</th><th className="text-right">Precision</th><th className="text-right">Recall</th></tr></thead>
             <tbody>
               {e.precisionAtK.map((p) => (
                 <tr key={p.k}><td className="num">Top {p.k}</td><td className="num text-right">{pct(p.precision)}</td><td className="num text-right">{pct(p.recall)}</td></tr>
               ))}
             </tbody>
-          </table>
+          </table></div>
         </div>
         <div className="card p-4">
           <SectionTitle>Precision-recall curve - dev world (rules)</SectionTitle>
@@ -128,7 +128,7 @@ export default function Evaluation({ a }: { a: Analysis }) {
 
       <div className="card p-4">
         <SectionTitle>Per-scenario detection - dev world (rules)</SectionTitle>
-        <table className="table-base">
+        <div className="table-scroll"><table className="table-base">
           <thead><tr><th>Injected scenario</th><th className="text-right">Accounts</th><th className="text-right">Flagged</th><th className="text-right">Detection</th></tr></thead>
           <tbody>
             {e.perScenario.map((s) => (
@@ -140,7 +140,7 @@ export default function Evaluation({ a }: { a: Analysis }) {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></div>
         <div className="mt-3 text-[12px] text-ink-soft leading-relaxed">
           Herder and merchant off-ramp accounts carry little transactional signal by design; they surface through the network view, echoing the FCA finding that link analysis - not scoring - uncovers controllers. Confusion at threshold: TP {e.tp}, FP {e.fp}, FN {e.fn}, TN {e.tn}.
         </div>

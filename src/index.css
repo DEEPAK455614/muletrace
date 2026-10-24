@@ -89,3 +89,5 @@ select.btn:focus, input.btn:focus { outline: 2px solid var(--color-brand-soft); 
 
 /* grid blowout guard: children may shrink below content width */
 .grid > * { min-width: 0; }
+
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }

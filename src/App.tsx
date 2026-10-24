@@ -1,7 +1,7 @@
 import React, { Suspense, lazy, useMemo } from 'react';
 import { Routes, Route, NavLink, Link } from 'react-router-dom';
 import { analyze } from './engine';
-import { LayoutDashboard, Bell, Network, GitBranch, FileWarning, FlaskConical, BookOpen, Menu, X, ShieldCheck } from 'lucide-react';
+import { LayoutDashboard, Bell, Network, GitBranch, FileWarning, FlaskConical, BookOpen, Menu, X, ShieldCheck, History } from 'lucide-react';
 
 const Overview = lazy(() => import('./pages/Overview'));
 const Alerts = lazy(() => import('./pages/Alerts'));
@@ -11,6 +11,7 @@ const Trails = lazy(() => import('./pages/Trails'));
 const Complaints = lazy(() => import('./pages/Complaints'));
 const Evaluation = lazy(() => import('./pages/Evaluation'));
 const Methodology = lazy(() => import('./pages/Methodology'));
+const Audit = lazy(() => import('./pages/Audit'));
 const ReportPage = lazy(() => import('./pages/ReportPage'));
 
 const NAV = [
@@ -19,6 +20,7 @@ const NAV = [
   { to: '/network', label: 'Network', icon: Network },
   { to: '/trails', label: 'Money trails', icon: GitBranch },
   { to: '/complaints', label: 'Complaints', icon: FileWarning },
+  { to: '/audit', label: 'Audit trail', icon: History },
   { to: '/evaluation', label: 'Evaluation', icon: FlaskConical },
   { to: '/methodology', label: 'Methodology', icon: BookOpen },
 ];
@@ -107,6 +109,7 @@ export default function App() {
               <Route path="/network" element={<NetworkPage a={a} />} />
               <Route path="/trails" element={<Trails a={a} />} />
               <Route path="/complaints" element={<Complaints a={a} />} />
+              <Route path="/audit" element={<Audit a={a} />} />
               <Route path="/evaluation" element={<Evaluation a={a} />} />
               <Route path="/methodology" element={<Methodology a={a} />} />
               <Route path="/report/account/:id" element={<ReportPage a={a} />} />
