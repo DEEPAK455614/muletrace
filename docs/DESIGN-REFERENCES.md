@@ -76,3 +76,84 @@ Rejected: dark command-center theme (user asked for iOS-style light clarity), pr
 "next movement / predicted ATM" framing (conflicts with suspicion-not-guilt discipline),
 decorative fraud map (geography is not in the risk model), case-compare matrix (lower value
 than the existing queue workflow). No code copied; concept inspiration only.
+
+---
+
+# Round 3 - 24 Oct 2026, ~22:35 IST: sci-fi cyber-intelligence direction (user 22:33 voice)
+
+User rejected the light iOS direction as too plain; wants a global-stage sci-fi
+cyber-intelligence experience with purposeful animation, research-led. This round's
+review was a targeted pass: 6 search sweeps produced the candidates below; notes come
+from each source's public pages/case studies/snippets, depth honestly scaled to a
+same-evening build window. Aspirational quality target only - no ranking claims.
+
+## A. Financial-crime / crypto investigation tools (our exact domain)
+1. Chainalysis Reactor (Behance case study) - node-graph investigation canvas, exposure coloring. TAKE: graph as the hero surface, edge direction weight. AVOID: dense pro-tool chrome everywhere.
+2. Chainalysis Reactor "Exposure" (Behance) - in/out exposure visualization. TAKE: our trails page can use exposure-style terminal emphasis.
+3. Chainalysis Reactor product page - investigation workflow framing. TAKE: case-first language.
+4. Alanna Fischer - Chainalysis collaboration infra case study. TAKE: auditability as a first-class surface (we already have audit trail).
+5. TRM Labs case studies - investigation narratives. TAKE: typology storytelling in Complaints.
+6. Elliptic (Rob Squires rebuild) - dark fintech-investigation palette discipline. TAKE: restrained neon on near-black.
+7. Recorded Future Attack Surface Intelligence dashboard - KPI + risk band hierarchy. TAKE: band color language.
+8. Recorded Future Threat Intelligence product page - intel-card structure. TAKE: alert cards with confidence context.
+
+## B. SOC / threat-intel dashboards
+9. Figma Community Security Operations Dashboard - SOC layout grammar. TAKE: left-rail + dense-but-breathing grid.
+10. Threat Intelligence Dashboard case study (designwithsarath.in) - alert triage flow. TAKE: severity-first queue.
+11. Wandr Threat Intelligence Dashboard guide - practical density limits. AVOID: over-decorated panels.
+12. Darkside Insights Dashboard - dark data-viz craft. TAKE: chart styling on dark.
+13. Aegis SOC UI kit (Envato, reference only) - component inventory. AVOID: kit look.
+14. rinjanianalytics/cti-platform-dashboard (GitHub) - open CTI layout. TAKE: feed/table rhythm.
+15. CrowdStrike Foundry UI examples - enterprise module chrome. AVOID: enterprise clutter.
+16. CrowdStrike Charlotte AI UX blog - conversational overlay on console. TAKE: command-bar future idea (not now).
+17. Lab7 cybersecurity UI agency (Dribbble) - cyber visual language. TAKE: accent restraint.
+18. Palantir (Dribbble) - Gotham-style ontology views. TAKE: entity linking presentation.
+
+## C. Film FUI (sci-fi reference, the studios behind Oblivion/Tron/Blade Runner)
+19. GMUNK Oblivion GFX - the benchmark for believable future consoles. TAKE: layered data, thin lines, glow on focal points only.
+20. GMUNK Tron Board Room - geometric grid identity. TAKE: grid motif for our network canvas.
+21. Territory Studio Blade Runner 2049 - atmospheric dark UI with amber accents. TAKE: amber/cyan duotone.
+22. Territory Studio Ghost in the Shell - data-density + motion loops. TAKE: ambient background motion, slow.
+23. Territory Studio Ex Machina - minimal lab interfaces. TAKE: typography-forward panels.
+24. Territory Studio The Martian - mission telemetry readability. TAKE: numbers legible at glance.
+25. Territory Studio Prometheus - ship consoles. TAKE: ring/radial motifs for score dial.
+26. Perception RoboCop tech design - HUD restraint in real workflows. AVOID: decorative HUD clutter.
+27. Perception FUI roundtable (Cineversity) - FUI principles: story-first, not decoration. GUIDING PRINCIPLE.
+28. Territory Studio screen-graphics portfolio index - breadth. Reference only.
+
+## D. Award-level dark web/data experiences
+29. Awwwards Analytics Dashboard (Whispernode) - hero metric treatment. TAKE: oversized KPI type.
+30. Awwwards Control-to-Analytics Flow (CryptoWL) - crypto console flow. TAKE: transition between control and analytics states.
+31. Awwwards data-visualization websites index - benchmark list. Reference set.
+32. Data Jungle real-time telemetry case study - streaming-data feel. TAKE: subtle tick/update animation on data.
+33. Nexus Analytics (A'Design) - proactive insights cards. AVOID: busy gradients.
+34. Awwwards Orage case study - cinematic dark launch page. TAKE: atmospheric depth (fog/glow layers).
+35. Exaloop (Awwwards HM) - dev-tool dark polish. TAKE: code/data typography.
+36. Multiuser Fluid (Awwwards HM) - motion smoothness bar. TAKE: easing discipline.
+
+## E. Cyber maps / flow visualization
+37. Cambridge Intelligence Wannacry visualization - flow-through-graph storytelling. TAKE: our trails = flow narrative.
+38. Chainalysis-style exposure graph (Behance) - see #2.
+39. cybermap-attack-globe (GitHub) - 3D globe arcs. AVOID: 3D globe (no map in our risk model; decorative).
+40. Pulsemap (Kaan Gultekin) - live pulse aesthetics. TAKE: pulse on high-risk nodes.
+41. hashplane map - grid-map abstraction. AVOID: geography (not in model).
+42. xmcyber (JLE design) - attack-path visualization. TAKE: path highlighting through the graph.
+
+## F. Mission-control / telemetry (NASA-grade clarity under pressure)
+43. NASA Open MCT (ammos.nasa.gov) - open mission-control web UI. TAKE: dense telemetry grids that stay readable.
+44. NASA NTRS telemetry display research - human-centered telemetry principles. TAKE: alarm hierarchy.
+45. MoonRanger case study (laurenjpark.com) - modern mission console. TAKE: status strip design.
+46. NASA mission-control redesign (space.com) - legacy-to-modern lessons. AVOID: wall-of-panels.
+47. NASA Spinoff data-viz platform - operational dashboards. Reference.
+
+## G. Premium dark product craft (motion/systems discipline)
+48. Linear/Vercel/Stripe design-DNA analyses (dupe.design, opendesigner.io, mantlr.com) - how premium dark systems stay coherent. TAKE: token discipline, one accent, restrained motion.
+49. DesignMD Linear-vs-Vercel motion study - minimal motion budgets. TAKE: animate state changes, not decorations.
+50. Emil Kowalski design-eng skill (design-resources) - transform/opacity only, no animation on frequent actions, reduced-motion. RULE for all motion here.
+
+## Synthesis -> art direction (codename NIGHTWATCH)
+- Dark console: near-black blue base, glass panels, hairline cyan-tinted borders, subtle grid texture; glow only on focal/active elements (GMUNK restraint).
+- Duotone accent: cyan (signal/intelligence) + amber (caution), red reserved for Critical, green for benign/cleared.
+- The graph is the hero: d3-force network with directional flow particles (money movement), pulsing complaint-linked nodes, path highlighting on trails.
+- Data typography: IBM Plex Mono for IDs, amounts, hashes; Space Grotesk display; count-up KPIs; staggered entrances; reduced-motion respected.
+- Truthfulness stays: compact "Demo - Synthetic data" pill (dark-styled), suspicion-not-guilt cautions, frozen benchmark, audit trail. No predictive claims, no map, no fake live feeds.
