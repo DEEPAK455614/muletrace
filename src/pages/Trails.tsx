@@ -89,10 +89,10 @@ export default function Trails({ a }: { a: Analysis }) {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
             <div className="card p-4"><div className="num text-[16px] md:text-[20px] font-semibold">{merged.hops.length}</div><div className="text-[11px] text-ink-mute">Hops reconstructed</div></div>
             <div className="card p-4"><div className="num text-[16px] md:text-[20px] font-semibold">{inrFull(merged.totalTraced)}</div><div className="text-[11px] text-ink-mute">Cumulative flow (distinct transactions)</div></div>
-            <div className="card p-4"><div className="num text-[16px] md:text-[20px] font-semibold">{inrFull(merged.exitValue)}</div><div className="text-[11px] text-ink-mute">Exit value (where money stops)</div></div>
+            <div className="card p-4"><div className="num text-[16px] md:text-[20px] font-semibold">{inrFull(merged.exitValue)}</div><div className="text-[11px] text-ink-mute">Terminal inbound total (hypothesis)</div></div>
             <div className="card p-4"><div className="num text-[16px] md:text-[20px] font-semibold">{merged.endpoints.length}</div><div className="text-[11px] text-ink-mute">Exit points (cash / terminal)</div></div>
           </div>
-          <div className="text-[11px] text-ink-mute mb-4 -mt-2">Allocation follows FIFO time-ordering over observed transactions - a hypothesis, not proof of which rupee moved where. In circular flows the same funds pass repeatedly, so cumulative flow can exceed an account's genuine inflow; exit value is the non-duplicative figure for funds reaching a stopping point. Neither number is a proven illicit amount.</div>
+          <div className="text-[11px] text-ink-mute mb-4 -mt-2">Allocation follows FIFO time-ordering over observed transactions - a hypothesis, not proof of which rupee moved where. In circular flows the same funds pass repeatedly, so cumulative flow can exceed an account's genuine inflow. The terminal inbound total sums the full inbound amounts of hops that reach a stopping point; it is not a conserved trace of origin principal, and in branched or cyclic flows the same funds may be attributed to more than one sink. Neither number is a proven illicit amount.</div>
           <div style={{display:'none'}}>
           </div>
 

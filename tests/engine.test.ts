@@ -121,12 +121,12 @@ describe('money-trail accounting honesty', () => {
     expect(new Set(ids).size).toBe(ids.length);
     expect(t.totalTraced).toBeCloseTo(t.hops.reduce((s, h) => s + h.amount, 0), 6);
   });
-  it('exit value is positive and attributed to terminal sinks, not circulation', () => {
+  it('exit value is positive and equals the terminal-sink attribution sum', () => {
     const c = a.world.complaints.find((x) => x.namedAccountIds.length > 0)!;
     const t = traceComplaint(a.world, c.id)[0];
     expect(t.exitValue).toBeGreaterThan(0);
     expect(t.exitValue).toBe(t.endpoints.reduce((s, e) => s + e.amount, 0));
-    // exit value can never exceed the cumulative distinct flow
+    // structural check: terminal-sink attribution never exceeds the cumulative distinct flow
     expect(t.exitValue).toBeLessThanOrEqual(t.totalTraced);
   });
 });

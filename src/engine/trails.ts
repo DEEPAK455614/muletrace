@@ -22,9 +22,10 @@ export interface TrailResult {
   // Sum of DISTINCT hop transaction amounts (visitedEdges dedupes). In cyclic
   // flows the same funds can be counted on each pass - see exitValue.
   totalTraced: number;
-  // Non-duplicative measure: amounts arriving at terminal sinks (cash-out,
-  // terminal accounts, off-window). This is the defensible "how much value
-  // reached an observed stopping point" figure; it never recounts circulation.
+  // Sum of full inbound amounts of hops that arrive at terminal sinks
+  // (cash-out, terminal accounts, off-window). Hypothesis only: this is NOT a
+  // conserved trace of origin principal - in branched or cyclic flows the same
+  // funds may be attributed to more than one sink.
   exitValue: number;
   maxDepth: number;
 }

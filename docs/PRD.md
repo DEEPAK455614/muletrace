@@ -1,7 +1,7 @@
 # MuleTrace - Intelligent Mule Account Detection and Financial Fraud Investigation Platform
 
 Product & technical document - v1.0, 24 Oct 2026
-Status: working synthetic prototype, deployed preview. It covers the named PS-01 workflows end to end on synthetic data; it is not audit-ready and not production-ready (see section 8 limitations).
+Status: working synthetic prototype, deployed preview. It covers the named PS-01 workflows end to end on synthetic data; it is not audit-ready and not production-ready (see section 6 limitations, and the validity limits in docs/BENCHMARK.md).
 Live preview: https://muletrace-5gm.pages.dev - Repo: https://github.com/DEEPAK455614/muletrace (private)
 Problem statement: PS-01, supplied as a brief over WhatsApp on 24 Oct 2026. No hackathon, competition, deadline or production customer has been named; nothing below should be read as a submission to, or endorsement by, any organiser or institution.
 
@@ -81,7 +81,7 @@ via network analysis rather than account score (FCA-consistent design choice).
 
 Protocol: rule weights frozen on dev world; ML trained on dev only (31 pos / 430 neg);
 threshold 35 chosen on validation ("highest recall at precision >= 0.9"); two
-holdout worlds with independent seeds evaluated once after freeze. No label leakage:
+holdout worlds with independent seeds evaluated once after freeze. No direct generator-label feature:
 features use only observed transactions, complaints and graph structure.
 
 | Scorer | World | Precision | Recall | False-alarm |

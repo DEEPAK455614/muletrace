@@ -60,7 +60,7 @@ export default function Evaluation({ a }: { a: Analysis }) {
           <div>- ML model (logistic regression, {benchmark.protocol.featureKeys.length} observed features) trained only on dev: <span className="num">{benchmark.protocol.trainCounts.positives}</span> positive / <span className="num">{benchmark.protocol.trainCounts.negatives}</span> negative accounts.</div>
           <div>- Threshold <span className="num">{benchmark.protocol.threshold}</span>: {benchmark.protocol.thresholdRule} (<span className="num">{benchmark.protocol.validationSeed}</span>).</div>
           <div>- Holdout worlds <span className="num">{benchmark.protocol.holdoutSeeds.join(', ')}</span> evaluated exactly once, after the freeze.</div>
-          <div>- No label leakage: features use transactions, complaints and graph structure only; ground truth is used for evaluation and dev-only training.</div>
+          <div>- No direct generator-label feature: features use transactions, complaints and graph structure only; ground truth is used for evaluation and dev-only training. Complaint-dependent proxy leakage remains - see Validity limits below.</div>
           <div>- Protocol run at <span className="num">{new Date(benchmark.protocol.trainedAtUtc).toLocaleString('en-IN')}</span>.</div>
         </div>
       </div>

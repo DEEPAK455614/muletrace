@@ -12,9 +12,10 @@
 - Holdout worlds (`muletrace-holdout-2026a`, `muletrace-holdout-2026b`): evaluated exactly once, after freeze.
 - Benign hard negatives: landlord rent fan-in, coaching-fee band, kitty pooling,
   festival burst, family remittance pooling, salary sweep - reported explicitly.
-- No label leakage in features: scoring features are computed from transactions,
+- No direct generator-label feature: scoring features are computed from transactions,
   complaints and graph structure only; ground truth is used exclusively for evaluation
-  and (dev-only) training.
+  and (dev-only) training. However, complaint-dependent proxy leakage remains (see
+  Validity limits): the generator correlates complaints with injected mule rings.
 - As-of discipline: each account is scored from the full Jan-Oct 2026 window; complaints
   carry their own report dates and are treated as known for the whole window. There is
   NO per-account temporal cutoff (unlike the arXiv NFPC study's per-account pre-flag
