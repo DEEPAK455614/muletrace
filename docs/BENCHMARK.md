@@ -34,9 +34,9 @@
   to attract synthetic complaints, and complaint linkage is a scoring feature. The
   generator creates this correlation deliberately to model victim reporting, but it
   means complaint-aware features partly "read the answer key": synthetic labels and
-  complaint assignment are not independent. Precision/recall here are therefore an
-  upper bound relative to a deployment where complaints arrive for only a fraction of
-  real mules.
+  complaint assignment are not independent. These numbers are therefore
+  potentially optimistic; the size and direction of the effect in any real
+  deployment is unknown (an expectation, not a proven mathematical bound).
 - **Hard negatives are template-injected too.** The 6 benign look-alikes are designed
   traps; a real benign population is far more diverse.
 
