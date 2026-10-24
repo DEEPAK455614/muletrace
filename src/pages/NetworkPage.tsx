@@ -43,7 +43,7 @@ export default function NetworkPage({ a }: { a: Analysis }) {
       <div className="mb-4">
         <h1 className="text-[22px] font-bold tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>Network intelligence</h1>
         <p className="text-[13px] text-ink-soft mt-1">
-          Transaction communities (Louvain) ranked by peak member risk. The graph is how controllers, collectors and off-ramps surface - link analysis reveals roles that account-level scores miss.
+          Transaction communities (Louvain) ranked by peak member risk. Link analysis surfaces hub accounts and dense clusters that account-level scores alone can miss. Structure is shown for investigator review - it does not establish any person's role.
         </p>
       </div>
 

@@ -75,13 +75,19 @@ export default function Overview({ a }: { a: Analysis }) {
           <SectionTitle right={<span className="text-[12px] font-medium" style={{ color: 'var(--color-brand)' }}>Open network explorer</span>}>
             Money movement - highest-risk network
           </SectionTitle>
-          {hero && (
+          {hero ? (
             <>
               <div className="text-[12px] text-ink-soft mt-1">
                 Network #{hero.c.cid} - {hero.c.members.length} accounts - {hero.c.flagged.length} flagged - {hero.c.complaints.length} complaint-linked. Particles trace transaction direction and size.
               </div>
               <FlowGraph layout={hero.layout} width={660} height={400} />
             </>
+          ) : (
+            <div className="mt-6 mb-4 px-2 text-[12.5px] text-ink-soft leading-relaxed">
+              No network meets the display threshold in this dataset. That only means no transaction community
+              crossed the alerting bar under the current rules - it is not evidence that no suspicious activity
+              exists. Accounts still appear individually in the alert queue below when they score for review.
+            </div>
           )}
         </div>
       </div>
