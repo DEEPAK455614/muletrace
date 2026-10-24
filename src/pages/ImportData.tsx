@@ -145,6 +145,19 @@ export default function ImportData({ onWorld, activeKind, onReset }: {
         </div>
       )}
 
+      {result && !result.world && (
+        <div className="card p-5 mb-4" style={{ borderColor: '#FF4D5E50', background: '#FF4D5E10' }}>
+          <SectionTitle>Could not use that file</SectionTitle>
+          <div className="space-y-1.5">
+            {result.issues.map((i, k) => (
+              <div key={k} className="text-[12.5px]" style={{ color: i.level === 'error' ? 'var(--color-risk-crit)' : '#FFB020' }}>
+                {i.level === 'error' ? 'Error' : 'Note'}: {i.message}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {txn && (
         <div className="card p-5 mb-4">
           <SectionTitle>3 - Validate and run</SectionTitle>
