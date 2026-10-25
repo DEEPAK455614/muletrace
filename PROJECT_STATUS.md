@@ -71,18 +71,26 @@ Data/artifact/report directories exist at repo root: `data/{historical,incoming,
 - Backend report: `services/reporting.py` renders an evidence-linked PDF via ReportLab from
   persisted run results only ("No matching evidence found" for empty sections);
   `GET /api/v1/analysis-runs/{id}/report.pdf`. TESTED.
-- Frontend wiring to the backend API (workspace, upload wizard, training, dashboard, graph,
-  findings, report download) and the FR-10 Light/Dark/System theme selector: IN PROGRESS.
-  The existing root frontend remains the synthetic-scenario workbench and is unchanged.
+- Frontend wiring to the backend API: IMPLEMENTED - typed API client (VITE_API_BASE, honest
+  unreachable state), Workspace (FR-01), upload wizard with mapping review (FR-03), Training
+  (FR-02), analysis launcher, run dashboard from persisted runs only (FR-05), money trail with
+  bounded trace controls (FR-06), findings with status/notes (FR-07), PDF download (FR-08).
+- FR-10 Light/Dark/System: IMPLEMENTED + PIXEL-VERIFIED on the deployed preview - OS default
+  (System resolved light in a light-OS browser), explicit choice persists across full reloads,
+  switching does not reload or reset the active view, graph canvas/forms/tables adapt via
+  tokens (legacy workbench hexes centralised as CSS overrides).
 
-### Phase 6 — Verification: PARTIAL
+### Phase 6 — Verification: MOSTLY DONE
 - Live-server E2E smoke PASSED (25 Oct): import labelled synthetic historical CSV -> train
   (logistic, 18/6/6 split) -> import current CSV -> analysis (pass-through account ranked
   highest, 67.98 high) -> graph (edges == stored transactions) -> forward trace (4 temporal
   paths) -> finding -> valid PDF report.
 - Hardcoded-value sweep on new platform screens: no fabricated metrics/markers; all figures
   come from API responses.
-- Remaining: fresh-clone setup walkthrough on a clean machine.
+- Deployed-preview pixel checks passed (25 Oct): platform workspace honest-unavailable state,
+  workbench in dark + light, theme persistence across reload.
+- Remaining: fresh-clone setup walkthrough on a clean machine; Postgres runtime verification
+  on a Docker-capable environment.
 
 ## Leakage posture (verified, not just claimed)
 - Split unit is the account; a regression test recomputes the deterministic split and asserts
