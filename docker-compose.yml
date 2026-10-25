@@ -1,0 +1,13 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: muletrace
+      POSTGRES_PASSWORD: muletrace
+      POSTGRES_DB: muletrace
+    ports:
+      - "5432:5432"
+    volumes:
+      - muletrace-pgdata:/var/lib/postgresql/data
+volumes:
+  muletrace-pgdata:

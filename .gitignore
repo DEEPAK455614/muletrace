@@ -1,2 +1,17 @@
 node_modules/
 dist/
+
+# MULE DRISHTI SRS layout (backend + local data)
+.env
+backend/__pycache__/
+backend/**/__pycache__/
+.pytest_cache/
+data/historical/*
+data/incoming/*
+data/processed/*
+!data/**/.gitkeep
+data/*.db
+artifacts/*
+!artifacts/.gitkeep
+reports/*
+!reports/.gitkeep
