@@ -242,11 +242,19 @@ def _execute_training(db: Session, run: TrainingRun, datasets: list[Dataset], pa
         method = run.algorithm
         metrics.update({
             'mode': 'supervised',
+            'split_unit': 'account',
             'split': {'train': int(len(y_tr)), 'dev': int(len(y_dev)), 'holdout': int(len(y_hold))},
             'dev': _metrics(y_dev, pipe.predict_proba(X_dev)[:, 1]),
             'holdout': _metrics(y_hold, pipe.predict_proba(X_hold)[:, 1]),
             'evaluation_note': 'Holdout evaluated once and never used for tuning. '
                                'Logistic/forest outputs are uncalibrated scores, not validated probabilities.',
+            'leakage_limits': [
+                'Split unit is the account: each labelled account appears in exactly one split (verified disjoint).',
+                'Preprocessing (StandardScaler) is fit on the training split only.',
+                'RESIDUAL LIMIT: account features are computed over the full historical graph, so the split is transductive, not a pure inductive network holdout.',
+                'RESIDUAL LIMIT: the split is random by account, not temporal; features aggregate the full dataset window, so no statement about future-time generalisation is made.',
+                'Duplicate transaction rows are flagged at import; account-level split units cannot straddle splits by construction.',
+            ],
         })
 
     model_version_id = str(uuid.uuid4())

@@ -75,9 +75,22 @@ Data/artifact/report directories exist at repo root: `data/{historical,incoming,
   findings, report download) and the FR-10 Light/Dark/System theme selector: IN PROGRESS.
   The existing root frontend remains the synthetic-scenario workbench and is unchanged.
 
-### Phase 6 — Verification: PENDING
-- E2E labelled-synthetic walkthrough, hardcoded-value sweep, fresh-clone setup check, final
-  PROJECT_STATUS reconciliation.
+### Phase 6 — Verification: PARTIAL
+- Live-server E2E smoke PASSED (25 Oct): import labelled synthetic historical CSV -> train
+  (logistic, 18/6/6 split) -> import current CSV -> analysis (pass-through account ranked
+  highest, 67.98 high) -> graph (edges == stored transactions) -> forward trace (4 temporal
+  paths) -> finding -> valid PDF report.
+- Hardcoded-value sweep on new platform screens: no fabricated metrics/markers; all figures
+  come from API responses.
+- Remaining: fresh-clone setup walkthrough on a clean machine.
+
+## Leakage posture (verified, not just claimed)
+- Split unit is the account; a regression test recomputes the deterministic split and asserts
+  the three splits are pairwise disjoint and cover each labelled account exactly once.
+- A test asserts the persisted pipeline scaler was fit on the training split only.
+- RESIDUAL LIMITS (disclosed in every supervised run's metrics): features are computed over the
+  full historical graph (transductive, not a pure inductive network holdout) and the split is
+  random by account, not temporal - so metrics do not claim future-time generalisation.
 
 ## Test totals
 - Backend: 23/23 pytest passing (13 Phase 0–1 + 8 Phase 2–4 services + 2 API flow).

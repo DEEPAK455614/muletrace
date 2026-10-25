@@ -226,3 +226,47 @@ UTR-R2,05/09/2026 10:30,85000,HDFC Bank,ACC-M2,ACC-M3
     with pytest.raises(ApiError) as e:
         reporting.generate_report(db, 'run-incomplete')
     assert e.value.code == 'run_incomplete'
+
+
+def test_split_units_disjoint_and_scaler_fit_on_train_only(trained, db):
+    """Leakage verification (not just fixed-seed claims):
+    - recompute the deterministic split from the same labelled account set and
+      assert the three splits are pairwise disjoint and cover every account once;
+    - assert the persisted pipeline's scaler was fit on the training split only
+      (its means equal the training rows' means, not the full-data means);
+    - assert the run records the split unit and the residual leakage limits."""
+    import joblib
+    import numpy as np
+    from sklearn.model_selection import train_test_split
+    from app.models import Account, Dataset
+    from app.services.features import compute_account_features, feature_vector
+    from app.services.training import RANDOM_SEED, _find_source_file, _read_labels
+
+    run = db.get(TrainingRun, trained.id)
+    metrics = json.loads(run.metrics_json)
+    assert metrics['split_unit'] == 'account'
+    assert any('transductive' in l for l in metrics['leakage_limits'])
+    assert any('not temporal' in l for l in metrics['leakage_limits'])
+
+    ds = db.query(Dataset).filter_by(source_type='historical').one()
+    labels, _ = _read_labels(_find_source_file(ds))
+    ref_by_id = {a.external_account_ref: a.id for a in
+                 db.query(Account).filter_by(dataset_id=ds.id).all()}
+    y_map = {ref_by_id[r]: v for r, v in labels.items() if r in ref_by_id}
+    ids = sorted(y_map)
+    feats = compute_account_features(db, ds.id)
+    X = np.array([feature_vector(feats[i]['features']) for i in ids])
+    y = np.array([y_map[i] for i in ids])
+    idx = np.arange(len(ids))
+    idx_tr, idx_tmp, _, y_tmp = train_test_split(idx, y, test_size=0.4, random_state=RANDOM_SEED, stratify=y)
+    idx_dev, idx_hold = train_test_split(idx_tmp, test_size=0.5, random_state=RANDOM_SEED, stratify=y_tmp)
+    s_tr, s_dev, s_hold = set(idx_tr), set(idx_dev), set(idx_hold)
+    assert not (s_tr & s_dev) and not (s_tr & s_hold) and not (s_dev & s_hold)
+    assert len(s_tr | s_dev | s_hold) == len(ids)  # each account in exactly one split
+    assert metrics['split'] == {'train': len(s_tr), 'dev': len(s_dev), 'holdout': len(s_hold)}
+
+    mv = db.query(ModelVersion).filter_by(training_run_id=run.id).one()
+    pipe = joblib.load(mv.artifact_path)
+    scaler = pipe.named_steps['scaler']
+    np.testing.assert_allclose(scaler.mean_, X[sorted(s_tr)].mean(axis=0), rtol=1e-8)
+    assert not np.allclose(scaler.mean_, X.mean(axis=0), rtol=1e-8) or len(ids) == len(s_tr)
