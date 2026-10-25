@@ -1,14 +1,33 @@
 import React from 'react';
 import { forceSimulation, forceLink, forceManyBody, forceCollide, forceCenter, forceX, forceY, type SimulationNodeDatum, type SimulationLinkDatum } from 'd3-force';
 import type { Analysis } from '../engine';
+import { inr } from '../ui';
 
 export interface GN extends SimulationNodeDatum { id: string; score: number; band: string; inflow: number; name: string; complaint: boolean }
 export interface GL extends SimulationLinkDatum<GN> { amount: number }
 export interface GraphLayout { nodes: GN[]; links: GL[]; maxAmt: number }
 
 export const BAND_FILL: Record<string, string> = {
-  Critical: '#FF4D5E', High: '#FF7A45', Moderate: '#FFB020', Low: '#2FD48C', Minimal: '#5E7191',
+  Critical: 'var(--color-risk-crit)',
+  High: 'var(--color-risk-high)',
+  Moderate: 'var(--color-risk-mod)',
+  Low: 'var(--color-risk-low)',
+  Minimal: 'var(--color-ink-mute)',
 };
+
+export function GraphLegend() {
+  return (
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-ink-mute py-2">
+      <span className="font-semibold uppercase tracking-wider text-ink-soft text-[10px]">Observed transaction links</span>
+      <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-risk-crit inline-block" /> Critical (≥75)</span>
+      <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-risk-high inline-block" /> High (45–74)</span>
+      <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-risk-mod inline-block" /> Moderate (30–44)</span>
+      <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-risk-low inline-block" /> Low (&lt;30)</span>
+      <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full border-2 border-risk-crit inline-block" /> Complaint-named</span>
+      <span className="text-ink-mute">Layout is spatial, not chronological.</span>
+    </div>
+  );
+}
 
 export function buildCommunities(a: Analysis) {
   const byCommunity = new Map<number, string[]>();
@@ -49,29 +68,41 @@ export function buildLayout(a: Analysis, members: string[], width = 660, height 
   });
   const maxAmt = Math.max(...links.map((l) => l.amount), 1);
   const sim = forceSimulation(nodes)
-    .force('link', forceLink<GN, GL>(links).id((d) => d.id).distance(70))
-    .force('charge', forceManyBody().strength(-180))
-    .force('collide', forceCollide(18))
+    .force('link', forceLink<GN, GL>(links).id((d) => d.id).distance(76))
+    .force('charge', forceManyBody().strength(-190))
+    .force('collide', forceCollide(20))
     .force('center', forceCenter(width / 2, height / 2))
     .force('x', forceX(width / 2).strength(0.06))
     .force('y', forceY(height / 2).strength(0.1))
     .stop();
   for (let i = 0; i < 300; i++) sim.tick();
 
-  // Fit to view: normalize the simulated positions so the cluster spans the
-  // canvas with margins - a 3-node chain should read as clearly as a 30-node web.
-  const m = 56;
+  const margin = 54;
   const xs = nodes.map((n) => n.x ?? 0), ys = nodes.map((n) => n.y ?? 0);
   const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
   const spanX = Math.max(x1 - x0, 1), spanY = Math.max(y1 - y0, 1);
-  const scale = Math.min((width - 2 * m) / spanX, (height - 2 * m) / spanY, 2.4);
-  const offX = m + ((width - 2 * m) - spanX * scale) / 2 - x0 * scale;
-  const offY = m + ((height - 2 * m) - spanY * scale) / 2 - y0 * scale;
+  const scale = Math.min((width - 2 * margin) / spanX, (height - 2 * margin) / spanY, 2.4);
+  const offX = margin + ((width - 2 * margin) - spanX * scale) / 2 - x0 * scale;
+  const offY = margin + ((height - 2 * margin) - spanY * scale) / 2 - y0 * scale;
   for (const n of nodes) { n.x = (n.x ?? 0) * scale + offX; n.y = (n.y ?? 0) * scale + offY; }
   return { nodes, links, maxAmt };
 }
 
-export default function FlowGraph({ layout, selNode, selEdge, onSelectNode, onSelectEdge, width = 660, height = 480 }: {
+function linkKey(link: GL) {
+  const source = typeof link.source === 'string' ? link.source : (link.source as GN).id;
+  const target = typeof link.target === 'string' ? link.target : (link.target as GN).id;
+  return `${source}->${target}`;
+}
+
+function edgePath(source: GN, target: GN, curve: number) {
+  const sx = source.x ?? 0, sy = source.y ?? 0, tx = target.x ?? 0, ty = target.y ?? 0;
+  const dx = tx - sx, dy = ty - sy, len = Math.hypot(dx, dy) || 1;
+  const nx = -dy / len, ny = dx / len;
+  const cx = (sx + tx) / 2 + nx * curve, cy = (sy + ty) / 2 + ny * curve;
+  return `M ${sx} ${sy} Q ${cx} ${cy} ${tx} ${ty}`;
+}
+
+export default function FlowGraph({ layout, selNode, selEdge, onSelectNode, onSelectEdge, width = 660, height = 400 }: {
   layout: GraphLayout;
   selNode?: string | null;
   selEdge?: { from: string; to: string } | null;
@@ -80,53 +111,61 @@ export default function FlowGraph({ layout, selNode, selEdge, onSelectNode, onSe
   width?: number;
   height?: number;
 }) {
+  const markerId = `flow-arrow-${React.useId().replace(/:/g, '')}`;
   const interactive = Boolean(onSelectNode || onSelectEdge);
-  const labelSize = layout.nodes.length <= 8 ? 12.5 : layout.nodes.length <= 16 ? 11 : 9.5;
+  const labelSize = layout.nodes.length <= 8 ? 11.5 : layout.nodes.length <= 16 ? 10.5 : 9.5;
+  const nodeById = new Map(layout.nodes.map((node) => [node.id, node]));
+  const reverseKeys = new Set(layout.links.map((link) => {
+    const source = typeof link.source === 'string' ? link.source : (link.source as GN).id;
+    const target = typeof link.target === 'string' ? link.target : (link.target as GN).id;
+    return `${target}->${source}`;
+  }));
+
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="w-full mt-2 rounded-lg" style={{ background: '#0E1626', border: '1px solid var(--color-line)' }}>
+    <svg viewBox={`0 0 ${width} ${height}`} className="w-full graph-panel" role="img" aria-label="Observed directed transaction network">
       <defs>
-        <marker id="edge-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-          <path d="M0,0 L8,4 L0,8 z" fill="#5E7191" />
+        <marker id={markerId} markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 z" fill="var(--color-ink-mute)" />
+        </marker>
+        <marker id={`${markerId}-selected`} markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 z" fill="var(--color-brand)" />
         </marker>
       </defs>
-      {layout.links.map((l, i) => {
-        const sn = l.source as GN, t = l.target as GN;
-        const dx = (t.x ?? 0) - (sn.x ?? 0), dy = (t.y ?? 0) - (sn.y ?? 0);
-        const len = Math.hypot(dx, dy) || 1;
-        const tr = 6 + Math.min(10, Math.sqrt(t.inflow) / 90);
-        const ex = (t.x ?? 0) - (dx / len) * (tr + 4), ey = (t.y ?? 0) - (dy / len) * (tr + 4);
-        const isSel = selEdge?.from === sn.id && selEdge?.to === t.id;
-        const pr = 1.4 + (l.amount / layout.maxAmt) * 2.2;
+      <text x="16" y="20" fill="var(--color-ink-mute)" fontFamily="var(--font-mono)" fontSize="10">OBSERVED TRANSACTION LINKS · NOT CHRONOLOGICAL</text>
+      {layout.links.map((link, index) => {
+        const source = nodeById.get(typeof link.source === 'string' ? link.source : (link.source as GN).id);
+        const target = nodeById.get(typeof link.target === 'string' ? link.target : (link.target as GN).id);
+        if (!source || !target) return null;
+        const from = source.id, to = target.id;
+        const isSelected = selEdge?.from === from && selEdge?.to === to;
+        const hasReverse = reverseKeys.has(`${from}->${to}`);
+        const curve = hasReverse ? (index % 2 === 0 ? 13 : -13) : ((index % 3) - 1) * 5;
+        const d = edgePath(source, target, curve);
+        const amountRatio = link.amount / layout.maxAmt;
+        const strokeWidth = 1.2 + amountRatio * 2.4;
+        const labelX = ((source.x ?? 0) + (target.x ?? 0)) / 2;
+        const labelY = ((source.y ?? 0) + (target.y ?? 0)) / 2 + (curve < 0 ? -7 : 12);
         return (
-          <g key={i}>
-            <line x1={sn.x} y1={sn.y} x2={ex} y2={ey}
-              stroke={isSel ? '#4F8CFF' : '#44587A'} strokeWidth={(0.6 + (l.amount / layout.maxAmt) * 3.4) * (isSel ? 1.6 : 1)}
-              opacity={isSel ? 1 : 0.45} markerEnd="url(#edge-arrow)" className={interactive ? 'cursor-pointer' : ''}
-              onClick={onSelectEdge ? () => onSelectEdge(isSel ? null : { from: sn.id, to: t.id }) : undefined} />
-            <circle r={pr} fill={isSel ? '#4F8CFF' : '#2CD9FF'} opacity={0.85} className="flow-anim" style={{ pointerEvents: 'none' }}>
-              <animateMotion dur={`${2.4 + (i % 5) * 0.6}s`} begin={`${(i % 7) * 0.35}s`} repeatCount="indefinite"
-                path={`M${sn.x ?? 0},${sn.y ?? 0} L${ex},${ey}`} />
-            </circle>
+          <g key={linkKey(link)} className={interactive ? 'graph-edge' : undefined}>
+            <path d={d} className="graph-edge-hit" fill="none" onClick={onSelectEdge ? () => onSelectEdge(isSelected ? null : { from, to }) : undefined} />
+            <path d={d} fill="none" stroke={isSelected ? 'var(--color-brand)' : 'var(--color-ink-mute)'} strokeWidth={isSelected ? strokeWidth + 1.3 : strokeWidth} opacity={isSelected ? 1 : 0.72} markerEnd={`url(#${isSelected ? `${markerId}-selected` : markerId})`} onClick={onSelectEdge ? () => onSelectEdge(isSelected ? null : { from, to }) : undefined} />
+            {(layout.links.length <= 14 || isSelected) && <text x={labelX} y={labelY} textAnchor="middle" fill={isSelected ? 'var(--color-ink)' : 'var(--color-ink-soft)'} fontFamily="var(--font-mono)" fontSize="9">{inr(link.amount)}</text>}
           </g>
         );
       })}
-      {layout.nodes.map((n) => {
-        const r = 6 + Math.min(10, Math.sqrt(n.inflow) / 90);
-        const isSel = selNode === n.id;
+      {layout.nodes.map((node) => {
+        const radius = 7 + Math.min(9, Math.sqrt(node.inflow) / 95);
+        const selected = selNode === node.id;
+        const nodeColor = BAND_FILL[node.band] ?? BAND_FILL.Minimal;
         return (
-          <g key={n.id} className={interactive ? 'cursor-pointer' : ''}
-            onClick={onSelectNode ? () => { onSelectNode(isSel ? null : n.id); onSelectEdge?.(null); } : undefined}>
-            {isSel && <circle cx={n.x} cy={n.y} r={r + 4} fill="none" stroke="#4F8CFF" strokeWidth={1.6} />}
-            {n.complaint && (
-              <circle cx={n.x} cy={n.y} r={r} fill="none" stroke="#FF4D5E" strokeWidth={1.2} className="flow-anim" style={{ pointerEvents: 'none' }}>
-                <animate attributeName="r" values={`${r};${r + 10}`} dur="1.8s" repeatCount="indefinite" />
-                <animate attributeName="opacity" values="0.7;0" dur="1.8s" repeatCount="indefinite" />
-              </circle>
-            )}
-            <circle cx={n.x} cy={n.y} r={r} fill={BAND_FILL[n.band] ?? '#5E7191'} opacity={0.88} stroke={n.complaint ? '#FF4D5E' : '#fff'} strokeWidth={n.complaint ? 2.5 : 1.5} />
-            {(n.score >= 45 || n.complaint || isSel) && (
-              <text x={n.x! + r + 3} y={n.y! + 3.5} fontSize={labelSize} fill="#8FA3C0" fontWeight={600}>{n.name.split(' ')[0]} - {Math.round(n.score)}</text>
-            )}
+          <g key={node.id} className={interactive ? 'graph-node' : undefined} tabIndex={interactive ? 0 : undefined} role={interactive ? 'button' : undefined} aria-label={`${node.name} ${node.id}, score ${Math.round(node.score)}, ${node.band}${node.complaint ? ', complaint-named' : ''}`} onClick={onSelectNode ? () => { onSelectNode(selected ? null : node.id); onSelectEdge?.(null); } : undefined} onKeyDown={onSelectNode ? (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); onSelectNode(selected ? null : node.id); onSelectEdge?.(null); } } : undefined}>
+            <title>{`${node.name} (${node.id}) · score ${Math.round(node.score)} · ${node.band}${node.complaint ? ' · complaint-named' : ''}`}</title>
+            {selected && <circle cx={node.x} cy={node.y} r={radius + 8} fill="none" stroke="var(--color-brand)" strokeWidth="2" />}
+            {node.complaint && <circle cx={node.x} cy={node.y} r={radius + 3} fill="none" stroke="var(--color-risk-crit)" strokeWidth="1.5" />}
+            <circle cx={node.x} cy={node.y} r={radius} fill="var(--color-raised)" stroke={nodeColor} strokeWidth={selected ? 2.5 : 2} />
+            <circle cx={node.x} cy={node.y} r={Math.max(3, radius - 4)} fill={nodeColor} opacity="0.84" />
+            {(node.score >= 45 || node.complaint || selected) && <text x={(node.x ?? 0) + radius + 5} y={(node.y ?? 0) - 2} fill="var(--color-ink)" fontSize={labelSize} fontWeight="600">{node.name.split(' ')[0]}</text>}
+            {(node.score >= 45 || node.complaint || selected) && <text x={(node.x ?? 0) + radius + 5} y={(node.y ?? 0) + 11} fill="var(--color-ink-mute)" fontFamily="var(--font-mono)" fontSize="9">{node.id}</text>}
           </g>
         );
       })}

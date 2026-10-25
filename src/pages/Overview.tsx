@@ -1,13 +1,15 @@
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import type { Analysis } from '../engine';
-import { Stat, SectionTitle, ScoreBadge, inr, bandColor } from '../ui';
-import { ArrowRight, AlertTriangle } from 'lucide-react';
+import { Stat, SectionTitle, ScoreBadge, inr, bandColor, Tooltip, GlossaryTip } from '../ui';
+import { ArrowRight, AlertTriangle, Activity, CheckCircle2, Clock } from 'lucide-react';
 import FlowGraph, { buildCommunities, buildLayout } from '../components/FlowGraph';
+import { WhyRiskScoreModal } from '../components/WhyRiskScoreModal';
 import { useNavigate } from 'react-router-dom';
 
 export default function Overview({ a }: { a: Analysis }) {
   const nav = useNavigate();
+  const [selectedNode, setSelectedNode] = React.useState<string | null>(null);
   const hero = useMemo(() => {
     const cs = buildCommunities(a);
     const top = cs[0];
@@ -33,20 +35,49 @@ export default function Overview({ a }: { a: Analysis }) {
 
   return (
     <div className="max-w-[1080px]">
-      <div className="mb-5">
-        <h1 className="text-[22px] font-bold tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>Investigation overview</h1>
-        <p className="text-[13px] text-ink-soft mt-1">Mule-account risk across the monitored consortium. Every score below is explainable - open any account to see exactly why it was flagged.</p>
+      <div className="page-header">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-2">
+          <h1>Investigation overview</h1>
+          {/* System status indicator (Feature 4) */}
+          <div className="flex items-center gap-3 text-[11px] text-ink-mute px-3 py-1.5 rounded-full border border-line bg-surface/70">
+            <span className="flex items-center gap-1.5 text-risk-low">
+              <span className="w-2 h-2 rounded-full bg-risk-low animate-pulse inline-block" />
+              Monitoring active
+            </span>
+            <span className="text-line">•</span>
+            <span className="flex items-center gap-1 num">
+              <Clock size={11} /> {a.buildMs.toFixed(0)}ms scan latency
+            </span>
+          </div>
+        </div>
+        <p>Mule-account risk across the monitored consortium. Every score below is explainable — open any account to see exactly why it was flagged.</p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-        <Stat label="Accounts monitored" value={a.world.accounts.length.toLocaleString('en-IN')} sub={`${a.world.txns.length.toLocaleString('en-IN')} transactions${a.world.seed === 'uploaded' ? ' (uploaded)' : ', Jan-Oct 2026'}`} />
-        <Stat label="Open alerts" value={d.alerts.length} sub={`${d.complaintLinkedAlerts} directly named in complaints`} accent="var(--color-risk-high)" />
-        <Stat label="Suspicious networks" value={topNetworks.length} sub="Communities with concentrated risk signals" accent="var(--color-risk-crit)" />
-        <Stat label="Complaints on file" value={a.world.complaints.length} sub="NCRP-style cybercrime reports" />
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 section-gap stat-grid">
+        <Tooltip text="Total customer deposit and current accounts evaluated within the active consortium database">
+          <div className="cursor-help">
+            <Stat label="Accounts monitored ⓘ" value={a.world.accounts.length.toLocaleString('en-IN')} sub={`${a.world.txns.length.toLocaleString('en-IN')} transactions${a.world.seed === 'uploaded' ? ' (uploaded)' : ', Jan-Oct 2026'}`} />
+          </div>
+        </Tooltip>
+        <Tooltip text="Accounts meeting High (≥45) or Critical (≥75) threshold requiring human review">
+          <div className="cursor-help">
+            <Stat label="Open alerts ⓘ" value={d.alerts.length} sub={`${d.complaintLinkedAlerts} directly named in complaints`} accent="var(--color-risk-high)" />
+          </div>
+        </Tooltip>
+        <Tooltip text="Clustered account subgraphs with concentrated pass-through or layering activity">
+          <div className="cursor-help">
+            <Stat label="Suspicious networks ⓘ" value={topNetworks.length} sub="Communities with concentrated risk signals" accent="var(--color-risk-crit)" />
+          </div>
+        </Tooltip>
+        <Tooltip text="Official victim complaints filed via national portal matched against account graph">
+          <div className="cursor-help">
+            <Stat label="Complaints on file ⓘ" value={a.world.complaints.length} sub="NCRP-style cybercrime reports" />
+          </div>
+        </Tooltip>
       </div>
 
-      <div className="grid lg:grid-cols-5 gap-4 mb-6">
-        <div className="card p-4 lg:col-span-2">
+      <div className="grid lg:grid-cols-5 gap-5 section-gap">
+        <div className="card p-5 lg:col-span-2">
           <SectionTitle>Risk distribution</SectionTitle>
           <div className="space-y-2.5 mt-4">
             {(['Critical', 'High', 'Moderate', 'Low'] as const).map((b) => {
@@ -71,16 +102,34 @@ export default function Overview({ a }: { a: Analysis }) {
           </div>
         </div>
 
-        <div className="card p-4 lg:col-span-3 cursor-pointer" onClick={() => nav('/network')} title="Open network explorer">
-          <SectionTitle right={<span className="text-[12px] font-medium" style={{ color: 'var(--color-brand)' }}>Open network explorer</span>}>
-            Money movement - highest-risk network
+        <div className="card p-5 lg:col-span-3">
+          <WhyRiskScoreModal accountId={selectedNode} onClose={() => setSelectedNode(null)} a={a} />
+          <SectionTitle
+            right={
+              <button
+                className="text-[12px] font-medium text-brand hover:underline cursor-pointer bg-transparent border-none"
+                onClick={() => nav('/network')}
+              >
+                Open network explorer →
+              </button>
+            }
+          >
+            Money movement — highest-risk network
           </SectionTitle>
           {hero ? (
             <>
               <div className="text-[12px] text-ink-soft mt-1">
-                Network #{hero.c.cid} - {hero.c.members.length} accounts - {hero.c.flagged.length} flagged - {hero.c.complaints.length} complaint-linked. Particles trace transaction direction and size.
+                Network #{hero.c.cid} • {hero.c.members.length} accounts • {hero.c.flagged.length} flagged • {hero.c.complaints.length} complaint-linked. Click any node to see why it was flagged.
               </div>
-              <FlowGraph layout={hero.layout} width={660} height={400} />
+              <div className="mt-2">
+                <FlowGraph
+                  layout={hero.layout}
+                  width={660}
+                  height={400}
+                  selNode={selectedNode}
+                  onSelectNode={(id) => setSelectedNode(id)}
+                />
+              </div>
             </>
           ) : (
             <div className="mt-6 mb-4 px-2 text-[12.5px] text-ink-soft leading-relaxed">
@@ -93,7 +142,7 @@ export default function Overview({ a }: { a: Analysis }) {
       </div>
 
       <div className="card">
-        <div className="flex items-center justify-between px-4 pt-4 pb-2">
+        <div className="flex items-center justify-between px-5 pt-5 pb-2">
           <SectionTitle>Highest-risk accounts</SectionTitle>
           <Link to="/alerts" className="flex items-center gap-1 text-[12px] font-medium no-underline mb-3" style={{ color: 'var(--color-brand)' }}>
             Full alert queue <ArrowRight size={13} />

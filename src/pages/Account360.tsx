@@ -1,7 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import type { Analysis } from '../engine';
-import { ScoreBadge, FactorBars, SectionTitle, inr, inrFull, fmtDate, fmtDateTime, bandColor } from '../ui';
+import { ScoreBadge, FactorBars, SectionTitle, inr, inrFull, fmtDate, fmtDateTime, bandColor, Breadcrumbs, Tooltip, GlossaryTip, ConfirmModal, useToast } from '../ui';
 import { loadTriage, saveTriageEntry, TRIAGE_LABELS, TRIAGE_COLORS, type TriageStatus } from '../state/triage';
 import { ArrowLeft, Printer, GitBranch } from 'lucide-react';
 
@@ -14,6 +14,23 @@ export default function Account360({ a }: { a: Analysis }) {
   const f = a.features.get(id);
   const [tick, setTick] = useState(0);
   const triage = loadTriage()[id];
+  const { showToast } = useToast();
+
+  // Confirmation modal state for destructive / sensitive triage status changes
+  const [pendingStatus, setPendingStatus] = useState<TriageStatus | null>(null);
+
+  // Track in recent accounts
+  useEffect(() => {
+    if (id) {
+      try {
+        const stored = JSON.parse(sessionStorage.getItem('surag_recent_accounts') ?? '[]');
+        const updated = [id, ...stored.filter((x: string) => x !== id)].slice(0, 8);
+        sessionStorage.setItem('surag_recent_accounts', JSON.stringify(updated));
+      } catch {
+        // ignore
+      }
+    }
+  }, [id]);
 
   const data = useMemo(() => {
     if (!acc) return null;
@@ -47,52 +64,118 @@ export default function Account360({ a }: { a: Analysis }) {
   }
   const name = cust?.name ?? id;
   const maxVal = Math.max(1, ...data.series.map((s) => Math.max(s.inflow, s.outflow)));
-  const setStatus = (status: TriageStatus) => { saveTriageEntry(id, { status, note: triage?.note ?? '', updatedAt: Date.now() }); setTick(tick + 1); };
+
+  const applyStatusChange = (status: TriageStatus) => {
+    const prevStatus = triage?.status ?? 'new';
+    saveTriageEntry(id, { status, note: triage?.note ?? '', updatedAt: Date.now() });
+    setTick((t) => t + 1);
+    showToast(
+      `Status changed to "${TRIAGE_LABELS[status]}"`,
+      () => {
+        saveTriageEntry(id, { status: prevStatus, note: triage?.note ?? '', updatedAt: Date.now() });
+        setTick((t) => t + 1);
+      },
+      'Undo'
+    );
+  };
+
+  const handleStatusClick = (status: TriageStatus) => {
+    if (status === 'escalated' || status === 'cleared') {
+      setPendingStatus(status);
+    } else {
+      applyStatusChange(status);
+    }
+  };
 
   return (
     <div className="max-w-[1080px]">
-      <button className="btn mb-4 no-print" onClick={() => nav(-1 as never)}><ArrowLeft size={14} /> Back</button>
+      <Breadcrumbs
+        items={[
+          { label: 'Home', to: '/' },
+          { label: 'Alert queue', to: '/alerts' },
+          { label: `${name} (${acc.id})` },
+        ]}
+      />
 
-      <div className="card p-5 mb-4">
+      <ConfirmModal
+        open={pendingStatus !== null}
+        title={pendingStatus === 'escalated' ? 'Confirm Case Escalation' : 'Confirm Account Clearance'}
+        description={
+          pendingStatus === 'escalated'
+            ? `Are you sure you want to escalate account ${acc.id} (${name})? This marks it for external Law Enforcement Agency (LEA) referral and locks preliminary findings in the audit trail.`
+            : `Are you sure you want to mark account ${acc.id} (${name}) as cleared? This indicates investigator review determined low actionable mule risk.`
+        }
+        confirmText={pendingStatus === 'escalated' ? 'Escalate Case' : 'Clear Account'}
+        danger={pendingStatus === 'escalated'}
+        onConfirm={() => {
+          if (pendingStatus) applyStatusChange(pendingStatus);
+          setPendingStatus(null);
+        }}
+        onCancel={() => setPendingStatus(null)}
+      />
+
+      <div className="flex items-center justify-between mb-4 no-print">
+        <button className="btn" onClick={() => nav(-1 as never)}>
+          <ArrowLeft size={14} /> Back
+        </button>
+      </div>
+
+      <div className="card p-6 mb-5">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 flex-wrap">
-              <h1 className="text-[20px] font-bold tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>{name}</h1>
+              <h1 className="text-[20px] font-bold tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>
+                {name}
+              </h1>
               <ScoreBadge score={score.score} band={score.band} size="lg" />
             </div>
-            <div className="num text-[12px] text-ink-mute mt-1.5">{acc.id} - {acc.bank} - {acc.ifsc} - {acc.type === 'current' ? 'Current' : 'Savings'} - opened {fmtDate(acc.openedAt)}</div>
-            <div className="text-[13px] text-ink-soft mt-1">Observed pattern: {score.archetype} - {cust?.occupation}, declared income {inrFull(cust?.declaredIncome ?? 0)}/yr - {acc.city}</div>
+            <div className="num text-[12px] text-ink-mute mt-1.5">
+              {acc.id} • {acc.bank} • {acc.ifsc} • {acc.type === 'current' ? 'Current' : 'Savings'} • opened {fmtDate(acc.openedAt)}
+            </div>
+            <div className="text-[13px] text-ink-soft mt-1">
+              Observed pattern: <GlossaryTip term="pass-through" label={score.archetype} /> • {cust?.occupation}, declared income {inrFull(cust?.declaredIncome ?? 0)}/yr • {acc.city}
+            </div>
           </div>
           <div className="flex flex-col items-end gap-2 no-print">
             <div className="flex gap-2">
-              <Link to={`/trails?account=${id}`} className="btn no-underline"><GitBranch size={14} /> Trace funds</Link>
-              <Link to={`/report/account/${id}`} className="btn no-underline"><Printer size={14} /> Evidence report</Link>
+              <Link to={`/trails?account=${id}`} className="btn no-underline">
+                <GitBranch size={14} /> Trace funds
+              </Link>
+              <Link to={`/report/account/${id}`} className="btn no-underline">
+                <Printer size={14} /> Evidence report
+              </Link>
             </div>
             <div className="flex gap-1.5">
               {(Object.keys(TRIAGE_LABELS) as TriageStatus[]).map((s) => (
-                <button key={s} className="chip cursor-pointer" onClick={() => setStatus(s)}
+                <button
+                  key={s}
+                  className="chip cursor-pointer"
+                  onClick={() => handleStatusClick(s)}
                   style={{
                     color: TRIAGE_COLORS[s],
                     background: (triage?.status ?? 'new') === s ? `${TRIAGE_COLORS[s]}22` : 'transparent',
                     borderColor: `${TRIAGE_COLORS[s]}45`,
-                  }}>
+                  }}
+                  title={s === 'escalated' || s === 'cleared' ? 'Requires confirmation' : undefined}
+                >
                   {TRIAGE_LABELS[s]}
                 </button>
               ))}
             </div>
           </div>
         </div>
-        <div className="mt-3 text-[12px] text-ink-soft border-t border-line pt-3">
-          Suspicion for review only - not a finding of guilt. Corroborate with account documents and customer contact before any action.
+        <div className="mt-3 text-[12px] text-ink-soft border-t border-line pt-3 flex items-center justify-between">
+          <span>Suspicion for review only — not a finding of guilt. Corroborate with account documents and customer contact before any action.</span>
+          <span className="text-[11px] text-ink-mute">Status: {TRIAGE_LABELS[triage?.status ?? 'new']}</span>
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-4 mb-4">
-        <div className="card p-4">
+      <div className="grid lg:grid-cols-2 gap-5 mb-5">
+        <div className="card p-5">
           <SectionTitle>Why this score</SectionTitle>
           <FactorBars factors={score.factors} />
         </div>
-        <div className="card p-4">
+        <div className="card p-5">
           <SectionTitle>Weekly flow</SectionTitle>
           <div className="mt-2">
             <svg viewBox={`0 0 560 180`} className="w-full">
@@ -117,15 +200,30 @@ export default function Account360({ a }: { a: Analysis }) {
             </div>
           </div>
           <div className="grid grid-cols-3 gap-3 mt-4 text-center">
-            <div><div className="num text-[16px] font-semibold">{inr(f.inTotal)}</div><div className="text-[11px] text-ink-mute">Total inflow</div></div>
-            <div><div className="num text-[16px] font-semibold">{Math.round(f.passThrough24h * 100)}%</div><div className="text-[11px] text-ink-mute">Out within 24h</div></div>
-            <div><div className="num text-[16px] font-semibold">{f.medianHoldHours > 0 ? `${f.medianHoldHours.toFixed(1)}h` : '-'}</div><div className="text-[11px] text-ink-mute">Median hold</div></div>
+            <div>
+              <div className="num text-[16px] font-semibold">{inr(f.inTotal)}</div>
+              <Tooltip text="Total INR credits received during the monitored period">
+                <div className="text-[11px] text-ink-mute cursor-help">Total inflow ⓘ</div>
+              </Tooltip>
+            </div>
+            <div>
+              <div className="num text-[16px] font-semibold">{Math.round(f.passThrough24h * 100)}%</div>
+              <Tooltip text="Percentage of funds transferred out within 24 hours of arrival (pass-through velocity)">
+                <div className="text-[11px] text-ink-mute cursor-help">Out within 24h ⓘ</div>
+              </Tooltip>
+            </div>
+            <div>
+              <div className="num text-[16px] font-semibold">{f.medianHoldHours > 0 ? `${f.medianHoldHours.toFixed(1)}h` : '-'}</div>
+              <Tooltip text="Median hours money stays in account before being dispatched to downstream accounts">
+                <div className="text-[11px] text-ink-mute cursor-help">Median hold ⓘ</div>
+              </Tooltip>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-4">
-        <div className="card p-4">
+      <div className="grid lg:grid-cols-2 gap-5">
+        <div className="card p-5">
           <SectionTitle>Top counterparties</SectionTitle>
           <div className="space-y-1.5">
             {data.counterparties.map((c) => {

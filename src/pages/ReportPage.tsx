@@ -1,8 +1,8 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import type { Analysis } from '../engine';
-import { ScoreBadge, FactorBars, SectionTitle, inrFull, fmtDate, fmtDateTime } from '../ui';
-import { Printer, ArrowLeft } from 'lucide-react';
+import { ScoreBadge, FactorBars, SectionTitle, inrFull, fmtDate, fmtDateTime, Breadcrumbs } from '../ui';
+import { Printer, ArrowLeft, ShieldAlert } from 'lucide-react';
 
 export default function ReportPage({ a }: { a: Analysis }) {
   const { id = '' } = useParams();
@@ -33,15 +33,40 @@ export default function ReportPage({ a }: { a: Analysis }) {
 
   return (
     <div className="max-w-[860px] report-print">
-      <div className="flex gap-2 mb-4 no-print">
-        <Link to={`/accounts/${id}`} className="btn no-underline"><ArrowLeft size={14} /> Back to account</Link>
-        <button className="btn" onClick={() => window.print()}><Printer size={14} /> Print / save PDF</button>
+      <div className="no-print mb-3">
+        <Breadcrumbs
+          items={[
+            { label: 'Home', to: '/' },
+            { label: 'Alert queue', to: '/alerts' },
+            { label: `${name} (${acc.id})`, to: `/accounts/${id}` },
+            { label: 'Evidence report' },
+          ]}
+        />
+      </div>
+
+      <div className="flex items-center justify-between gap-2 mb-4 no-print">
+        <Link to={`/accounts/${id}`} className="btn no-underline">
+          <ArrowLeft size={14} /> Back to account
+        </Link>
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] text-ink-mute hidden sm:inline flex items-center gap-1">
+            <ShieldAlert size={12} className="text-risk-mod" /> Sensitive financial intelligence
+          </span>
+          <button className="btn" onClick={() => window.print()}>
+            <Printer size={14} /> Print / Save PDF
+          </button>
+        </div>
       </div>
 
       <div className="card p-6 mb-4">
-        <div className="text-[11px] uppercase tracking-[0.18em] text-ink-mute">Investigation evidence report</div>
+        <div className="flex items-center justify-between">
+          <div className="text-[11px] uppercase tracking-[0.18em] text-ink-mute">Investigation evidence report</div>
+          <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded border border-line bg-surface text-ink-soft">
+            CONFIDENTIAL // FOR AUDIT ONLY
+          </span>
+        </div>
         <h1 className="text-[22px] font-bold tracking-tight mt-1" style={{ fontFamily: 'var(--font-display)' }}>{name}</h1>
-        <div className="num text-[12px] text-ink-mute mt-1">{acc.id} - {acc.bank} - {acc.ifsc}</div>
+        <div className="num text-[12px] text-ink-mute mt-1">{acc.id} • {acc.bank} • {acc.ifsc}</div>
         <div className="text-[11px] text-ink-mute mt-1">Prepared {fmtDateTime(now.getTime())} - Surag synthetic demonstration environment</div>
         <div className="mt-4 flex items-center gap-4">
           <ScoreBadge score={score.score} band={score.band} size="lg" />

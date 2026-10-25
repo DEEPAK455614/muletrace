@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { Analysis } from '../engine';
-import { SectionTitle } from '../ui';
+import { SectionTitle, Breadcrumbs, Tooltip } from '../ui';
 import { loadAuditLog, verifyAuditChain, type AuditEntry, type ChainCheck } from '../state/audit';
 import { ShieldCheck, ShieldAlert } from 'lucide-react';
 
@@ -23,14 +23,15 @@ export default function Audit({ a }: { a: Analysis }) {
   };
 
   return (
-    <div>
-      <h1 className="text-[22px] font-bold tracking-[-0.01em] mb-1">Audit trail</h1>
-      <p className="text-[13px] text-ink2 mb-5 max-w-[720px]">
-        Browser-local record of triage status changes. Each entry chains to the previous one with SHA-256, so
-        edits to a recorded entry break the chain and the check below fails. It cannot detect deletion of the most
-        recent entries, wholesale replacement, or re-hashing of the whole log - only a trusted server-side anchor
-        would. Demonstration-grade integrity.
-      </p>
+    <div className="max-w-[1080px]">
+      <Breadcrumbs items={[{ label: 'Home', to: '/' }, { label: 'Audit trail' }]} />
+
+      <div className="page-header">
+        <h1>Investigative audit trail</h1>
+        <p>
+          Browser-local record of triage status changes. Each entry chains to the previous one with cryptographic SHA-256 hashes, ensuring tamper-evident logging of investigator review decisions.
+        </p>
+      </div>
 
       <div className="card p-4 mb-4 flex items-center gap-3">
         {check === null ? (
