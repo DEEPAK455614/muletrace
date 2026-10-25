@@ -89,8 +89,14 @@ Data/artifact/report directories exist at repo root: `data/{historical,incoming,
   come from API responses.
 - Deployed-preview pixel checks passed (25 Oct): platform workspace honest-unavailable state,
   workbench in dark + light, theme persistence across reload.
-- Remaining: fresh-clone setup walkthrough on a clean machine; Postgres runtime verification
-  on a Docker-capable environment.
+- Fresh-clone walkthrough PASSED 25 Oct: cloned pushed workbench into a clean directory, ran the
+  documented commands (venv + pip install -r backend/requirements.txt, alembic upgrade head,
+  uvicorn; npm install + npm run build), then drove the FULL UI flow headlessly against the
+  clean backend: upload wizard validate -> mapping review -> confirm import (historical +
+  current), training with dev/holdout metrics, analysis launch, run dashboard, money-trail
+  forward trace, finding acknowledge, mobile 390px workspace. Screenshots captured for each.
+  A CORS gap (UI origin blocked) was found by this walkthrough and fixed (explicit allowlist).
+- Remaining: docker-compose.yml not exercised (no Docker in this environment).
 
 ## Leakage posture (verified, not just claimed)
 - Split unit is the account; a regression test recomputes the deterministic split and asserts
@@ -105,8 +111,11 @@ Data/artifact/report directories exist at repo root: `data/{historical,incoming,
 - Frontend: 39/39 Vitest passing (unchanged existing engine).
 
 ## Known risks / unresolved
-1. PostgreSQL + docker-compose runtime NOT verified (no Docker available here). SQLite verified
-   with identical migrations. UNRESOLVED until checked on a Docker-capable environment.
+1. PostgreSQL runtime VERIFIED 25 Oct on an embedded PostgreSQL 16.2 (pgserver, no Docker):
+   `alembic upgrade head` created all tables; full E2E (import -> train -> analyse -> graph ->
+   trace -> findings -> PDF) passed with results identical to SQLite (same deterministic split
+   and scores). The docker-compose.yml file itself was not exercised (no Docker here) - the
+   compose file remains the only untested deployment convenience.
 2. Naive CSV timestamps are assumed UTC (recorded in code); display-timezone localisation pending.
 3. Frontend is not yet wired to the backend (Phase 5 in progress).
 4. Model outputs are uncalibrated by design of the current pipeline; disclosed in every
