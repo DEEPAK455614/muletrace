@@ -1,0 +1,1 @@
+We begin in the backend workspace. A CSV is validated before storage. The analyst reviews column mapping and sample rows, chooses historical or current data, then confirms the import. Missing recipient information is not invented. Registered datasets and earlier analysis runs remain available for reuse.

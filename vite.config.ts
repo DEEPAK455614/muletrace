@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
+  server: { watch: { ignored: ["**/video/**"] } },
   plugins: [react(), tailwindcss()],
   build: { chunkSizeWarningLimit: 1200 },
 })

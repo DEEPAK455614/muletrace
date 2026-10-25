@@ -15,7 +15,7 @@ async function req<T>(path: string, init?: RequestInit): Promise<T> {
     r = await fetch(`${BASE}${path}`, init);
   } catch {
     throw new ApiError(0, 'api_unreachable',
-      `Cannot reach the MuleTrace API at ${BASE}. This hosted preview serves the frontend only - ` +
+      `Cannot reach the Suraag API at ${BASE}. This hosted preview serves the frontend only - ` +
       `the integrated import/train/analyse/report flow runs locally: start the backend ` +
       `(cd backend && uvicorn app.main:app) and set VITE_API_BASE if it is not ${BASE}. ` +
       `No sample data is substituted.`);

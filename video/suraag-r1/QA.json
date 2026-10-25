@@ -1,0 +1,24 @@
+{
+  "duration_seconds": "193.243000",
+  "bytes": "18841354",
+  "streams": [
+    {
+      "codec_name": "h264",
+      "width": 1920,
+      "height": 1080,
+      "duration": "193.200000",
+      "sample_rate": null
+    },
+    {
+      "codec_name": "aac",
+      "width": null,
+      "height": null,
+      "duration": "193.200000",
+      "sample_rate": "48000"
+    }
+  ],
+  "decode_errors": "",
+  "audio_inspection": "All seven transcripts checked against supplied scripts; source peaks below0dBFS; final integrated loudness about-16.4LUFS, true peak-1.46dBTP. Direct listening unavailable, pronunciation/voice naturalness not certified.",
+  "run_id": "3e55988c-1560-494e-8361-81d0cd77f028",
+  "visual_inspection": "Real full-frame samples across chapters, trace, findings, ML contributions, timeline, complaint groups, audit, report PDF and final exported video. PDF belongs to shown run."
+}

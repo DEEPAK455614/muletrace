@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     reports_dir: str = str(REPO_ROOT / 'reports')
     max_upload_bytes: int = 25 * 1024 * 1024  # laptop-scale guard
     max_csv_rows: int = 500_000
-    app_name: str = 'MuleTrace Investigation API'
+    app_name: str = 'Suraag Investigation API'
     # Browser UIs call the API cross-origin; allow only explicit local/preview origins.
     cors_origins: str = 'http://127.0.0.1:5173,http://localhost:5173,http://127.0.0.1:4173,http://localhost:4173,https://redesign.muletrace-5gm.pages.dev'
 

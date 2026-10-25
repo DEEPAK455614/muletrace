@@ -1,4 +1,4 @@
-# MuleTrace
+# Suraag
 
 Intelligent mule-account detection and financial-fraud investigation platform (Cyber
 Hackathon 2026, PS-01). React + TypeScript + Vite frontend at the repository root;
@@ -12,24 +12,6 @@ npm test                       # 39 engine tests
 ```
 
 ---
-
-## Backend (MULE DRISHTI SRS implementation)
-
-A FastAPI + SQLAlchemy/Alembic backend implementing the SRS data foundation now lives in
-`backend/`. The React app at the repository root is unchanged and remains the deployed UI;
-wiring it to the API is Phase 5.
-
-Local start (SQLite):
-```bash
-cd backend && pip install -r requirements.txt
-DATABASE_URL=sqlite:///./data/muletrace.db alembic upgrade head
-uvicorn app.main:app --reload
-```
-PostgreSQL (untested in build sandbox): `docker compose up db`, set `DATABASE_URL` per
-`.env.example`, then the same `alembic upgrade head`.
-
-Tests: `cd backend && python3 -m pytest tests/ -q` (13 passing as of 25 Oct 2026).
-See `PROJECT_STATUS.md` for implemented/tested/incomplete status per SRS phase.
 
 ## One-command local setup (full platform)
 
@@ -55,7 +37,10 @@ Core path: Workspace -> Insert Specific Dataset (import a historical CSV with a
 Dashboard / Money Trail / Findings -> PDF report.
 
 PostgreSQL mode: `docker compose up -d db`, set `DATABASE_URL` in `.env` (see
-`.env.example`), then `alembic upgrade head`. NOTE: the Postgres path is not yet
-verified in CI; SQLite is the verified local mode with identical migrations.
+`.env.example`), then `alembic upgrade head`. Embedded PostgreSQL16.2 runtime was verified in the 25 October QA; docker-compose itself was not exercised in the sandbox.
 
-Tests: `cd backend && python3 -m pytest tests/ -q` (23 tests) and `npm test` (39 tests).
+Tests: `cd backend && python3 -m pytest tests/ -q` (25 tests) and `npm test` (39 tests).
+
+## Short demo
+
+See `video/suraag-r1/README.md`. The short private review video distinguishes the persisted backend workspace from the separate browser-demo workbench.

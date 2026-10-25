@@ -103,7 +103,7 @@ def generate_report(db: Session, run_id: str, actor_ref: str = 'local-session') 
             y -= dy * mm
         y -= gap_after * mm
 
-    para('MuleTrace Investigation Report', 16, 7.5, gap_after=3)
+    para('Suraag Investigation Report', 16, 7.5, gap_after=3)
     para('Investigative leads for human review - not automated legal conclusions.', 10, gap_after=2)
     para(f'Analysis run: {run.id}')
     if dataset:

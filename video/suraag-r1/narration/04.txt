@@ -1,0 +1,1 @@
+Next, we analyse the current dataset using the active model. The dashboard records its dataset and model versions, account scores, risk bands, and triggered rules. In this example, the planted pass-through account ranks highest. The combined score uses sixty percent model output and forty percent rules. The model output is uncalibrated, not a validated fraud probability.

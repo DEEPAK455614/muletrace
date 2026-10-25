@@ -15,3 +15,12 @@ artifacts/*
 !artifacts/.gitkeep
 reports/*
 !reports/.gitkeep
+
+# Generated video media kept in the private Drive media archive
+video/**/recordings/
+video/**/audio/
+video/**/qa/
+video/**/captures/
+video/**/*.mp4
+video/**/*.pdf
+video/**/latest-run.txt

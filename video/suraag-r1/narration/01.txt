@@ -1,0 +1,1 @@
+Meet Suraag, a financial crime investigation prototype built for PS zero one. It brings data import, historical model training, account triage, money trails, and evidence reporting into one application. This demonstration uses synthetic records only. Scores are investigation leads for human review, never proof of fraud.
