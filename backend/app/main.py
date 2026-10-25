@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
 
@@ -10,6 +11,12 @@ from app.core.errors import ApiError, api_error_handler
 from app.db.session import engine
 
 app = FastAPI(title=settings.app_name, docs_url=None, redoc_url=None, openapi_url=None)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[o.strip() for o in settings.cors_origins.split(',') if o.strip()],
+    allow_methods=['GET', 'POST', 'PATCH'],
+    allow_headers=['Content-Type'],
+)
 app.add_exception_handler(ApiError, api_error_handler)
 
 
