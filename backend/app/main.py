@@ -1,4 +1,5 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from sqlalchemy import text
 
 from app.api.v1.analysis import router as analysis_router
@@ -10,6 +11,15 @@ from app.db.session import engine
 
 app = FastAPI(title=settings.app_name, docs_url=None, redoc_url=None, openapi_url=None)
 app.add_exception_handler(ApiError, api_error_handler)
+
+
+@app.exception_handler(Exception)
+async def unhandled_error(_: Request, exc: Exception) -> JSONResponse:
+    # Consistent JSON errors; never leak stack traces, paths or internals (SRS section 8/11).
+    return JSONResponse(status_code=500,
+                        content={'error': {'code': 'internal_error',
+                                           'message': 'Unexpected server error. The request ID is in the server log.',
+                                           'details': {}}})
 app.include_router(datasets_router)
 app.include_router(training_router, prefix='/api/v1')
 app.include_router(analysis_router, prefix='/api/v1')

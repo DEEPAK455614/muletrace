@@ -142,3 +142,75 @@ select.btn:focus, input.btn:focus { outline: 2px solid var(--color-brand-soft); 
 main > div { animation: nw-rise 420ms cubic-bezier(0.22, 0.9, 0.28, 1) both; }
 
 .demo-pill-uploaded { border-color: #FFB02080 !important; color: #FFB020 !important; background: #FFB02014 !important; }
+
+/* FR-10: Light / Dark / System themes. Tokens switch under [data-theme]; no reload,
+   no state reset. Colour alone never carries a risk classification - text labels pair everywhere. */
+:root[data-theme='light'] {
+  --color-paper: #F6F4EF;
+  --color-surface: #FFFFFF;
+  --color-ink: #182233;
+  --color-ink-soft: #3D4C63;
+  --color-ink-mute: #6B7A92;
+  --color-line: #DDD8CE;
+  --color-brand: #0E7490;
+  --color-brand-soft: rgba(14, 116, 144, 0.10);
+  --color-risk-low: #0F7A4D;
+  --color-risk-mod: #9A6A00;
+  --color-risk-high: #C2400C;
+  --color-risk-crit: #B91C2E;
+}
+
+:root[data-theme='light'] body { background: var(--color-paper); }
+:root[data-theme='light'] body::before {
+  background:
+    radial-gradient(900px 500px at 85% -10%, rgba(14, 116, 144, 0.05), transparent 60%),
+    radial-gradient(700px 500px at -10% 110%, rgba(154, 106, 0, 0.04), transparent 60%);
+}
+:root[data-theme='light'] .card {
+  background: #FFFFFF;
+  border: 1px solid var(--color-line);
+  box-shadow: 0 1px 2px rgba(24, 34, 51, 0.05), 0 8px 24px rgba(24, 34, 51, 0.06);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+:root[data-theme='light'] .btn {
+  background: #FFFFFF; border-color: var(--color-line); color: var(--color-ink);
+}
+:root[data-theme='light'] .btn:hover { background: #F0EDE6; border-color: #C9C2B4; }
+:root[data-theme='light'] .btn-primary { background: var(--color-brand); border-color: var(--color-brand); color: #FFFFFF; box-shadow: none; }
+:root[data-theme='light'] .btn-primary:hover { background: #155E75; border-color: #155E75; }
+:root[data-theme='light'] .navpill:hover { background: rgba(14, 116, 144, 0.07); }
+:root[data-theme='light'] .table-base td { border-bottom-color: #ECE8DF; }
+:root[data-theme='light'] .rowlink:hover { background: rgba(14, 116, 144, 0.05); }
+:root[data-theme='light'] * { scrollbar-color: #C9C2B4 transparent; }
+:root[data-theme='light'] *::-webkit-scrollbar-thumb { background: #C9C2B4; }
+:root[data-theme='light'] .bg-surface { background-color: var(--color-surface) !important; }
+
+/* Theme selector (top bar) */
+.theme-toggle {
+  display: inline-flex; align-items: center; gap: 2px;
+  border: 1px solid var(--color-line); border-radius: 10px; padding: 2px;
+  background: var(--color-surface);
+}
+.theme-toggle-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 600; color: var(--color-ink-mute);
+  padding: 4px 9px; border-radius: 8px; border: none; background: transparent; cursor: pointer;
+  transition: background 120ms ease-out, color 120ms ease-out;
+}
+.theme-toggle-btn:hover { color: var(--color-ink); }
+.theme-toggle-btn.active { background: var(--color-brand-soft); color: var(--color-brand); }
+.theme-toggle-btn:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 1px; }
+
+/* Backend-driven platform screens: shared bits */
+.kpi { display: flex; flex-direction: column; gap: 2px; }
+.kpi-label { font-size: 10.5px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--color-ink-mute); }
+.kpi-value { font-size: 24px; font-weight: 700; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.band-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 999px; border: 1px solid; }
+.band-low { color: var(--color-risk-low); border-color: var(--color-risk-low); }
+.band-medium { color: var(--color-risk-mod); border-color: var(--color-risk-mod); }
+.band-high { color: var(--color-risk-high); border-color: var(--color-risk-high); }
+.band-critical { color: var(--color-risk-crit); border-color: var(--color-risk-crit); }
+.state-box { padding: 28px 20px; text-align: center; color: var(--color-ink-mute); font-size: 13px; }
+.warn-text { color: var(--color-risk-mod); font-size: 12px; }
+.err-text { color: var(--color-risk-crit); font-size: 12.5px; }

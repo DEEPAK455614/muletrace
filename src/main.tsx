@@ -13,6 +13,9 @@ import '@fontsource/ibm-plex-mono/500.css';
 import '@fontsource/ibm-plex-mono/600.css';
 import './index.css';
 import App from './App';
+import { initTheme } from './state/theme';
+
+initTheme(); // apply saved/system theme before first paint (no flash)
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

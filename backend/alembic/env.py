@@ -11,8 +11,10 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 url = os.environ.get('DATABASE_URL')
-if url:
-    config.set_main_option('sqlalchemy.url', url)
+if not url:
+    from app.core.config import settings
+    url = settings.database_url  # absolute, CWD-independent default
+config.set_main_option('sqlalchemy.url', url)
 target_metadata = Base.metadata
 
 
@@ -24,9 +26,7 @@ def run_migrations_offline() -> None:
 
 def run_migrations_online() -> None:
     section = config.get_section(config.config_ini_section, {})
-    url = os.environ.get('DATABASE_URL')
-    if url:
-        section['sqlalchemy.url'] = url
+    section['sqlalchemy.url'] = config.get_main_option('sqlalchemy.url')
     connectable = engine_from_config(section, prefix='sqlalchemy.', poolclass=pool.NullPool)
     with connectable.connect() as connection:
         context.configure(connection=connection, target_metadata=target_metadata)

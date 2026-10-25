@@ -4,7 +4,8 @@ import { analyze, analyzeWorld, type Analysis } from './engine';
 import type { World } from './engine/types';
 import type { ImportResult } from './engine/import';
 import { setActiveDatasetScope } from './state/dataset';
-import { LayoutDashboard, Bell, Network, GitBranch, FileWarning, FlaskConical, BookOpen, Menu, X, ShieldCheck, History, Upload } from 'lucide-react';
+import { LayoutDashboard, Bell, Network, GitBranch, FileWarning, FlaskConical, BookOpen, Menu, X, ShieldCheck, History, Upload, Server } from 'lucide-react';
+import ThemeToggle from './components/ThemeToggle';
 
 const Workbench = lazy(() => import('./pages/Workbench'));
 const Overview = lazy(() => import('./pages/Overview'));
@@ -18,6 +19,13 @@ const Methodology = lazy(() => import('./pages/Methodology'));
 const Audit = lazy(() => import('./pages/Audit'));
 const ReportPage = lazy(() => import('./pages/ReportPage'));
 const ImportData = lazy(() => import('./pages/ImportData'));
+const PlatformWorkspace = lazy(() => import('./pages/platform/Workspace'));
+const PlatformUpload = lazy(() => import('./pages/platform/UploadWizard'));
+const PlatformTraining = lazy(() => import('./pages/platform/Training'));
+const PlatformAnalyse = lazy(() => import('./pages/platform/AnalyseLauncher'));
+const PlatformRun = lazy(() => import('./pages/platform/RunDashboard'));
+const PlatformTrail = lazy(() => import('./pages/platform/MoneyTrailApi'));
+const PlatformFindings = lazy(() => import('./pages/platform/FindingsApi'));
 
 const NAV = [
   { to: '/', label: 'Workbench', icon: LayoutDashboard, end: true },
@@ -29,6 +37,7 @@ const NAV = [
   { to: '/evaluation', label: 'Evaluation', icon: FlaskConical },
   { to: '/methodology', label: 'Methodology', icon: BookOpen },
   { to: '/import', label: 'Import data', icon: Upload },
+  { to: '/platform', label: 'Platform (API)', icon: Server, end: true },
 ];
 
 function Brand({ uploaded, fileName }: { uploaded: boolean; fileName?: string }) {
@@ -84,9 +93,12 @@ export default function App() {
         <div className="no-print md:hidden">
           <div className="flex items-center justify-between px-3 h-[52px]">
             <Brand uploaded={uploaded} fileName={uploaded ? dataset.fileName : undefined} />
-            <button className="btn !p-2" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
-              {menuOpen ? <X size={18} /> : <Menu size={18} />}
-            </button>
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <button className="btn !p-2" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
+                {menuOpen ? <X size={18} /> : <Menu size={18} />}
+              </button>
+            </div>
           </div>
           {menuOpen && (
             <div className="px-2 py-2 grid grid-cols-2 gap-1">
@@ -103,7 +115,10 @@ export default function App() {
       <div className="flex flex-1 min-h-0">
         {/* Sidebar - desktop */}
         <aside className="no-print hidden md:flex flex-col w-[218px] shrink-0 px-3 py-5 gap-[3px] sticky top-0 h-screen">
-          <div className="px-1 pb-4"><Brand uploaded={uploaded} fileName={uploaded ? dataset.fileName : undefined} /></div>
+          <div className="px-1 pb-4 flex items-center justify-between gap-2">
+            <Brand uploaded={uploaded} fileName={uploaded ? dataset.fileName : undefined} />
+            <ThemeToggle />
+          </div>
           {NAV.map(({ to, label, icon: Icon, end }) => (
             <NavLink key={to} to={to} end={end}
               className={({ isActive }) => `navpill ${isActive ? 'active' : ''}`}>
@@ -142,6 +157,13 @@ export default function App() {
                 onWorld={(world, fileName, stats, scope) => setDataset({ kind: 'uploaded', world, fileName, stats, scope })}
                 onReset={() => setDataset({ kind: 'synthetic' })} />} />
               <Route path="/report/account/:id" element={<ReportPage a={a} />} />
+              <Route path="/platform" element={<PlatformWorkspace />} />
+              <Route path="/platform/upload" element={<PlatformUpload />} />
+              <Route path="/platform/training" element={<PlatformTraining />} />
+              <Route path="/platform/analyse/:datasetId" element={<PlatformAnalyse />} />
+              <Route path="/platform/runs/:runId" element={<PlatformRun />} />
+              <Route path="/platform/runs/:runId/trail" element={<PlatformTrail />} />
+              <Route path="/platform/runs/:runId/findings" element={<PlatformFindings />} />
             </Routes>
           </Suspense>
         </main>
