@@ -84,7 +84,7 @@ export default function FlowGraph({ layout, selNode, selEdge, onSelectNode, onSe
   const interactive = Boolean(onSelectNode || onSelectEdge);
   const labelSize = (layout.nodes.length <= 8 ? 12.5 : layout.nodes.length <= 16 ? 11 : 9.5) * labelScale;
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="w-full mt-2 rounded-lg" style={{ background: '#0E1626', border: '1px solid var(--color-line)' }}>
+    <svg viewBox={`0 0 ${width} ${height}`} className="w-full mt-2 rounded-lg" style={{ background: 'var(--color-graph-canvas)', border: '1px solid var(--color-line)' }}>
       <defs>
         <marker id="edge-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
           <path d="M0,0 L8,4 L0,8 z" fill="#5E7191" />
@@ -101,7 +101,7 @@ export default function FlowGraph({ layout, selNode, selEdge, onSelectNode, onSe
         return (
           <g key={i}>
             <line x1={sn.x} y1={sn.y} x2={ex} y2={ey}
-              stroke={isSel ? '#4F8CFF' : '#44587A'} strokeWidth={(0.6 + (l.amount / layout.maxAmt) * 3.4) * (isSel ? 1.6 : 1)}
+              stroke={isSel ? '#4F8CFF' : 'var(--color-graph-edge)'} strokeWidth={(0.6 + (l.amount / layout.maxAmt) * 3.4) * (isSel ? 1.6 : 1)}
               opacity={isSel ? 1 : 0.45} markerEnd="url(#edge-arrow)" className={interactive ? 'cursor-pointer' : ''}
               onClick={onSelectEdge ? () => onSelectEdge(isSel ? null : { from: sn.id, to: t.id }) : undefined} />
             <circle r={pr} fill={isSel ? '#4F8CFF' : '#2CD9FF'} opacity={0.85} className="flow-anim" style={{ pointerEvents: 'none' }}>
@@ -126,7 +126,7 @@ export default function FlowGraph({ layout, selNode, selEdge, onSelectNode, onSe
             )}
             <circle cx={n.x} cy={n.y} r={r} fill={BAND_FILL[n.band] ?? '#5E7191'} opacity={0.88} stroke={n.complaint ? '#FF4D5E' : '#fff'} strokeWidth={n.complaint ? 2.5 : 1.5} />
             {(n.score >= 45 || n.complaint || isSel) && (
-              <text x={n.x! + r + 3} y={n.y! + 3.5} fontSize={labelSize} fill="#8FA3C0" fontWeight={600}>{n.name.split(' ')[0]} - {Math.round(n.score)}</text>
+              <text x={n.x! + r + 3} y={n.y! + 3.5} fontSize={labelSize} fill="var(--color-graph-label)" fontWeight={600}>{n.name.split(' ')[0]} - {Math.round(n.score)}</text>
             )}
           </g>
         );

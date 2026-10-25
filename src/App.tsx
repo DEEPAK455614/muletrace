@@ -115,7 +115,7 @@ export default function App() {
       <div className="flex flex-1 min-h-0">
         {/* Sidebar - desktop */}
         <aside className="no-print hidden md:flex flex-col w-[218px] shrink-0 px-3 py-5 gap-[3px] sticky top-0 h-screen">
-          <div className="px-1 pb-4 flex items-center justify-between gap-2">
+          <div className="px-1 pb-4 grid gap-2">
             <Brand uploaded={uploaded} fileName={uploaded ? dataset.fileName : undefined} />
             <ThemeToggle />
           </div>

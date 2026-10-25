@@ -214,3 +214,17 @@ main > div { animation: nw-rise 420ms cubic-bezier(0.22, 0.9, 0.28, 1) both; }
 .state-box { padding: 28px 20px; text-align: center; color: var(--color-ink-mute); font-size: 13px; }
 .warn-text { color: var(--color-risk-mod); font-size: 12px; }
 .err-text { color: var(--color-risk-crit); font-size: 12.5px; }
+
+/* Graph canvas tokens (FlowGraph) */
+:root { --color-graph-canvas: #0E1626; --color-graph-edge: #44587A; --color-graph-label: #8FA3C0; }
+:root[data-theme='light'] { --color-graph-canvas: #F3F6FA; --color-graph-edge: #9FB0C6; --color-graph-label: #40506A; }
+
+/* FR-10 light-mode overrides for the legacy workbench's recurring deep-panel hexes.
+   Centralised here instead of rewriting every arbitrary-value class. */
+:root[data-theme='light'] .bg-\[\#0E1626\] { background-color: #F3F6FA !important; }
+:root[data-theme='light'] .border-\[\#1A2537\] { border-color: #DDD8CE !important; }
+:root[data-theme='light'] .border-\[\#141E30\] { border-color: #ECE8DF !important; }
+:root[data-theme='light'] .hover\:bg-\[\#131E33\]:hover { background-color: #EAF1F7 !important; }
+:root[data-theme='light'] .bg-\[\#1B2B47\] { background-color: #DCE7F0 !important; }
+:root[data-theme='light'] .bg-\[\#2CD9FF10\] { background-color: rgba(14, 116, 144, 0.08) !important; }
+:root[data-theme='light'] .bg-\[\#2CD9FF12\] { background-color: rgba(14, 116, 144, 0.10) !important; }
