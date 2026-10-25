@@ -127,6 +127,9 @@ select.btn:focus, input.btn:focus { outline: 2px solid var(--color-brand-soft); 
 .grid > * { min-width: 0; }
 
 .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.table-scroll .table-base { min-width: 560px; }
+.table-hint { display: none; font-size: 11px; color: var(--color-ink-mute); margin-top: 6px; }
+@media (max-width: 767px) { .table-hint { display: block; } }
 
 .demo-pill {
   font-size: 10px; font-weight: 600; letter-spacing: 0.02em;

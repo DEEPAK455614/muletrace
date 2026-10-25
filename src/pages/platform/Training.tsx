@@ -97,6 +97,11 @@ export default function Training() {
                   <div>Split: train {r.metrics.split?.train}, dev {r.metrics.split?.dev}, holdout {r.metrics.split?.holdout}</div>
                   <div>Dev: F1 {r.metrics.dev?.f1?.toFixed(3)}, precision {r.metrics.dev?.precision?.toFixed(3)}, recall {r.metrics.dev?.recall?.toFixed(3)}{r.metrics.dev?.pr_auc != null ? `, PR-AUC ${r.metrics.dev.pr_auc.toFixed(3)}` : ''}</div>
                   <div>Holdout (single evaluation, never tuned): F1 {r.metrics.holdout?.f1?.toFixed(3)}, precision {r.metrics.holdout?.precision?.toFixed(3)}, recall {r.metrics.holdout?.recall?.toFixed(3)}{r.metrics.holdout?.pr_auc != null ? `, PR-AUC ${r.metrics.holdout.pr_auc.toFixed(3)}` : ''}</div>
+                  <div className="text-[11.5px] text-ink-mute mt-1">
+                    Limits of this run: metrics describe only this imported dataset on a deterministic random
+                    split (not temporal); graph features are transductive (computed over the full dataset before
+                    splitting); scores are uncalibrated and are not fraud probabilities.
+                  </div>
                 </div>
               )}
               {r.metrics?.mode === 'unsupervised' && (

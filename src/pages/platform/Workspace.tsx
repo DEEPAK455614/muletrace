@@ -49,6 +49,7 @@ export default function Workspace() {
               </tbody>
             </table></div>
           )}
+          {datasets.length > 0 && <div className="table-hint">Scroll sideways to see all columns.</div>}
         </div>
         <div className="grid gap-4 content-start">
           <div className="card p-5">

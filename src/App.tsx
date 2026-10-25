@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useMemo } from 'react';
-import { Routes, Route, NavLink, Link } from 'react-router-dom';
+import { Routes, Route, NavLink, Link, useLocation } from 'react-router-dom';
 import { analyze, analyzeWorld, type Analysis } from './engine';
 import type { World } from './engine/types';
 import type { ImportResult } from './engine/import';
@@ -40,7 +40,7 @@ const NAV = [
   { to: '/platform', label: 'Platform (API)', icon: Server, end: true },
 ];
 
-function Brand({ uploaded, fileName }: { uploaded: boolean; fileName?: string }) {
+function Brand({ uploaded, fileName, onPlatform }: { uploaded: boolean; fileName?: string; onPlatform?: boolean }) {
   return (
     <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
       <Link to="/" className="flex items-center gap-2.5 no-underline">
@@ -52,7 +52,11 @@ function Brand({ uploaded, fileName }: { uploaded: boolean; fileName?: string })
           <div className="text-[10px] font-medium text-ink-mute leading-3 mt-0.5">Financial crime intelligence</div>
         </div>
       </Link>
-      {uploaded ? (
+      {onPlatform ? (
+        <Link to="/platform" className="demo-pill no-print" title="Backend workspace: this area shows persisted datasets, runs and findings served by the investigation API. Demo-engine metadata is hidden here so it cannot be mistaken for actual run context.">
+          Backend workspace
+        </Link>
+      ) : uploaded ? (
         <Link to="/import" className="demo-pill demo-pill-uploaded no-print" title={`Uploaded dataset${fileName ? ` (${fileName})` : ''} - unverified, not validated banking data. Scores rank suspicion for human review, never proof of guilt. No accuracy benchmark exists for unlabelled data.`}>
           Uploaded data - unverified
         </Link>
@@ -80,6 +84,8 @@ export default function App() {
     setActiveDatasetScope(uploaded ? dataset.scope : 'synthetic');
   }, [dataset, uploaded]);
   const [menuOpen, setMenuOpen] = React.useState(false);
+  const location = useLocation();
+  const onPlatform = location.pathname.startsWith('/platform');
   const fmtM = (ts: number) => new Date(ts).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
   const windowLabel = uploaded
     ? `${fmtM(a.world.windowStart)} - ${fmtM(a.world.windowEnd)} (uploaded)`
@@ -92,7 +98,7 @@ export default function App() {
         {/* Mobile top bar */}
         <div className="no-print md:hidden">
           <div className="flex items-center justify-between px-3 h-[52px]">
-            <Brand uploaded={uploaded} fileName={uploaded ? dataset.fileName : undefined} />
+            <Brand uploaded={uploaded} fileName={uploaded ? dataset.fileName : undefined} onPlatform={onPlatform} />
             <div className="flex items-center gap-2">
               <ThemeToggle />
               <button className="btn !p-2" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
@@ -116,7 +122,7 @@ export default function App() {
         {/* Sidebar - desktop */}
         <aside className="no-print hidden md:flex flex-col w-[218px] shrink-0 px-3 py-5 gap-[3px] sticky top-0 h-screen">
           <div className="px-1 pb-4 grid gap-2">
-            <Brand uploaded={uploaded} fileName={uploaded ? dataset.fileName : undefined} />
+            <Brand uploaded={uploaded} fileName={uploaded ? dataset.fileName : undefined} onPlatform={onPlatform} />
             <ThemeToggle />
           </div>
           {NAV.map(({ to, label, icon: Icon, end }) => (
@@ -124,15 +130,18 @@ export default function App() {
               className={({ isActive }) => `navpill ${isActive ? 'active' : ''}`}>
               <Icon size={16} strokeWidth={2} />
               {label}
-              {label === 'Alerts' && (
+              {label === 'Alerts' && !onPlatform && (
                 <span className="ml-auto num text-[10px] font-semibold rounded-full px-1.5 py-0.5" style={{ background: '#FF4D5E18', color: 'var(--color-risk-crit)' }}>{alertCount}</span>
               )}
             </NavLink>
           ))}
           <div className="mt-auto pt-4 border-t border-[#1A2537]">
             <div className="text-[10.5px] text-ink-mute px-2 leading-relaxed">
-              Analysis window: {windowLabel}<br />
-              Engine built in {a.buildMs.toFixed(0)} ms<br />
+              {onPlatform ? (
+                <>Backend workspace<br />Figures on these pages come from persisted API runs, not the demo engine.<br /></>
+              ) : (
+                <>Demo engine: analysis window {windowLabel}<br />Demo engine built in {a.buildMs.toFixed(0)} ms (client-side)<br /></>
+              )}
               <a href="https://sahajsolutions.org" target="_blank" rel="noreferrer" className="text-ink-mute no-underline hover:text-brand mt-1 inline-block">Developed by Sahaj Solutions</a>
             </div>
           </div>
