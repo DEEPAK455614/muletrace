@@ -4,7 +4,12 @@ sqlalchemy==2.0.36
 alembic==1.14.0
 pydantic==2.10.3
 pydantic-settings==2.6.1
-pandas==2.3.0
+pandas==2.3.3
+numpy==2.2.6
+scikit-learn==1.7.2
+networkx==3.4.2
+joblib==1.6.0
+reportlab==3.6.8
 pytest==8.3.4
 httpx==0.28.1
 python-multipart==0.0.19
