@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import type { World } from '../engine/types';
 import { parseCsv, autoMap, buildWorld, TXN_FIELDS, ACCOUNT_FIELDS, COMPLAINT_FIELDS, type ColumnMapping, type ImportResult } from '../engine/import';
-import { SectionTitle } from '../ui';
+import { SectionTitle, Breadcrumbs } from '../ui';
 
 const TXN_CANON = [
   { f: 'from', label: 'From account (required)' }, { f: 'to', label: 'To account (required)' },
@@ -110,11 +110,13 @@ export default function ImportData({ onWorld, activeKind, onReset }: {
 
   return (
     <div className="max-w-[880px]">
-      <div className="mb-4">
-        <h1 className="text-[22px] font-bold tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>Import dataset</h1>
-        <p className="text-[13px] text-ink-soft mt-1 max-w-[720px]">
+      <Breadcrumbs items={[{ label: 'Home', to: '/' }, { label: 'Import dataset' }]} />
+
+      <div className="page-header">
+        <h1>Import dataset</h1>
+        <p>
           Analyse your own transactions, accounts and complaints (CSV or JSON) with the same engine. Files are parsed
-          locally in this browser - nothing is uploaded to any server. Imported data is <b>unverified</b>: scores rank
+          locally in this browser — nothing is uploaded to any server. Imported data is <b>unverified</b>: scores rank
           suspicion for human review and are never proof of guilt, and no accuracy benchmark can be computed for unlabelled data.
         </p>
       </div>

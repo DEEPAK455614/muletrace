@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Analysis } from '../engine';
-import { SectionTitle } from '../ui';
+import { SectionTitle, Breadcrumbs } from '../ui';
 import benchmark from '../data/benchmark.json';
 
 type BenchEval = {
@@ -44,9 +44,11 @@ export default function Evaluation({ a }: { a: Analysis }) {
 
   return (
     <div className="max-w-[1080px]">
-      <div className="mb-4">
-        <h1 className="text-[22px] font-bold tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>Evaluation - synthetic benchmark</h1>
-        <p className="text-[13px] text-ink-soft mt-1 max-w-[760px]">
+      <Breadcrumbs items={[{ label: 'Home', to: '/' }, { label: 'Evaluation' }]} />
+
+      <div className="page-header">
+        <h1>Evaluation — synthetic benchmark</h1>
+        <p>
           These numbers measure how well each scorer recovers the fraud scenarios injected into generated worlds.
           They are not evidence of real-world performance. Dev numbers are optimistic by construction;
           the honest estimate is the untouched-holdout rows, and even those only describe this generator.

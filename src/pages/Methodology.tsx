@@ -2,7 +2,7 @@ import React from 'react';
 import type { Analysis } from '../engine';
 import { factorSpecs } from '../engine/scoring';
 import type { AccountFeatures } from '../engine/features';
-import { SectionTitle } from '../ui';
+import { SectionTitle, Breadcrumbs } from '../ui';
 
 const TYPOLOGIES = [
   { name: 'Rapid dispersal (pass-through)', desc: 'Victim funds forwarded within minutes to hours, preserving most of the amount. Generational layering follows: one account receives from many victims, forwards to a smaller set of consolidators.', src: 'FCA multi-firm review; FATF illicit financial flows' },
@@ -32,9 +32,11 @@ export default function Methodology({ a }: { a: Analysis }) {
   const totalW = specs.reduce((s, f) => s + f.max, 0);
   return (
     <div className="max-w-[880px]">
-      <div className="mb-4">
-        <h1 className="text-[22px] font-bold tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>Methodology and limitations</h1>
-        <p className="text-[13px] text-ink-soft mt-1">Full disclosure of how scores are produced, what the demonstration data is, and what this system does not claim.</p>
+      <Breadcrumbs items={[{ label: 'Home', to: '/' }, { label: 'Methodology & limitations' }]} />
+
+      <div className="page-header">
+        <h1>Methodology and limitations</h1>
+        <p>Full disclosure of how scores are produced, what the demonstration data is, and what this system does not claim.</p>
       </div>
 
       <div className="card p-5 mb-4">

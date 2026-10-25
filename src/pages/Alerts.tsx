@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Analysis } from '../engine';
-import { ScoreBadge, inr } from '../ui';
+import { ScoreBadge, inr, Breadcrumbs, FilterChipsBar, Tooltip, GlossaryTip } from '../ui';
 import { loadTriage, TRIAGE_LABELS, TRIAGE_COLORS } from '../state/triage';
 
 type Filter = 'all' | 'complaint' | 'critical' | 'untriaged';
@@ -12,6 +12,8 @@ export default function Alerts({ a }: { a: Analysis }) {
   const [band, setBand] = useState<string>('all');
   const triage = loadTriage();
 
+  const totalAlerts = useMemo(() => [...a.scores.values()].filter((s) => s.score >= 45).length, [a]);
+
   const rows = useMemo(() => {
     let rs = [...a.scores.values()].filter((s) => s.score >= 45);
     if (filter === 'complaint') rs = rs.filter((s) => (a.features.get(s.accountId)?.complaintDistance ?? 99) === 0);
@@ -19,7 +21,7 @@ export default function Alerts({ a }: { a: Analysis }) {
     if (filter === 'untriaged') rs = rs.filter((s) => !triage[s.accountId] || triage[s.accountId].status === 'new');
     if (band !== 'all') rs = rs.filter((s) => s.band === band);
     return rs.sort((x, y) => y.score - x.score);
-  }, [a, filter, band]);
+  }, [a, filter, band, triage]);
 
   const custName = (id: string) => {
     const acc = a.world.accounts.find((x) => x.id === id);
@@ -35,19 +37,38 @@ export default function Alerts({ a }: { a: Analysis }) {
     { k: 'untriaged', label: 'Untriaged' },
   ];
 
+  // Active filter chips
+  const activeChips = useMemo(() => {
+    const chips: { id: string; label: string; onRemove: () => void }[] = [];
+    if (filter !== 'all') {
+      const fObj = FILTERS.find((x) => x.k === filter);
+      if (fObj) chips.push({ id: 'filter', label: `Filter: ${fObj.label}`, onRemove: () => setFilter('all') });
+    }
+    if (band !== 'all') {
+      chips.push({ id: 'band', label: `Band: ${band}`, onRemove: () => setBand('all') });
+    }
+    return chips;
+  }, [filter, band]);
+
   return (
     <div className="max-w-[1080px]">
-      <div className="mb-4">
-        <h1 className="text-[22px] font-bold tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>Alert queue</h1>
-        <p className="text-[13px] text-ink-soft mt-1">
-          Accounts scoring in the High or Critical band, ranked for investigator review. Scores rank suspicion for review; they are not findings of guilt. Analyst capacity is the real constraint - work the queue top-down.
+      <Breadcrumbs items={[{ label: 'Home', to: '/' }, { label: 'Alert queue' }]} />
+
+      <div className="page-header">
+        <h1>Alert queue</h1>
+        <p>
+          Accounts scoring in the High or Critical band, ranked for investigator review. Scores rank suspicion for review; they are not findings of guilt. Analyst capacity is the real constraint — work the queue top-down.
         </p>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2 mb-4">
+      <div className="flex flex-wrap items-center gap-2.5 mb-3">
         {FILTERS.map((f) => (
-          <button key={f.k} className="btn" onClick={() => setFilter(f.k)}
-            style={filter === f.k ? { background: 'var(--color-brand)', color: '#fff', borderColor: 'var(--color-brand)' } : {}}>
+          <button
+            key={f.k}
+            className="btn"
+            onClick={() => setFilter(f.k)}
+            style={filter === f.k ? { background: 'var(--color-brand)', color: '#fff', borderColor: 'var(--color-brand)' } : {}}
+          >
             {f.label}
           </button>
         ))}
@@ -56,13 +77,59 @@ export default function Alerts({ a }: { a: Analysis }) {
           <option>Critical</option>
           <option>High</option>
         </select>
-        <span className="text-[12px] text-ink-mute ml-auto num">{rows.length} in queue</span>
+        <span className="text-[12px] text-ink-mute ml-auto num">
+          Showing {rows.length} of {totalAlerts} alerts
+        </span>
       </div>
+
+      <FilterChipsBar
+        chips={activeChips}
+        onClearAll={() => {
+          setFilter('all');
+          setBand('all');
+        }}
+      />
 
       <div className="card overflow-x-auto">
         <table className="table-base min-w-[760px]">
           <thead>
-            <tr><th>Account</th><th>Observed pattern</th><th>Top indicators</th><th>Complaint</th><th>Triage</th><th className="text-right">Inflow</th><th className="text-right">Score</th></tr>
+            <tr>
+              <th>
+                <Tooltip text="Customer name, account ID, and institution">
+                  <span className="cursor-help">Account ⓘ</span>
+                </Tooltip>
+              </th>
+              <th>
+                <Tooltip text="Primary money-laundering behavior detected by graph and velocity heuristics">
+                  <span className="cursor-help">Observed pattern ⓘ</span>
+                </Tooltip>
+              </th>
+              <th>
+                <Tooltip text="Highest-weighted indicators driving this account's risk score">
+                  <span className="cursor-help">Top indicators ⓘ</span>
+                </Tooltip>
+              </th>
+              <th>
+                <Tooltip text="Proximity to accounts directly named by cybercrime victims">
+                  <span className="cursor-help">Complaint ⓘ</span>
+                </Tooltip>
+              </th>
+              <th>
+                <Tooltip text="Investigator case review status">
+                  <span className="cursor-help">Triage ⓘ</span>
+                </Tooltip>
+              </th>
+              <th className="text-right">
+                <Tooltip text="Total INR credits observed during monitoring period">
+                  <span className="cursor-help">Inflow ⓘ</span>
+                </Tooltip>
+              </th>
+              <th className="text-right">
+                <Tooltip text="Composite risk score from 0 to 100">
+                  <span className="cursor-help">Score ⓘ</span>
+                </Tooltip>
+              </th>
+            </tr>
           </thead>
           <tbody>
             {rows.map((s) => {
@@ -76,16 +143,45 @@ export default function Alerts({ a }: { a: Analysis }) {
                   </td>
                   <td className="text-[12px] text-ink-soft max-w-[150px]">{s.archetype}</td>
                   <td className="text-[12px] text-ink-soft max-w-[210px]">{topFactors(s.accountId)}</td>
-                  <td>{f.complaintDistance === 0 ? <span className="chip" style={{ color: 'var(--color-risk-crit)', background: '#FF4D5E12', borderColor: '#FF4D5E30' }}>Named</span> : f.complaintDistance === 1 ? <span className="chip" style={{ color: 'var(--color-risk-high)', background: '#FF7A4512', borderColor: '#FF7A4530' }}>1 hop</span> : <span className="text-[12px] text-ink-mute">-</span>}</td>
-                  <td><span className="chip" style={{ color: TRIAGE_COLORS[t?.status ?? 'new'], background: `${TRIAGE_COLORS[t?.status ?? 'new']}12`, borderColor: `${TRIAGE_COLORS[t?.status ?? 'new']}30` }}>{TRIAGE_LABELS[t?.status ?? 'new']}</span></td>
+                  <td>
+                    {f.complaintDistance === 0 ? (
+                      <span className="chip" style={{ color: 'var(--color-risk-crit)', background: '#FF4D5E12', borderColor: '#FF4D5E30' }}>
+                        Named
+                      </span>
+                    ) : f.complaintDistance === 1 ? (
+                      <span className="chip" style={{ color: 'var(--color-risk-high)', background: '#FF7A4512', borderColor: '#FF7A4530' }}>
+                        1 hop
+                      </span>
+                    ) : (
+                      <span className="text-[12px] text-ink-mute">-</span>
+                    )}
+                  </td>
+                  <td>
+                    <span
+                      className="chip"
+                      style={{
+                        color: TRIAGE_COLORS[t?.status ?? 'new'],
+                        background: `${TRIAGE_COLORS[t?.status ?? 'new']}12`,
+                        borderColor: `${TRIAGE_COLORS[t?.status ?? 'new']}30`,
+                      }}
+                    >
+                      {TRIAGE_LABELS[t?.status ?? 'new']}
+                    </span>
+                  </td>
                   <td className="num text-right text-[12px]">{inr(f.inTotal)}</td>
-                  <td className="text-right"><ScoreBadge score={s.score} band={s.band} size="sm" /></td>
+                  <td className="text-right">
+                    <ScoreBadge score={s.score} band={s.band} size="sm" />
+                  </td>
                 </tr>
               );
             })}
           </tbody>
         </table>
-        {rows.length === 0 && <div className="p-10 text-center text-sm text-ink-mute">No alerts match this filter.</div>}
+        {rows.length === 0 && (
+          <div className="p-10 text-center text-sm text-ink-mute">
+            No alerts match this filter. Try clearing active filters above.
+          </div>
+        )}
       </div>
     </div>
   );
