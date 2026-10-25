@@ -24,3 +24,5 @@ video/**/captures/
 video/**/*.mp4
 video/**/*.pdf
 video/**/latest-run.txt
+video/**/*.wav
+video/**/parts.concat
